@@ -37,17 +37,17 @@ export default {
   name: "rvo",
   aliases: ["read", "view", "readviewonce"],
   category: "tools",
-  execute: async (ctx) => {
-    const contextInfo = ctx.msg.message?.extendedTextMessage?.contextInfo;
+  execute: async ({ msg, sock, jid }) => {
+    const contextInfo = msg.message?.extendedTextMessage?.contextInfo;
     const quotedMsg = contextInfo?.quotedMessage;
 
     const target = unwrapViewOnce(quotedMsg);
 
     if (!target || !quotedMsg) {
-      await ctx.sock.sendMessage(
-        ctx.jid,
+      await sock.sendMessage(
+        jid,
         { text: "Harap reply pesan sekali lihat (View Once)!" },
-        { quoted: ctx.msg },
+        { quoted: msg },
       );
       return;
     }
@@ -56,7 +56,7 @@ export default {
       const buffer = (await downloadMediaMessage(
         {
           key: {
-            remoteJid: ctx.jid,
+            remoteJid: jid,
             id: contextInfo.stanzaId,
             participant: contextInfo.participant,
           },
@@ -65,8 +65,8 @@ export default {
         "buffer",
         {},
         {
-          logger: ctx.sock.logger,
-          reuploadRequest: ctx.sock.updateMediaMessage,
+          logger: sock.logger,
+          reuploadRequest: sock.updateMediaMessage,
         },
       )) as Buffer;
 
@@ -74,36 +74,36 @@ export default {
         (target.media as proto.Message.IImageMessage).caption || undefined;
 
       if (target.type === "image") {
-        await ctx.sock.sendMessage(
-          ctx.jid,
+        await sock.sendMessage(
+          jid,
           { image: buffer, caption },
-          { quoted: ctx.msg },
+          { quoted: msg },
         );
       } else if (target.type === "video") {
-        await ctx.sock.sendMessage(
-          ctx.jid,
+        await sock.sendMessage(
+          jid,
           { video: buffer, caption },
-          { quoted: ctx.msg },
+          { quoted: msg },
         );
       } else if (target.type === "audio") {
-        await ctx.sock.sendMessage(
-          ctx.jid,
+        await sock.sendMessage(
+          jid,
           {
             audio: buffer,
             ptt: (target.media as proto.Message.IAudioMessage).ptt || false,
             mimetype: "audio/mp4",
           },
-          { quoted: ctx.msg },
+          { quoted: msg },
         );
       }
     } catch (error) {
       console.error("[error] Gagal memproses RVO:", error);
-      await ctx.sock.sendMessage(
-        ctx.jid,
+      await sock.sendMessage(
+        jid,
         {
           text: "Gagal mengunduh media. File mungkin sudah kedaluwarsa atau tidak valid.",
         },
-        { quoted: ctx.msg },
+        { quoted: msg },
       );
     }
   },

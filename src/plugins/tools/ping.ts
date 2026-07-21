@@ -4,13 +4,13 @@ export default {
   name: "ping",
   category: "tools",
   aliases: ["p"],
-  execute: async (ctx) => {
-    await ctx.sock.sendMessage(
-      ctx.jid,
+  execute: async ({ msg, jid, sock }) => {
+    await sock.sendMessage(
+      jid,
       {
         text: "pong",
       },
-      { quoted: ctx.msg },
+      { quoted: msg },
     );
   },
 } satisfies Plugin;

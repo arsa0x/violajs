@@ -12,18 +12,18 @@ export default {
   aliases: ["tt", "tik"],
   category: "downloader",
   description: "Tiktok video and audio downloader",
-  execute: async (ctx) => {
-    const urlArg = ctx.args.find((arg) => arg.includes("https://"));
+  execute: async ({ args, jid, msg, sock }) => {
+    const urlArg = args.find((arg) => arg.includes("https://"));
 
-    const isAudioOnly = ctx.args.some((arg) =>
+    const isAudioOnly = args.some((arg) =>
       ["--mp3", "--audio", "-mp3", "-audio"].includes(arg.toLowerCase()),
     );
 
     if (!urlArg) {
-      await ctx.sock.sendMessage(
-        ctx.jid,
+      await sock.sendMessage(
+        jid,
         { text: "Penggunaan: .tiktok [-mp3] <url_tiktok>" },
-        { quoted: ctx.msg },
+        { quoted: msg },
       );
       return;
     }
@@ -46,10 +46,10 @@ export default {
       const data = (await response.json()) as TikTokResponse;
 
       if (!data.status) {
-        await ctx.sock.sendMessage(
-          ctx.jid,
+        await sock.sendMessage(
+          jid,
           { text: "Gagal. Video mungkin diprivasi atau URL tidak valid." },
-          { quoted: ctx.msg },
+          { quoted: msg },
         );
         return;
       }
@@ -59,34 +59,34 @@ export default {
           "utf-8",
         );
 
-        await ctx.sock.sendMessage(
-          ctx.jid,
+        await sock.sendMessage(
+          jid,
           {
             audio: { url: decodedAudioUrl },
             mimetype: "audio/mpeg",
           },
-          { quoted: ctx.msg },
+          { quoted: msg },
         );
       } else {
         const decodedVideoUrl = Buffer.from(data.videoId, "base64").toString(
           "utf-8",
         );
 
-        await ctx.sock.sendMessage(
-          ctx.jid,
+        await sock.sendMessage(
+          jid,
           {
             video: { url: decodedVideoUrl },
             caption: `Author: ${data.author}`,
           },
-          { quoted: ctx.msg },
+          { quoted: msg },
         );
       }
     } catch (error: any) {
       console.error("[error]:", error);
-      await ctx.sock.sendMessage(
-        ctx.jid,
+      await sock.sendMessage(
+        jid,
         { text: `Terjadi kesalahan sistem: ${error.message}` },
-        { quoted: ctx.msg },
+        { quoted: msg },
       );
     }
   },
