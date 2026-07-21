@@ -1,0 +1,20 @@
+{
+  "name": "violajs",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/pino": "^7.0.5",
+    "@types/qrcode": "^1.5.6"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "baileys": "^7.0.0-rc13",
+    "cheerio": "^1.2.0",
+    "pino": "^10.3.1",
+    "qrcode": "^1.5.4"
+  }
+}
