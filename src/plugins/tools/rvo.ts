@@ -1,4 +1,4 @@
-import { downloadMediaMessage, type proto, type WAMessage } from "baileys";
+import { downloadMediaMessage, type proto } from "baileys";
 import type { Plugin } from "../../types";
 
 type ViewOnceMedia = {
@@ -97,7 +97,7 @@ export default {
         );
       }
     } catch (error) {
-      console.error("Gagal memproses RVO:", error);
+      console.error("[error] Gagal memproses RVO:", error);
       await ctx.sock.sendMessage(
         ctx.jid,
         {
