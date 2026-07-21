@@ -8,23 +8,29 @@ export class Manager {
 
   async load() {
     const pluginDir = join(import.meta.dir, "plugins");
-    const files = readdirSync(pluginDir).filter(
-      (f) => f.endsWith(".ts") || f.endsWith(".js"),
-    );
 
-    for (const file of files) {
-      const mod = await import(join(pluginDir, file));
-      const plugin: Plugin = mod.default;
+    for (const folder of readdirSync(pluginDir)) {
+      const featureDir = join(pluginDir, folder);
 
-      if (!plugin || !plugin.name) continue;
+      const files = readdirSync(featureDir).filter(
+        (f) => f.endsWith(".ts") || f.endsWith(".js"),
+      );
 
-      this.plugins.set(plugin.name.toLowerCase(), plugin);
+      for (const file of files) {
+        const mod = await import(join(featureDir, file));
+        const plugin: Plugin = mod.default;
 
-      if (plugin.aliases)
-        for (const alias of plugin.aliases) {
-          this.plugins.set(alias.toLowerCase(), plugin);
-        }
+        if (!plugin || !plugin.name) continue;
+
+        this.plugins.set(plugin.name.toLowerCase(), plugin);
+
+        if (plugin.aliases)
+          for (const alias of plugin.aliases) {
+            this.plugins.set(alias.toLowerCase(), plugin);
+          }
+      }
     }
+
     console.log(
       `[Worker ${process.pid}] ${this.plugins.size} command/alias berhasil dimuat.`,
     );

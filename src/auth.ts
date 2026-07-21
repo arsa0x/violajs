@@ -15,7 +15,6 @@ export const useSQLiteAuthState = (
 } => {
   const db = new Database(dbPath, { create: true });
 
-
   db.run("PRAGMA journal_mode = WAL;");
   db.run("PRAGMA synchronous = NORMAL;");
 
