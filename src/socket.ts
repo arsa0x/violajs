@@ -23,7 +23,9 @@ const { saveCreds, state } = await useSQLiteAuthState(
 export async function start(manager: Manager, config: Config) {
   const sock = makeWASocket({
     auth: state,
-    logger: pino(),
+    logger: pino({
+      level: "error",
+    }),
     syncFullHistory: false,
     shouldSyncHistoryMessage: () => false,
     markOnlineOnConnect: false,
@@ -59,7 +61,7 @@ export async function start(manager: Manager, config: Config) {
       }
 
       if (connection === "open") {
-        console.log("connected");
+        console.log("[info] Connected");
       }
     },
   );
@@ -82,6 +84,7 @@ export async function start(manager: Manager, config: Config) {
           args: parts,
           jid: jid,
           sock,
+          msg,
         },
         cmd,
       );

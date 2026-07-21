@@ -1,4 +1,4 @@
-import { type WASocket } from "baileys";
+import { type WAMessage, type WASocket } from "baileys";
 
 export type Config = {
   owners: string[];
@@ -9,6 +9,7 @@ export type Context = {
   jid: string;
   args: string[];
   sock: WASocket;
+  msg: WAMessage;
 };
 
 export type Plugin = {

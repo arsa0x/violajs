@@ -5,8 +5,12 @@ export default {
   category: "tools",
   aliases: ["p"],
   execute: async (ctx) => {
-    await ctx.sock.sendMessage(ctx.jid, {
-      text: "pong",
-    });
+    await ctx.sock.sendMessage(
+      ctx.jid,
+      {
+        text: "pong",
+      },
+      { quoted: ctx.msg },
+    );
   },
 } satisfies Plugin;

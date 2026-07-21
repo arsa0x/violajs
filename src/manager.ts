@@ -8,6 +8,7 @@ export class Manager {
 
   async load() {
     const pluginDir = join(import.meta.dir, "plugins");
+    let total: number = 0;
 
     for (const folder of readdirSync(pluginDir)) {
       const featureDir = join(pluginDir, folder);
@@ -17,6 +18,7 @@ export class Manager {
       );
 
       for (const file of files) {
+        total += 1;
         const mod = await import(join(featureDir, file));
         const plugin: Plugin = mod.default;
 
@@ -31,9 +33,7 @@ export class Manager {
       }
     }
 
-    console.log(
-      `[Worker ${process.pid}] ${this.plugins.size} command/alias berhasil dimuat.`,
-    );
+    console.log(`[info] ${total} plugin berhasil dimuat.`);
   }
 
   getTextContent(msg: proto.IMessage | null | undefined): string | null {
@@ -45,6 +45,7 @@ export class Manager {
       msg.imageMessage?.caption ??
       msg.videoMessage?.caption ??
       msg.documentMessage?.caption ??
+      msg.interactiveMessage?.body?.text ??
       this.getTextContent(msg.viewOnceMessage?.message) ??
       this.getTextContent(msg.viewOnceMessageV2?.message) ??
       this.getTextContent(msg.ephemeralMessage?.message) ??
@@ -65,7 +66,8 @@ export class Manager {
     try {
       await plugin.execute(ctx);
     } catch (e) {
-      ctx.sock.sendMessage(ctx.jid, {
+      console.error(`[error] ${e}`);
+      await ctx.sock.sendMessage(ctx.jid, {
         text: `error: ${e}`,
       });
     }
