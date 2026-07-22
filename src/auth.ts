@@ -11,6 +11,7 @@ import type {
   SignalDataTypeMap,
   SignalDataSet,
 } from "baileys";
+import fs from "fs";
 
 export const useSQLiteAuthState = async (
   dbPath: string,
@@ -19,7 +20,10 @@ export const useSQLiteAuthState = async (
   saveCreds: () => void;
   clearAll: () => void;
 }> => {
-  const db = new Database(dbPath, { create: true });
+  if (!fs.existsSync(dbPath)) {
+    fs.mkdirSync(dbPath, { recursive: true });
+  }
+  const db = new Database(`${dbPath}/auth.sqlite`, { create: true });
   db.run("PRAGMA journal_mode = WAL;");
   db.run("PRAGMA synchronous = NORMAL;");
 

@@ -17,7 +17,7 @@ export const customFetchAgent = new https.Agent({
 const mediaCacheStore = new MemoryMediaCache(1000);
 
 const { saveCreds, state } = await useSQLiteAuthState(
-  "./session/auth_state.sqlite",
+  "./session",
 );
 
 export async function start(manager: Manager, config: Config) {
