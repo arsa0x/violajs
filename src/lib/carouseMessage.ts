@@ -6,13 +6,97 @@ import {
   type WASocket,
 } from "baileys";
 
+export type CarouselButton =
+  | {
+      type: "cta_url";
+      displayText: string;
+      url: string;
+      merchantUrl?: string;
+    }
+  | {
+      type: "cta_call";
+      displayText: string;
+      phoneNumber: string;
+    }
+  | {
+      type: "cta_copy";
+      displayText: string;
+      copyCode: string;
+      id?: string;
+    }
+  | {
+      type: "quick_reply";
+      displayText: string;
+      id: string;
+    }
+  | {
+      type: "single_select";
+      title: string;
+      sections: {
+        title: string;
+        rows: {
+          title: string;
+          description?: string;
+          id: string;
+          header?: string;
+        }[];
+      }[];
+    };
+
+function buildNativeFlowButton(btn: CarouselButton) {
+  switch (btn.type) {
+    case "cta_url":
+      return {
+        name: "cta_url",
+        buttonParamsJson: JSON.stringify({
+          display_text: btn.displayText,
+          url: btn.url,
+          merchant_url: btn.merchantUrl ?? btn.url,
+          webview_interaction: true,
+        }),
+      };
+    case "cta_call":
+      return {
+        name: "cta_call",
+        buttonParamsJson: JSON.stringify({
+          display_text: btn.displayText,
+          phone_number: btn.phoneNumber,
+        }),
+      };
+    case "cta_copy":
+      return {
+        name: "cta_copy",
+        buttonParamsJson: JSON.stringify({
+          display_text: btn.displayText,
+          copy_code: btn.copyCode,
+          id: btn.id ?? btn.copyCode,
+        }),
+      };
+    case "quick_reply":
+      return {
+        name: "quick_reply",
+        buttonParamsJson: JSON.stringify({
+          display_text: btn.displayText,
+          id: btn.id,
+        }),
+      };
+    case "single_select":
+      return {
+        name: "single_select",
+        buttonParamsJson: JSON.stringify({
+          title: btn.title,
+          sections: btn.sections,
+        }),
+      };
+  }
+}
+
 export interface CarouselCard {
   title: string;
   subtitle?: string;
   bodyText: string;
   imageUrl: string;
-  buttonText: string;
-  buttonUrl: string;
+  buttons: CarouselButton[];
 }
 
 export interface CarouselOptions {
@@ -22,6 +106,32 @@ export interface CarouselOptions {
   cards: CarouselCard[];
 }
 
+/// Contoh penggunaan:
+///
+/// await sendCarouselMessage(sock, jid, {
+///   quoted: msg,
+///   bodyText: "Body text",
+///   footerText: "Footer text",
+///   cards: [
+///     {
+///       title: "Title card",
+///       bodyText: "Body card text",
+///       imageUrl: "https://example.com/image.jpg",
+///       buttons: [
+///         {
+///           type: "cta_url",
+///           displayText: "Display button text",
+///           url: "https://www.example.com",
+///         },
+///         {
+///           type: "quick_reply",
+///           displayText: "Display text button",
+///           id: "Id message text",
+///         },
+///       ],
+///     },
+///   ],
+/// });
 export async function sendCarouselMessage(
   sock: WASocket,
   jid: string,
@@ -56,16 +166,7 @@ export async function sendCarouselMessage(
         }),
         nativeFlowMessage:
           proto.Message.InteractiveMessage.NativeFlowMessage.create({
-            buttons: [
-              {
-                name: "cta_url",
-                buttonParamsJson: JSON.stringify({
-                  display_text: card.buttonText,
-                  url: card.buttonUrl,
-                  webview_interaction: true,
-                }),
-              },
-            ],
+            buttons: card.buttons.map(buildNativeFlowButton),
             messageParamsJson: "{}",
           }),
       }),
