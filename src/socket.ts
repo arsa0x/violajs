@@ -1,7 +1,7 @@
 import pino from "pino";
 import { makeWASocket } from "baileys";
 import https from "https";
-import { MemoryMediaCache } from "./cache/media";
+import { MemoryMediaCache } from "./lib/mediaCache";
 import type { Config } from "./types";
 import type { Manager } from "./manager";
 import { useSQLiteAuthState } from "./auth";
@@ -68,7 +68,35 @@ export async function start(manager: Manager, config: Config) {
 
   sock.ev.on("messages.upsert", async ({ messages, type, requestId }) => {
     for (const msg of messages) {
-      if (msg.key.fromMe) continue;
+      if (msg.key.fromMe) {
+        const now = new Date().toISOString();
+        await Bun.write(
+          `sniff/${now}-captured-from-me.json`,
+          JSON.stringify(
+            {
+              message: msg.message,
+              time: now,
+            },
+            null,
+            2,
+          ),
+        );
+        continue;
+      }
+
+      // digunakan hanya untuk development
+      const now = new Date().toISOString();
+      await Bun.write(
+        `sniff/${now}-captured.json`,
+        JSON.stringify(
+          {
+            message: msg.message,
+            time: now,
+          },
+          null,
+          2,
+        ),
+      );
 
       const text = manager.getTextContent(msg.message);
       const jid = msg.key.remoteJid;
