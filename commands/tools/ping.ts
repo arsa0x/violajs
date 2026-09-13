@@ -1,6 +1,6 @@
-import { defineCommand } from "../../core/command";
-import { cooldown } from "../../middlewares/cooldown";
-import { groupOnly } from "../../middlewares/group";
+import { defineCommand } from "../../src/core/command";
+import { cooldown } from "../../src/middlewares/cooldown";
+import { groupOnly } from "../../src/middlewares/group";
 
 export default defineCommand({
   name: "ping",

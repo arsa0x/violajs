@@ -1,14 +1,11 @@
 import { readdir } from "fs/promises";
 import { join, extname } from "path";
-import { fileURLToPath, pathToFileURL } from "url";
+import { pathToFileURL } from "url";
 import { CommandRegistry } from "./registry";
 import type { Command } from "../types/command";
 
-const here = fileURLToPath(new URL(".", import.meta.url));
-
 export async function loadCommands(registry: CommandRegistry): Promise<void> {
-  const root = join(here, "..", "commands");
-  const files = await collectCommandFiles(root);
+  const files = await collectCommandFiles("commands");
 
   for (const file of files) {
     const module = await import(pathToFileURL(file).href);
