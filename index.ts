@@ -1,10 +1,10 @@
 import { config } from "./config";
+import { Context } from "./src/core/context";
 import { CommandDispatcher } from "./src/core/dispatcher";
 import { loadCommands } from "./src/core/loader";
 import { parseCommand } from "./src/core/parser";
 import { CommandRegistry } from "./src/core/registry";
 import { createWAClient } from "./src/core/socket";
-import type { Context } from "./src/types/context";
 
 const registry = new CommandRegistry();
 await loadCommands(registry);
@@ -34,31 +34,13 @@ sock.ev.on("messages.upsert", async ({ messages, type }) => {
     const jid = message.key.remoteJid;
     if (!jid) continue;
 
-    const senderJid = message.key.participant ?? jid;
-
-    const ctx: Context = {
-      name: parsed.name,
-      args: parsed.args,
-      text,
-      sender: {
-        jid: senderJid,
-        isOwner: config.owners.has(senderJid),
-      },
-      chat: {
-        jid,
-        isGroup: jid.endsWith("@g.us"),
-      },
-      reply: {
-        text: (body: string) =>
-          sock.sendMessage(jid, { text: body }, { quoted: message }),
-      },
-    };
+    const ctx = new Context({ sock, message, text, parsed, jid });
 
     try {
       await dispatcher.dispatch(ctx);
     } catch (error) {
       console.error(`Command ${parsed.name} failed:`, error);
-      await ctx.reply.text("Terjadi error saat menjalankan command.");
+      await ctx.reply("Terjadi error saat menjalankan command.");
     }
   }
 });

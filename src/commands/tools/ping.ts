@@ -1,7 +1,9 @@
 import { defineCommand } from "../../core/command";
 
 export default defineCommand({
-  name: "",
-
-  async execute(ctx) {},
+  name: "ping",
+  aliases: ["p"],
+  async execute(ctx) {
+    await ctx.reply("Pong!");
+  },
 });
