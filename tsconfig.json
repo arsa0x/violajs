@@ -1,5 +1,12 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@types/*": ["src/types/*"],
+      "@middlewares/*": ["src/middlewares/*"],
+      "@core/*": ["src/core/*"],
+    },
+
     // Environment setup & latest features
     "lib": ["ESNext"],
     "target": "ESNext",
@@ -25,6 +32,6 @@
     // Some stricter flags (disabled by default)
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noPropertyAccessFromIndexSignature": false
-  }
+    "noPropertyAccessFromIndexSignature": false,
+  },
 }
