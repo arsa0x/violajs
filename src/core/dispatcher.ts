@@ -1,16 +1,27 @@
-import type { Context } from "../types/context";
-import { runMiddleware } from "./middleware";
-import type { CommandRegistry } from "./registry";
+import type { Middleware } from '../types/middleware'
+import type { Context } from './context'
+import { runMiddleware } from './middleware'
+import { CommandRegistry } from './registry'
 
 export class CommandDispatcher {
-  constructor(private readonly registry: CommandRegistry) {}
+  constructor(
+    private readonly registry: CommandRegistry,
+    private readonly globalMiddleware: readonly Middleware[] = [],
+  ) {}
 
   async dispatch(ctx: Context): Promise<void> {
-    const command = this.registry.resolve(ctx.name);
-    if (!command) return;
+    const command = this.registry.resolve(ctx.name)
+    if (!command) return
 
-    await runMiddleware(command.middleware ?? [], ctx, () =>
-      command.execute(ctx),
-    );
+    const middleware = [
+      ...this.globalMiddleware,
+      ...(command.middleware ?? []),
+    ]
+
+    await runMiddleware(
+      middleware,
+      ctx,
+      () => command.execute(ctx),
+    )
   }
 }

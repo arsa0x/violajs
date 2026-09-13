@@ -1,4 +1,4 @@
-import type { Context } from "./context";
+import type { Context } from "../core/context";
 
 export type Middleware = (
   ctx: Context,

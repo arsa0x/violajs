@@ -1,28 +1,44 @@
-import type { Context } from "../types/context";
 import type { Middleware } from "../types/middleware";
+import type { Context } from "./context";
 
 export async function runMiddleware(
-  middleware: Middleware[],
+  middleware: readonly Middleware[],
   ctx: Context,
   handler: () => Promise<void>,
 ): Promise<void> {
   let index = -1;
 
-  async function dispatch(position: number): Promise<void> {
+  const dispatch = async (position: number): Promise<void> => {
     if (position <= index) {
       throw new Error("next() called multiple times");
     }
 
     index = position;
-    const fn = middleware[position];
+    const current = middleware[position];
 
-    if (!fn) {
+    if (!current) {
       await handler();
       return;
     }
 
-    await fn(ctx, () => dispatch(position + 1));
-  }
+    let called = false;
+
+    await current(ctx, async () => {
+      if (called) {
+        throw new Error("next() called multiple times");
+      }
+
+      called = true;
+      await dispatch(position + 1);
+    });
+  };
 
   await dispatch(0);
+}
+
+export function withMiddleware(
+  middleware: readonly Middleware[],
+  handler: (ctx: Context) => Promise<void>,
+): (ctx: Context) => Promise<void> {
+  return (ctx) => runMiddleware(middleware, ctx, () => handler(ctx));
 }
