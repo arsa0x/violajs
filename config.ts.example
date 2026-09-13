@@ -1,0 +1,10 @@
+export interface BotConfig {
+  prefix: string
+  owners: Set<string>
+}
+
+export const config: BotConfig = {
+  prefix: '.',
+  // Ganti dengan JID/nomor owner.
+  owners: new Set(['628xxxxxxxxxx@s.whatsapp.net']),
+}
