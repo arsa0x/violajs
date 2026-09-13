@@ -31,7 +31,7 @@ bun install
 ```
 
 **3. Konfigurasi**
-Buat file `config.json` atau cukup dengan menghapus `.example` pada file `config.json.example`.
+Buat file `config.ts` atau cukup dengan menghapus `.example` pada file `config.ts.example`.
 
 ## Jalankan
 
@@ -47,35 +47,58 @@ bun run index.ts
 
 ```bash
 violajs/
-├── config.json         # File konfigurasi utama bot (diabaikan oleh git)
-├── config.json.example # Contoh struktur file konfigurasi
-├── index.ts            # Entry point utama program
-├── session/            # Direktori penyimpanan sesi autentikasi WhatsApp
-└── src                 # Direktori kode sumber utama
-    ├── lib             # Kumpulan utility dan helper
-    ├── plugins         # Direktori penyimpanan modul/perintah (plugin) bot
-    │   ├── downloader
-    │   ├── tools
-    │   └── [kategori]  # Kategori plugin lainnya
-    └── types.ts        # Definisi tipe data TypeScript kustom
+├── commands
+│   ├── downloader/
+│   └── tools/
+├── config.ts
+├── index.ts
+├── package.json
+├── session
+│   ├── auth.sqlite
+│   ├── auth.sqlite-shm
+│   └── auth.sqlite-wal
+├── src
+│   ├── core
+│   │   ├── command.ts
+│   │   ├── context.ts
+│   │   ├── dispatcher.ts
+│   │   ├── loader.ts
+│   │   ├── middleware.ts
+│   │   ├── parser.ts
+│   │   ├── registry.ts
+│   │   └── socket.ts
+│   ├── middlewares
+│   │   ├── cooldown.ts
+│   │   ├── group.ts
+│   │   ├── logger.ts
+│   │   └── owner.ts
+│   ├── storage
+│   │   ├── auth.ts
+│   │   └── cache.ts
+│   ├── types
+│   │   ├── command.ts
+│   │   └── middleware.ts
+│   └── utils
+└── tsconfig.json
 ```
 
 ## Contoh Plugin
 
-Membuat fitur baru sangat mudah! Buat file .ts baru di dalam direktori plugins/[kategori]/.
+Membuat fitur baru sangat mudah! Buat file .ts baru di dalam direktori commands/[kategori]/.
 
 ```typescript
-import type { Plugin } from "../../types";
+import { defineCommand } from "@core/command";
+import { cooldown } from "@middlewares/cooldown";
+import { groupOnly } from "@middlewares/group";
 
-export default {
+export default defineCommand({
   name: "ping",
   aliases: ["p"],
-  category: "tools",
-  description: "Cek responsivitas bot",
-  execute: async ({ sock, jid, msg }) => {
-    await sock.sendMessage(jid, { text: "Pong!" }, { quoted: msg });
+  middleware: [groupOnly(), cooldown(100000)],
+  async execute(ctx) {
+    await ctx.reply("Pong!");
   },
-} satisfies Plugin;
+});
 ```
 
 ## Kontribusi
