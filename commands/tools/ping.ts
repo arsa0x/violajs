@@ -7,6 +7,6 @@ export default defineCommand({
   aliases: ["p"],
   middleware: [groupOnly(), cooldown(100000)],
   async execute(ctx) {
-    await ctx.reply("Pong!");
+    await ctx.reply.text("Pong!");
   },
 });

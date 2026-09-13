@@ -1,6 +1,7 @@
 import type { WASocket, WAMessage } from "baileys";
 import type { ParsedCommand } from "./parser";
 import { config } from "../../config";
+import { Reply } from "@utils/reply";
 
 export class Context {
   sock: WASocket;
@@ -16,13 +17,14 @@ export class Context {
     jid: string;
     isGroup: boolean;
   };
+  reply: Reply;
 
   constructor(params: {
     sock: WASocket;
     message: WAMessage;
     text: string;
     parsed: ParsedCommand;
-    jid: any;
+    jid: string;
   }) {
     const senderJid = params.message!.key.participant ?? params.jid;
 
@@ -39,9 +41,6 @@ export class Context {
       jid: senderJid,
       isOwner: config.owners.has(senderJid),
     };
-  }
-
-  async reply(text: string): Promise<void> {
-    this.sock.sendMessage(this.chat.jid, { text: text }, { quoted: this.msg });
+    this.reply = new Reply(params.sock, params.message, params.jid);
   }
 }

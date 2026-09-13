@@ -5,6 +5,7 @@
       "@types/*": ["src/types/*"],
       "@middlewares/*": ["src/middlewares/*"],
       "@core/*": ["src/core/*"],
+      "@utils/*" : ["src/utils/*"],
     },
 
     // Environment setup & latest features

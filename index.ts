@@ -1,18 +1,15 @@
 import { config } from "./config";
-import { Context } from "./src/core/context";
-import { CommandDispatcher } from "./src/core/dispatcher";
-import { loadCommands } from "./src/core/loader";
-import { parseCommand } from "./src/core/parser";
-import { CommandRegistry } from "./src/core/registry";
-import { createWAClient } from "./src/core/socket";
+import { Context } from "@core/context";
+import { CommandDispatcher } from "@core/dispatcher";
+import { loadCommands } from "@core/loader";
+import { parseCommand } from "@core/parser";
+import { CommandRegistry } from "@core/registry";
+import { createWAClient } from "@core/socket";
 
 const registry = new CommandRegistry();
 await loadCommands(registry);
 
 console.log(`Loaded ${registry.list().length} commands`);
-for (const command of registry.list()) {
-  console.log(`  .${command.name}`);
-}
 
 const dispatcher = new CommandDispatcher(registry);
 const sock = await createWAClient();
@@ -24,7 +21,17 @@ sock.ev.on("messages.upsert", async ({ messages, type }) => {
     if (!message.message || message.key.fromMe) continue;
 
     const text =
-      message.message.conversation ?? message.message.extendedTextMessage?.text;
+      message.message?.conversation ||
+      message.message?.extendedTextMessage?.text ||
+      message.message?.imageMessage?.caption ||
+      message.message?.videoMessage?.caption ||
+      message.message?.documentMessage?.caption ||
+      message.message?.buttonsResponseMessage?.selectedButtonId ||
+      message.message?.listResponseMessage?.singleSelectReply?.selectedRowId ||
+      message.message?.templateButtonReplyMessage?.selectedId ||
+      message.message?.interactiveResponseMessage?.nativeFlowResponseMessage
+        ?.paramsJson ||
+      "";
 
     if (!text) continue;
 
@@ -40,7 +47,7 @@ sock.ev.on("messages.upsert", async ({ messages, type }) => {
       await dispatcher.dispatch(ctx);
     } catch (error) {
       console.error(`Command ${parsed.name} failed:`, error);
-      await ctx.reply("Terjadi error saat menjalankan command.");
+      await ctx.reply.text("Terjadi error saat menjalankan command.");
     }
   }
 });

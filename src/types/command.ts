@@ -1,5 +1,5 @@
 
-import type { Context } from "../core/context";
+import type { Context } from "@core/context";
 import type { Middleware } from "./middleware";
 
 export type Category =
