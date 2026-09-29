@@ -1,9 +1,10 @@
 export const log = {
-  info: (message?: any) => console.log(`[\x1b[32mINFO\x1b[0m] ${message}`),
-  warn: (message?: any) => console.warn(`[\x1b[33mWARN\x1b[0m] ${message}`),
-  error: (message?: any) =>
-    console.error(`\x1b[0m[\x1b[31mERROR\x1b[0m] ${message}`),
-  debug: (message?: any) => console.debug(`[\x1b[90mDEBUG\x1b[0m] ${message}`),
+  info: (...args: unknown[]) => console.log(`[\x1b[32mINFO\x1b[0m]`, ...args),
+  warn: (...args: unknown[]) => console.warn(`[\x1b[33mWARN\x1b[0m]`, ...args),
+  error: (...args: unknown[]) =>
+    console.error(`[\x1b[31mERROR\x1b[0m]`, ...args),
+  debug: (...args: unknown[]) =>
+    console.debug(`[\x1b[90mDEBUG\x1b[0m]`, ...args),
 };
 
 export const logger = {

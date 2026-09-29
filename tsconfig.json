@@ -2,11 +2,11 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@types/*": ["src/types/*"],
-      "@middlewares/*": ["src/middlewares/*"],
-      "@core/*": ["src/core/*"],
-      "@utils/*" : ["src/utils/*"],
-      "@lib/*": ["lib/*"],
+      "@types/*": ["./src/types/*"],
+      "@middlewares/*": ["./src/middlewares/*"],
+      "@core/*": ["./src/core/*"],
+      "@utils/*" : ["./src/utils/*"],
+      "@lib/*": ["./lib/*"],
     },
 
     // Environment setup & latest features
