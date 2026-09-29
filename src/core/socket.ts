@@ -3,6 +3,7 @@ import { useSQLiteAuthState } from "../storage/auth";
 import https from "https";
 import qrcode from "qrcode";
 import { MemoryMediaCache } from "../storage/cache";
+import { log, logger } from "@lib/logger";
 
 const { saveCreds, state } = await useSQLiteAuthState("./session");
 
@@ -23,17 +24,7 @@ export const createWAClient: () => Promise<WASocket> = async () => {
     markOnlineOnConnect: false,
     fetchAgent: customFetchAgent,
     mediaCache: mediaCacheStore,
-    logger: {
-      level: "warn",
-      trace: () => {},
-      debug: () => {},
-      info: () => {},
-      warn: (...args: unknown[]) => console.warn(...args),
-      error: (...args: unknown[]) => console.error(...args),
-      child() {
-        return this;
-      },
-    },
+    logger,
   });
 
   sock.ev.on("creds.update", saveCreds);
@@ -42,13 +33,13 @@ export const createWAClient: () => Promise<WASocket> = async () => {
     "connection.update",
     async ({ connection, lastDisconnect, qr }) => {
       if (qr) {
-        console.log(
-          await qrcode.toString(qr, { small: true, type: "terminal" }),
+        log.info(
+          `\n${await qrcode.toString(qr, { small: true, type: "terminal" })}`,
         );
       }
 
       if (connection === "open") {
-        console.log("WhatsApp connected");
+        log.info("WhatsApp connected");
         return;
       }
 
@@ -59,9 +50,9 @@ export const createWAClient: () => Promise<WASocket> = async () => {
         )?.output?.statusCode;
 
         if (statusCode !== DisconnectReason.loggedOut) {
-          console.log("Connection closed:", statusCode ?? "unknown");
+          log.error(`Connection closed: ${statusCode ?? "unknown"}`);
         } else {
-          console.log("Logged out; delete session and pair again.");
+          log.error("Logged out; delete session and pair again.");
         }
       }
     },

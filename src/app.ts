@@ -1,3 +1,4 @@
+import { log } from "@lib/logger";
 import { config } from "../config";
 import { Context } from "./core/context";
 import { CommandDispatcher } from "./core/dispatcher";
@@ -6,7 +7,7 @@ import { CommandRegistry } from "./core/registry";
 import { createWAClient } from "./core/socket";
 
 export async function startApp(registry: CommandRegistry): Promise<void> {
-  console.log(`Loaded ${registry.list().length} commands`);
+  log.info(`Loaded ${registry.list().length} commands`);
 
   const dispatcher = new CommandDispatcher(registry);
   const sock = await createWAClient();
@@ -50,7 +51,7 @@ export async function startApp(registry: CommandRegistry): Promise<void> {
       try {
         await dispatcher.dispatch(ctx);
       } catch (error) {
-        console.error(`Command ${parsed.name} failed:`, error);
+        log.error(`Command ${parsed.name} failed: ${error}`);
         await ctx.reply.text("Terjadi error saat menjalankan command.");
       }
     }

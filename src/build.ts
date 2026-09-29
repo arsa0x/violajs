@@ -1,3 +1,4 @@
+import { log } from "@lib/logger";
 import fs from "fs/promises";
 import path from "path";
 
@@ -65,7 +66,7 @@ const generated = [
 
 await fs.writeFile(generatedFile, generated, "utf8");
 
-console.log(`Generated ${files.length} commands.`);
+log.info(`Generated ${files.length} commands.`);
 
 const result = await Bun.build({
   entrypoints: ["./production.ts"],
@@ -80,15 +81,15 @@ const result = await Bun.build({
 });
 
 if (!result.success) {
-  console.error("Build failed:");
+  log.error("Build failed:");
 
-  for (const log of result.logs) {
-    console.error(log);
+  for (const errlog of result.logs) {
+    log.error(errlog);
   }
 
   process.exit(1);
 }
 
-await fs.rename("dist/production", "dist/violajs")
+await fs.rename("dist/production", "dist/violajs");
 
-console.log("Build successful.");
+log.info("Build successful.");
