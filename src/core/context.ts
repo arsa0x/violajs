@@ -1,7 +1,7 @@
 import type { WASocket, WAMessage } from "baileys";
 import type { ParsedCommand } from "./parser";
 import { config } from "../../config";
-import { Reply } from "@utils/reply";
+import { Reply } from "@lib/reply";
 
 export class Context {
   sock: WASocket;

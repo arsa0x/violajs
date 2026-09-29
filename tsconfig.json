@@ -6,6 +6,7 @@
       "@middlewares/*": ["src/middlewares/*"],
       "@core/*": ["src/core/*"],
       "@utils/*" : ["src/utils/*"],
+      "@lib/*": ["lib/*"],
     },
 
     // Environment setup & latest features

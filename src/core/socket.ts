@@ -3,7 +3,6 @@ import { useSQLiteAuthState } from "../storage/auth";
 import https from "https";
 import qrcode from "qrcode";
 import { MemoryMediaCache } from "../storage/cache";
-import pino from "pino";
 
 const { saveCreds, state } = await useSQLiteAuthState("./session");
 
@@ -24,9 +23,17 @@ export const createWAClient: () => Promise<WASocket> = async () => {
     markOnlineOnConnect: false,
     fetchAgent: customFetchAgent,
     mediaCache: mediaCacheStore,
-    logger: pino({
-      level: "info",
-    }),
+    logger: {
+      level: "warn",
+      trace: () => {},
+      debug: () => {},
+      info: () => {},
+      warn: (...args: unknown[]) => console.warn(...args),
+      error: (...args: unknown[]) => console.error(...args),
+      child() {
+        return this;
+      },
+    },
   });
 
   sock.ev.on("creds.update", saveCreds);
