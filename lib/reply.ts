@@ -8,7 +8,7 @@ export class Reply {
   constructor(sock: WASocket, msg: WAMessage, jid: string) {
     this.msg = msg;
     this.sock = sock;
-    this.jid = jid;1
+    this.jid = jid;
   }
 
   async text(body: string) {

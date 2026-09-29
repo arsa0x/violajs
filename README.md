@@ -43,6 +43,15 @@ bun run start
 bun run index.ts
 ```
 
+Violajs juga bisa di compile (single executable file), cukup jalankan:
+
+```bash
+bun run build
+
+# jalankan (linux/macos)
+./dist/violajs
+```
+
 ## Struktur Direktori
 
 ```bash
