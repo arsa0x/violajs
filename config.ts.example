@@ -1,10 +1,8 @@
-export interface BotConfig {
-  prefix: string
-  owners: Set<string>
-}
+import type { BotConfig } from "@types/config";
 
 export const config: BotConfig = {
   prefix: '.',
   // Ganti dengan JID/nomor owner.
+  // Selalu akhiri nomor telepon dengan '@s.whatsapp.net'
   owners: new Set(['628xxxxxxxxxx@s.whatsapp.net']),
 }

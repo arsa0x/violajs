@@ -56,17 +56,25 @@ bun run build
 
 ```bash
 violajs/
+.
+├── bun.lock
 ├── commands
-│   ├── downloader/
-│   └── tools/
+│   ├── downloader
+│   └── tools
 ├── config.ts
 ├── index.ts
+├── lib
+│   ├── logger.ts
+│   └── reply.ts
 ├── package.json
+├── production.ts
 ├── session
 │   ├── auth.sqlite
 │   ├── auth.sqlite-shm
 │   └── auth.sqlite-wal
 ├── src
+│   ├── app.ts
+│   ├── build.ts
 │   ├── core
 │   │   ├── command.ts
 │   │   ├── context.ts
@@ -75,7 +83,10 @@ violajs/
 │   │   ├── middleware.ts
 │   │   ├── parser.ts
 │   │   ├── registry.ts
-│   │   └── socket.ts
+│   │   ├── socket.ts
+│   │   └── staticLoader.ts
+│   ├── generated
+│   │   └── commands.ts
 │   ├── middlewares
 │   │   ├── cooldown.ts
 │   │   ├── group.ts
@@ -84,16 +95,16 @@ violajs/
 │   ├── storage
 │   │   ├── auth.ts
 │   │   └── cache.ts
-│   ├── types
-│   │   ├── command.ts
-│   │   └── middleware.ts
-│   └── utils
+│   └── types
+│       ├── command.ts
+│       ├── config.ts
+│       └── middleware.ts
 └── tsconfig.json
 ```
 
 ## Contoh Plugin
 
-Membuat fitur baru sangat mudah! Buat file .ts baru di dalam direktori commands/[kategori]/.
+Membuat fitur baru sangat mudah! Buat file .ts atau .js baru di dalam direktori commands/[kategori]/.
 
 ```typescript
 import { defineCommand } from "@core/command";

@@ -31,7 +31,7 @@ async function collectCommandFiles(dir: string): Promise<string[]> {
       continue;
     }
 
-    if (entry.isFile() && extname(entry.name) === ".ts") {
+    if (entry.isFile() && extname(entry.name) === ".ts" || extname(entry.name) === ".js") {
       files.push(path);
     }
   }
