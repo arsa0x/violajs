@@ -5,7 +5,8 @@ export const logger = (): Middleware => async (ctx, next) => {
   const start = performance.now();
 
   log.info(
-    `[COMMAND] ${ctx.name} from=${ctx.sender.jid} chat=${ctx.chat.jid}`,
+    `[COMMAND] ${ctx.name} from=${ctx.sender.jid} chat=${ctx.chat.jid}\n`,
+    ctx.msg.message,
   );
 
   try {
