@@ -1,7 +1,7 @@
 import makeWASocket, { DisconnectReason, type WASocket } from "baileys";
 import { useSQLiteAuthState } from "../storage/auth";
 import https from "https";
-import qrcode from "qrcode";
+import { qrToString } from "@lib/qr";
 import { MemoryMediaCache } from "../storage/cache";
 import { log, logger } from "@lib/logger";
 
@@ -33,9 +33,7 @@ export const createWAClient: () => Promise<WASocket> = async () => {
     "connection.update",
     async ({ connection, lastDisconnect, qr }) => {
       if (qr) {
-        log.info(
-          `\n${await qrcode.toString(qr, { small: true, type: "terminal" })}`,
-        );
+        log.info(`\n${qrToString(qr)}`);
       }
 
       if (connection === "open") {

@@ -1,4 +1,4 @@
-import type { BotConfig } from "@types/config";
+import type { BotConfig } from "./src/types/config";
 
 export const config: BotConfig = {
   prefix: '.',
