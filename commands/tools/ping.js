@@ -4,6 +4,6 @@ export default defineCommand({
   name: "ping",
   aliases: ["p"],
   async execute(ctx) {
-    await ctx.reply.text("Pong!");
+    await ctx.send.text("Pong!");
   },
 });

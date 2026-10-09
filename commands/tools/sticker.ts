@@ -29,6 +29,6 @@ export default defineCommand({
     const webp = new Bun.Image(media).webp();
     webp.resize(512);
     const buffer = await webp.buffer();
-    ctx.reply.sticker(buffer);
+    ctx.send.sticker(buffer);
   },
 });

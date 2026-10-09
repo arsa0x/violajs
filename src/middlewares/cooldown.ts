@@ -10,7 +10,7 @@ export const cooldown = (durationMs: number): Middleware => {
     const remaining = durationMs - (now - previous);
 
     if (remaining > 0) {
-      await ctx.reply.text(
+      await ctx.send.text(
         `Tunggu ${Math.ceil(remaining / 1000)} detik sebelum menggunakan command ini lagi.`,
       );
       return;

@@ -5,12 +5,14 @@ import { CommandDispatcher } from "./core/dispatcher";
 import { parseCommand } from "./core/parser";
 import { CommandRegistry } from "./core/registry";
 import { createWAClient } from "./core/socket";
-import { logger } from "@middlewares/logger";
+// import { logger } from "@middlewares/logger";
 
 export async function startApp(registry: CommandRegistry): Promise<void> {
   log.info(`Loaded ${registry.list().length} commands`);
 
-  const dispatcher = new CommandDispatcher(registry, [logger()]);
+  const dispatcher = new CommandDispatcher(registry, [
+    // logger()
+  ]);
   const sock = await createWAClient();
 
   sock.ev.on("messages.upsert", async ({ messages, type }) => {
@@ -53,7 +55,7 @@ export async function startApp(registry: CommandRegistry): Promise<void> {
         await dispatcher.dispatch(ctx);
       } catch (error) {
         log.error(`Command ${parsed.name} failed: ${error}`);
-        await ctx.reply.text("Terjadi error saat menjalankan command.");
+        await ctx.send.text("Terjadi error saat menjalankan command.");
       }
     }
   });

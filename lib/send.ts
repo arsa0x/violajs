@@ -1,42 +1,46 @@
 import type { MimeType } from "../src/types/mime";
 import type { WAMediaUpload, WAMessage, WASocket } from "baileys";
 
-export class Reply {
+export class Send {
   constructor(
     private readonly sock: WASocket,
     private readonly msg: WAMessage,
     private readonly jid: string,
   ) {}
 
-  async text(body: string | string[]) {
+  async text(body: string | string[], reply: boolean = true) {
     const text = Array.isArray(body) ? body.join("") : body;
 
-    await this.sock.sendMessage(this.jid, { text }, { quoted: this.msg });
+    await this.sock.sendMessage(
+      this.jid,
+      { text },
+      { quoted: reply ? this.msg : undefined },
+    );
   }
 
-  async image(media: WAMediaUpload, caption?: string) {
+  async image(media: WAMediaUpload, caption?: string, reply: boolean = true) {
     await this.sock.sendMessage(
       this.jid,
       {
         image: media,
         ...(caption ? { caption } : {}),
       },
-      { quoted: this.msg },
+      { quoted: reply ? this.msg : undefined },
     );
   }
 
-  async video(media: WAMediaUpload, caption?: string) {
+  async video(media: WAMediaUpload, caption?: string, reply: boolean = true) {
     await this.sock.sendMessage(
       this.jid,
       {
         video: media,
         ...(caption ? { caption } : {}),
       },
-      { quoted: this.msg },
+      { quoted: reply ? this.msg : undefined },
     );
   }
 
-  async audio(media: WAMediaUpload, ptt = false) {
+  async audio(media: WAMediaUpload, ptt = false, reply: boolean = true) {
     await this.sock.sendMessage(
       this.jid,
       {
@@ -44,21 +48,26 @@ export class Reply {
         mimetype: "audio/mp4",
         ptt,
       },
-      { quoted: this.msg },
+      { quoted: reply ? this.msg : undefined },
     );
   }
 
-  async sticker(media: WAMediaUpload) {
+  async sticker(media: WAMediaUpload, reply: boolean = true) {
     await this.sock.sendMessage(
       this.jid,
       {
         sticker: media,
       },
-      { quoted: this.msg },
+      { quoted: reply ? this.msg : undefined },
     );
   }
 
-  async document(media: WAMediaUpload, fileName: string, mimetype?: MimeType) {
+  async document(
+    media: WAMediaUpload,
+    fileName: string,
+    mimetype?: MimeType,
+    reply: boolean = true,
+  ) {
     await this.sock.sendMessage(
       this.jid,
       {
@@ -66,7 +75,7 @@ export class Reply {
         fileName,
         mimetype: mimetype ?? "text/plain",
       },
-      { quoted: this.msg },
+      { quoted: reply ? this.msg : undefined },
     );
   }
 
@@ -75,6 +84,7 @@ export class Reply {
     longitude: number,
     name?: string,
     address?: string,
+    reply: boolean = true,
   ) {
     await this.sock.sendMessage(
       this.jid,
@@ -86,11 +96,11 @@ export class Reply {
           ...(address ? { address } : {}),
         },
       },
-      { quoted: this.msg },
+      { quoted: reply ? this.msg : undefined },
     );
   }
 
-  async contact(displayName: string, vcard: string) {
+  async contact(displayName: string, vcard: string, reply: boolean = true) {
     await this.sock.sendMessage(
       this.jid,
       {
@@ -104,7 +114,7 @@ export class Reply {
           ],
         },
       },
-      { quoted: this.msg },
+      { quoted: reply ? this.msg : undefined },
     );
   }
 

@@ -1,7 +1,7 @@
 import type { WASocket, WAMessage } from "baileys";
 import type { ParsedCommand } from "./parser";
 import { config } from "../../config";
-import { Reply } from "@lib/reply";
+import { Send } from "@lib/send";
 
 export class Context {
   sock: WASocket;
@@ -17,7 +17,7 @@ export class Context {
     jid: string;
     isGroup: boolean;
   };
-  reply: Reply;
+  send: Send;
 
   constructor(params: {
     sock: WASocket;
@@ -41,6 +41,6 @@ export class Context {
       jid: senderJid,
       isOwner: config.owners.has(senderJid),
     };
-    this.reply = new Reply(params.sock, params.message, params.jid);
+    this.send = new Send(params.sock, params.message, params.jid);
   }
 }

@@ -110,7 +110,7 @@ export default defineCommand({
     const input = ctx.args[0];
 
     if (!input) {
-      await ctx.reply.text("Usage: .ouo <url>");
+      await ctx.send.text("Usage: .ouo <url>");
 
       return;
     }
@@ -118,12 +118,12 @@ export default defineCommand({
     try {
       const result = await resolveOuo(input);
 
-      await ctx.reply.text(result);
+      await ctx.send.text(result);
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Gagal resolve URL";
 
-      await ctx.reply.text(message);
+      await ctx.send.text(message);
     }
   },
 });
