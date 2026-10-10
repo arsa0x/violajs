@@ -33,7 +33,7 @@ export const createWAClient: () => Promise<WASocket> = async () => {
     "connection.update",
     async ({ connection, lastDisconnect, qr }) => {
       if (qr) {
-        log.info(`\n${qrToString(qr)}`);
+        log.info("\n", qrToString(qr));
       }
 
       if (connection === "open") {
