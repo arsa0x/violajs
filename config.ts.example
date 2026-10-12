@@ -1,8 +1,15 @@
 import type { BotConfig } from "./src/types/config";
 
 export const config: BotConfig = {
-  prefix: '.',
+  prefix: ".",
   // Ganti dengan JID/nomor owner.
   // Selalu akhiri nomor telepon dengan '@s.whatsapp.net'
-  owners: new Set(['628xxxxxxxxxx@s.whatsapp.net']),
-}
+  owners: new Set(["628xxxxxxxxxx@s.whatsapp.net"]),
+
+  // API downloader yang kompatibel dengan endpoint Rubby-MD.
+  // Lebih aman isi lewat environment:
+  // DOWNLOADER_API_BASE_URL=https://api.kyzzz.xyz
+  // DOWNLOADER_API_KEY=isi_api_key_anda
+  downloaderApiBaseUrl: process.env.DOWNLOADER_API_BASE_URL,
+  downloaderApiKey: process.env.DOWNLOADER_API_KEY,
+};
