@@ -21,7 +21,7 @@ async function collect(dir: string): Promise<void> {
       continue;
     }
 
-    if (entry.isFile() && path.extname(entry.name) === ".ts" ||  path.extname(entry.name) === ".js") {
+    if (entry.isFile() && [".ts", ".js"].includes(path.extname(entry.name))) {
       files.push(fullPath);
     }
   }
