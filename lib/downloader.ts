@@ -1,4 +1,4 @@
-import { config } from "../../config";
+import { config } from "../config";
 import type { Context } from "@core/context";
 
 type JsonObject = Record<string, any>;
@@ -157,7 +157,7 @@ export async function runDownloader(
   } catch (error) {
     console.error(`[DOWNLOADER:${ctx.name}]`, error);
     await ctx.send.text(
-      error instanceof Error && error.message.startsWith("Masukkan URL")
+      error instanceof Error && (error.message.startsWith("Masukkan URL") || error.message.startsWith("Domain tidak didukung"))
         ? error.message
         : failureMessage,
     );
