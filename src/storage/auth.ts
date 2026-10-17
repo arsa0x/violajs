@@ -112,14 +112,12 @@ export const useSQLiteAuthState = async (
   };
 
   const keys = makeCacheableSignalKeyStore(rawKeyStore);
+  const state: AuthenticationState = { creds, keys };
 
   return {
-    state: {
-      creds,
-      keys,
-    },
+    state,
     saveCreds: () => {
-      writeData(CREDS_KEY, creds);
+      writeData(CREDS_KEY, state.creds);
     },
     clearAll: () => {
       stmtClear.run();
