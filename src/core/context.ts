@@ -2,8 +2,10 @@ import type { WASocket, WAMessage } from "baileys";
 import type { ParsedCommand } from "./parser";
 import { config } from "../../config";
 import { Send } from "@lib/send";
+import { type Log } from "@lib/logger";
 
 export class Context {
+  log: Log;
   sock: WASocket;
   msg: WAMessage;
   name: string;
@@ -25,9 +27,11 @@ export class Context {
     text: string;
     parsed: ParsedCommand;
     jid: string;
+    log: Log;
   }) {
     const senderJid = params.message!.key.participant ?? params.jid;
 
+    this.log = params.log;
     this.sock = params.sock;
     this.msg = params.message;
     this.text = params.text!;
