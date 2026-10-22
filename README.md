@@ -1,6 +1,6 @@
 # violajs
 
-Whatsapp bot sederhana yang dibangun menggunakan _library_ [Baileys](https://github.com/WhiskeySockets/Baileys) dan berjalan di atas _runtime_ [Bun](https://bun.sh/). Dirancang dengan arsitektur berbasis _plugin_.
+Whatsapp bot sederhana yang dibangun menggunakan _library_ [Baileys](https://github.com/WhiskeySockets/Baileys) dan berjalan di atas _runtime_ [Bun](https://bun.sh/). Dirancang dengan arsitektur berbasis _plugin_ dan dukungan multi sesi.
 
 ---
 
@@ -33,14 +33,34 @@ bun install
 **3. Konfigurasi**
 Buat file `config.ts` atau cukup dengan menghapus `.example` pada file `config.ts.example`.
 
-## Jalankan
+## Mulai Cepat
 
-Untuk menyalakan bot, jalankan perintah berikut di terminal Anda:
+### Buat sesi baru
 
 ```bash
-bun run start
+# 'default' adalah nama sesi jika tidak menambahkan nama sesi
+bun run start create --session nama_sesi
+# atau
+bun run index.ts create --session nama_sesi
+```
+
+### Jalankan
+
+Untuk menjalankan bot, jalankan perintah berikut di terminal Anda:
+
+```bash
+bun run index.ts --session nama_sesi
 # atau
 bun run index.ts
+# 'default' adalah nama sesi jika tidak menambahkan nama sesi
+```
+
+Menjalankan semua sesi yang tersedia:
+
+```bash
+bun run index.ts --all
+# atau
+bun run index.ts -a
 ```
 
 Violajs juga bisa di compile (single executable file), cukup jalankan:
@@ -117,6 +137,9 @@ export default defineCommand({
   middleware: [groupOnly(), cooldown(100000)],
   async execute(ctx) {
     await ctx.send.text("Pong!");
+
+    // logger
+    ctx.log.info("pesan berhasil dikirim");
   },
 });
 ```
