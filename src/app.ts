@@ -1,19 +1,27 @@
-import { log } from "@lib/logger";
+import { createSessionLogger, log } from "@lib/logger";
 import { config } from "../config";
 import { Context } from "./core/context";
 import { CommandDispatcher } from "./core/dispatcher";
 import { parseCommand } from "./core/parser";
 import { CommandRegistry } from "./core/registry";
 import { createWAClient } from "./core/socket";
-// import { logger } from "@middlewares/logger";
+import { cli } from "./cli";
+
+const sessionPath = "./sessions";
 
 export async function startApp(registry: CommandRegistry): Promise<void> {
+  cli(bot, registry, sessionPath);
+}
+
+async function bot(registry: CommandRegistry, name: string) {
+  const log = createSessionLogger(name);
+
   log.info(`Loaded ${registry.list().length} commands`);
 
   const dispatcher = new CommandDispatcher(registry, [
     // logger()
   ]);
-  const sock = await createWAClient();
+  const sock = await createWAClient(name, log);
 
   sock.ev.on("messages.upsert", async ({ messages, type }) => {
     if (type !== "notify") return;
@@ -49,6 +57,7 @@ export async function startApp(registry: CommandRegistry): Promise<void> {
         text,
         parsed,
         jid,
+        log,
       });
 
       try {

@@ -1,110 +1,170 @@
 # violajs
 
-Whatsapp bot sederhana yang dibangun menggunakan _library_ [Baileys](https://github.com/WhiskeySockets/Baileys) dan berjalan di atas _runtime_ [Bun](https://bun.sh/). Dirancang dengan arsitektur berbasis _plugin_.
+A simple WhatsApp bot built with [Baileys](https://github.com/WhiskeySockets/Baileys) and powered by the [Bun](https://bun.sh/) runtime.
+
+**violajs** features a plugin-based architecture and multi-session support, making it easy to extend with custom commands and manage multiple WhatsApp accounts.
 
 ---
 
-## Persyaratan (_Prerequisites_)
+## Prerequisites
 
-Sebelum memulai, pastikan Anda telah menginstal perangkat lunak berikut di sistem Anda:
+Before getting started, make sure you have the following installed:
 
-- [Bun](https://bun.sh/) (Disarankan versi terbaru)
-- Git (Opsional, untuk _cloning_ repositori)
-- Akun WhatsApp aktif yang akan dijadikan sebagai bot.
+- [Bun](https://bun.sh/) — The latest version is recommended.
+- [Git](https://git-scm.com/) — Optional, for cloning the repository.
+- An active WhatsApp account to use for the bot.
 
 ---
 
-## Instalasi
+## Installation
 
-**1. Kloning Repositori**
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/arsa0x/violajs.git
 cd violajs
 ```
 
-**2. Install Dependensi**
-Gunakan manajer paket Bun untuk menginstal semua library yang dibutuhkan:
+### 2. Install Dependencies
+
+Install the required dependencies using Bun:
 
 ```bash
 bun install
 ```
 
-**3. Konfigurasi**
-Buat file `config.ts` atau cukup dengan menghapus `.example` pada file `config.ts.example`.
+### 3. Configure the Bot
 
-## Jalankan
+Create a `config.ts` file, or rename `config.ts.example` to `config.ts`.
 
-Untuk menyalakan bot, jalankan perintah berikut di terminal Anda:
+Make sure to review the configuration options before starting the bot.
+
+---
+
+## Quick Start
+
+### Create a New Session
+
+Create a new WhatsApp session by specifying a session name:
 
 ```bash
-bun run start
-# atau
+bun run start create --session session_name
+```
+
+Alternatively, run the entry point directly:
+
+```bash
+bun run index.ts create --session session_name
+```
+
+Replace `session_name` with your desired session name.
+
+If no session name is specified when running the bot, the default session is `default`.
+
+### Start the Bot
+
+Start a specific session:
+
+```bash
+bun run index.ts --session session_name
+```
+
+Or start the default session:
+
+```bash
 bun run index.ts
 ```
 
-Violajs juga bisa di compile (single executable file), cukup jalankan:
+### Run All Sessions
+
+To start all available sessions, use:
+
+```bash
+bun run index.ts --all
+```
+
+Alternatively, use the shorthand option:
+
+```bash
+bun run index.ts -a
+```
+
+---
+
+## Building a Standalone Executable
+
+violajs can be compiled into a standalone executable file using Bun.
+
+Run the build command:
 
 ```bash
 bun run build
+```
 
-# jalankan (linux/macos)
+Once the build is complete, run the executable on Linux or macOS:
+
+```bash
 ./dist/violajs
 ```
 
-## Struktur Direktori
+---
 
-```bash
+## Project Structure
+
+```text
 violajs/
-.
-├── bun.lock
-├── commands
-│   ├── downloader
-│   └── tools
+├── commands/
+│   └── tools/
 ├── config.ts
 ├── index.ts
-├── lib
-│   ├── logger.ts
-│   └── reply.ts
-├── package.json
+├── lib/
+│   ├── logger.ts
+│   ├── qr/
+│   │   ├── index.ts
+│   │   ├── qr.c
+│   │   └── qr.h
+│   └── send.ts
 ├── production.ts
-├── session
-│   ├── auth.sqlite
-│   ├── auth.sqlite-shm
-│   └── auth.sqlite-wal
-├── src
-│   ├── app.ts
-│   ├── build.ts
-│   ├── core
-│   │   ├── command.ts
-│   │   ├── context.ts
-│   │   ├── dispatcher.ts
-│   │   ├── loader.ts
-│   │   ├── middleware.ts
-│   │   ├── parser.ts
-│   │   ├── registry.ts
-│   │   ├── socket.ts
-│   │   └── staticLoader.ts
-│   ├── generated
-│   │   └── commands.ts
-│   ├── middlewares
-│   │   ├── cooldown.ts
-│   │   ├── group.ts
-│   │   ├── logger.ts
-│   │   └── owner.ts
-│   ├── storage
-│   │   ├── auth.ts
-│   │   └── cache.ts
-│   └── types
-│       ├── command.ts
-│       ├── config.ts
-│       └── middleware.ts
+├── sessions/
+├── src/
+│   ├── app.ts
+│   ├── build.ts
+│   ├── cli.ts
+│   ├── core/
+│   │   ├── command.ts
+│   │   ├── context.ts
+│   │   ├── dispatcher.ts
+│   │   ├── loader.ts
+│   │   ├── middleware.ts
+│   │   ├── parser.ts
+│   │   ├── registry.ts
+│   │   ├── socket.ts
+│   │   └── staticLoader.ts
+│   ├── generated/
+│   │   └── commands.ts
+│   ├── middlewares/
+│   │   ├── cooldown.ts
+│   │   ├── group.ts
+│   │   ├── logger.ts
+│   │   └── owner.ts
+│   ├── storage/
+│   │   ├── auth.ts
+│   │   └── cache.ts
+│   └── types/
+│       ├── command.ts
+│       ├── config.ts
+│       ├── middleware.ts
+│       └── mime.ts
 └── tsconfig.json
 ```
 
-## Contoh Plugin
+---
 
-Membuat fitur baru sangat mudah! Buat file .ts atau .js baru di dalam direktori commands/[kategori]/.
+## Creating a Plugin
+
+Adding new functionality to violajs is simple. Create a `.ts` or `.js` file inside the appropriate category directory under `commands/`.
+
+For example, the following plugin defines a `ping` command:
 
 ```typescript
 import { defineCommand } from "@core/command";
@@ -117,20 +177,59 @@ export default defineCommand({
   middleware: [groupOnly(), cooldown(100000)],
   async execute(ctx) {
     await ctx.send.text("Pong!");
+
+    // Log a successful response
+    ctx.log.info("Message sent successfully");
   },
 });
 ```
 
-## Kontribusi
+### Example Explained
 
-Kontribusi selalu diterima! Jika Anda memiliki ide untuk fitur baru, menemukan bug, atau ingin memperbaiki dokumentasi:
+- **`name`** — Defines the command name.
+- **`aliases`** — Specifies alternative names for the command.
+- **`middleware`** — Applies middleware to control command execution. In this example, the command is restricted to groups and uses a cooldown.
+- **`execute(ctx)`** — Defines the command's behavior.
+- **`ctx.send.text()`** — Sends a text message.
+- **`ctx.log.info()`** — Writes an informational log message.
 
-- Fork repositori ini.
-- Buat branch fitur Anda (git checkout -b fitur/NamaFitur).
-- Commit perubahan Anda (git commit -m 'Menambahkan fitur XYZ').
-- Push ke branch (git push origin fitur/NamaFitur).
-- Buat Pull Request.
+The example uses `groupOnly()` to restrict the command to group chats and `cooldown(100000)` to apply a cooldown of 100,000 milliseconds (100 seconds).
 
-## Lisensi
+---
 
-Proyek ini didistribusikan di bawah Lisensi MIT. Lihat file [LICENSE](https://github.com/arsa0x/violajs/blob/main/LICENSE) untuk informasi lebih lanjut.
+## Contributing
+
+Contributions are welcome! Whether you have a feature idea, have found a bug, or want to improve the documentation, your help is appreciated.
+
+To contribute:
+
+1. Fork the repository.
+2. Create a feature branch:
+
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+3. Commit your changes:
+
+   ```bash
+   git commit -m "Add XYZ feature"
+   ```
+
+4. Push your branch:
+
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+
+5. Open a Pull Request.
+
+Please make sure your changes are clear, focused, and properly tested before submitting a Pull Request.
+
+---
+
+## License
+
+violajs is distributed under the [MIT License](https://github.com/arsa0x/violajs/blob/main/LICENSE).
+
+See the `LICENSE` file for the full license text.

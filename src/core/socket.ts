@@ -3,9 +3,7 @@ import { useSQLiteAuthState } from "../storage/auth";
 import https from "https";
 import { qrToString } from "@lib/qr";
 import { MemoryMediaCache } from "../storage/cache";
-import { log, logger } from "@lib/logger";
-
-const { saveCreds, state } = await useSQLiteAuthState("./session");
+import { logger, type Log } from "@lib/logger";
 
 export const customFetchAgent = new https.Agent({
   keepAlive: true,
@@ -17,14 +15,19 @@ export const customFetchAgent = new https.Agent({
 
 const mediaCacheStore = new MemoryMediaCache(1000);
 
-export const createWAClient: () => Promise<WASocket> = async () => {
+export const createWAClient: (
+  name: string,
+  log: Log,
+) => Promise<WASocket> = async (name: string, log: Log) => {
+  const { saveCreds, state } = await useSQLiteAuthState(`./sessions/${name}`);
+
   const sock = makeWASocket({
     auth: state,
     syncFullHistory: false,
     markOnlineOnConnect: false,
     fetchAgent: customFetchAgent,
     mediaCache: mediaCacheStore,
-    logger,
+    logger: logger(log),
   });
 
   sock.ev.on("creds.update", saveCreds);
