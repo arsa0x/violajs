@@ -2,6 +2,23 @@
   "name": "violajs",
   "module": "index.ts",
   "type": "module",
+  "version": "0.1.0",
+  "author": {
+    "name": "arsa",
+    "email": "0xarsa@proton.me",
+    "url": "https://github.com/arsa0x"
+  },
+  "repository": {
+    "url": "https://github.com/arsa0x/violajs"
+  },
+  "license": "MIT",
+  "keywords": [
+    "bot",
+    "whatsapp",
+    "bun",
+    "multi-device",
+    "multi-session"
+  ],
   "private": true,
   "scripts": {
     "build": "bun src/build.ts",

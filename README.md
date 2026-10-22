@@ -111,7 +111,7 @@ Once the build is complete, run the executable on Linux or macOS:
 
 ## Project Structure
 
-```text
+```bash
 violajs/
 ├── commands/
 │   └── tools/

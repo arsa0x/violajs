@@ -113,7 +113,7 @@ Setelah proses build selesai, jalankan file executable di Linux atau macOS denga
 
 ## Struktur Proyek
 
-```text
+```bash
 violajs/
 ├── commands/
 │   └── tools/
