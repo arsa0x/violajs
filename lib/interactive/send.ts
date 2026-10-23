@@ -1,10 +1,12 @@
 import {
   generateWAMessageFromContent,
+  prepareWAMessageMedia,
   type WAMessage,
   type WASocket,
 } from "baileys";
 import type {
   InteractiveCallButtonOptions,
+  InteractiveCarouselOptions,
   InteractiveCopyCodeOptions,
   InteractiveQuickReplyOptions,
   InteractiveSingleSelectOptions,
@@ -304,6 +306,99 @@ export async function sendCopyCode(
           }),
         }],
       },
+    },
+    options.quoted ?? true,
+  );
+}
+
+
+/** Sends a native WhatsApp carousel with image cards and consistent CTA buttons. */
+export async function sendCarousel(
+  sock: WASocket,
+  jid: string,
+  quotedMessage: WAMessage,
+  options: InteractiveCarouselOptions,
+): Promise<void> {
+  assertNonEmpty(options.body, "body");
+
+  if (options.cards.length < 2 || options.cards.length > 10) {
+    throw new RangeError("Carousel messages must contain between 2 and 10 cards.");
+  }
+
+  const buttonType = options.cards[0]?.button.type;
+  if (!buttonType) {
+    throw new TypeError("Every carousel card must have a button.");
+  }
+
+  const cards = await Promise.all(options.cards.map(async (card, index) => {
+    assertNonEmpty(card.image, `card ${index + 1} image URL`);
+    assertNonEmpty(card.title, `card ${index + 1} title`);
+    assertNonEmpty(card.button.text, `card ${index + 1} button text`);
+
+    if (card.button.type !== buttonType) {
+      throw new TypeError("All carousel cards must use the same button type.");
+    }
+
+    const imageUrl = new URL(card.image);
+    if (imageUrl.protocol !== "https:" && imageUrl.protocol !== "http:") {
+      throw new TypeError("Carousel image URLs must use http or https.");
+    }
+
+    let button;
+    if (card.button.type === "quick_reply") {
+      assertNonEmpty(card.button.id, `card ${index + 1} button ID`);
+      button = {
+        name: "quick_reply",
+        buttonParamsJson: JSON.stringify({
+          display_text: card.button.text,
+          id: card.button.id,
+        }),
+      };
+    } else {
+      assertNonEmpty(card.button.url, `card ${index + 1} button URL`);
+      const target = new URL(card.button.url);
+      if (target.protocol !== "https:" && target.protocol !== "http:") {
+        throw new TypeError("Carousel button URLs must use http or https.");
+      }
+      button = {
+        name: "cta_url",
+        buttonParamsJson: JSON.stringify({
+          display_text: card.button.text,
+          url: target.toString(),
+        }),
+      };
+    }
+
+    const media = await prepareWAMessageMedia(
+      { image: { url: imageUrl.toString() } },
+      { upload: sock.waUploadToServer },
+    );
+
+    if (!media.imageMessage) {
+      throw new Error(`Baileys failed to prepare image for carousel card ${index + 1}.`);
+    }
+
+    return {
+      header: {
+        imageMessage: media.imageMessage,
+        hasMediaAttachment: true,
+      },
+      body: { text: card.body?.trim() || card.title },
+      nativeFlowMessage: {
+        buttons: [button],
+        messageParamsJson: "",
+      },
+    };
+  }));
+
+  await sendNativeFlow(
+    sock,
+    jid,
+    quotedMessage,
+    {
+      body: { text: options.body },
+      header: { hasMediaAttachment: false },
+      carouselMessage: { cards },
     },
     options.quoted ?? true,
   );
