@@ -18,7 +18,7 @@ export default defineCommand({
     try {
       await ctx.sock.groupParticipantsUpdate(ctx.chat.jid, [target], "promote");
       await ctx.sock.sendMessage(ctx.chat.jid, {
-        text: `@ ${target.split("@")[0]} sekarang menjadi admin grup.`.replace("@ ", "@"),
+        text: `@${target.split("@")[0]} sekarang menjadi admin grup.`,
         mentions: [target],
       }, { quoted: ctx.msg });
     } catch (error) {
