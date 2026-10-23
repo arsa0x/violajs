@@ -1,4 +1,5 @@
 import { createSessionLogger, log } from "@lib/logger";
+import { extractInteractiveResponse } from "@lib/interactive";
 import { config } from "../config";
 import { Context } from "./core/context";
 import { CommandDispatcher } from "./core/dispatcher";
@@ -35,12 +36,7 @@ async function bot(registry: CommandRegistry, name: string) {
         message.message?.imageMessage?.caption ||
         message.message?.videoMessage?.caption ||
         message.message?.documentMessage?.caption ||
-        message.message?.buttonsResponseMessage?.selectedButtonId ||
-        message.message?.listResponseMessage?.singleSelectReply
-          ?.selectedRowId ||
-        message.message?.templateButtonReplyMessage?.selectedId ||
-        message.message?.interactiveResponseMessage?.nativeFlowResponseMessage
-          ?.paramsJson ||
+        extractInteractiveResponse(message) ||
         "";
 
       if (!text) continue;
