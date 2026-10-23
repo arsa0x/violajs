@@ -82,7 +82,6 @@ export default defineCommand({
       buttons: [
         { text: "Ping", id: ".ping" },
         { text: "Open list", id: ".interactive list" },
-        { text: "URL button", id: ".interactive url" },
         { text: "Carousel", id: ".interactive carousel" },
       ],
     });
