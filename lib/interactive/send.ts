@@ -4,12 +4,15 @@ import {
   type WAMessage,
   type WASocket,
 } from "baileys";
+import { buildCarouselButton } from "./carousel-button";
 import type {
   InteractiveCallButtonOptions,
   InteractiveCarouselOptions,
   InteractiveCopyCodeOptions,
   InteractiveLocationRequestOptions,
+  InteractiveInAppSignupOptions,
   InteractiveQuickReplyOptions,
+  InteractiveHeaderMedia,
   InteractiveSingleSelectOptions,
   InteractiveUrlButtonOptions,
 } from "./types";
@@ -18,6 +21,35 @@ function assertNonEmpty(value: string, name: string): void {
   if (!value.trim()) {
     throw new TypeError(`Interactive message ${name} cannot be empty.`);
   }
+}
+
+async function buildHeader(
+  sock: WASocket,
+  title: string | undefined,
+  media: InteractiveHeaderMedia | undefined,
+): Promise<Record<string, unknown>> {
+  if (!media) return { ...(title ? { title } : {}), hasMediaAttachment: false };
+  assertNonEmpty(media.url, "header media URL");
+  let parsedUrl: URL;
+  try { parsedUrl = new URL(media.url); }
+  catch { throw new TypeError("Interactive header media URL must be a valid absolute URL."); }
+  if (parsedUrl.protocol !== "https:" && parsedUrl.protocol !== "http:") {
+    throw new TypeError("Interactive header media URL must use http or https.");
+  }
+  if (media.type === "image") {
+    const prepared = await prepareWAMessageMedia(
+      { image: { url: parsedUrl.toString() } },
+      { upload: sock.waUploadToServer },
+    );
+    if (!prepared.imageMessage) throw new Error("Baileys failed to prepare interactive header image.");
+    return { ...(title ? { title } : {}), imageMessage: prepared.imageMessage, hasMediaAttachment: true };
+  }
+  const prepared = await prepareWAMessageMedia(
+    { video: { url: parsedUrl.toString() } },
+    { upload: sock.waUploadToServer },
+  );
+  if (!prepared.videoMessage) throw new Error("Baileys failed to prepare interactive header video.");
+  return { ...(title ? { title } : {}), videoMessage: prepared.videoMessage, hasMediaAttachment: true };
 }
 
 /**
@@ -114,10 +146,7 @@ export async function sendQuickReply(
     {
       body: { text: options.body },
       ...(options.footer ? { footer: { text: options.footer } } : {}),
-      header: {
-        ...(options.title ? { title: options.title } : {}),
-        hasMediaAttachment: false,
-      },
+      header: await buildHeader(sock, options.title, options.headerMedia),
       nativeFlowMessage: {
         buttons: options.buttons.map((button) => ({
           name: "quick_reply",
@@ -164,10 +193,7 @@ export async function sendSingleSelect(
     {
       body: { text: options.body },
       ...(options.footer ? { footer: { text: options.footer } } : {}),
-      header: {
-        ...(options.title ? { title: options.title } : {}),
-        hasMediaAttachment: false,
-      },
+      header: await buildHeader(sock, options.title, options.headerMedia),
       nativeFlowMessage: {
         buttons: [
           {
@@ -218,10 +244,7 @@ export async function sendUrlButton(
     {
       body: { text: options.body },
       ...(options.footer ? { footer: { text: options.footer } } : {}),
-      header: {
-        ...(options.title ? { title: options.title } : {}),
-        hasMediaAttachment: false,
-      },
+      header: await buildHeader(sock, options.title, options.headerMedia),
       nativeFlowMessage: {
         buttons: [{
           name: "cta_url",
@@ -258,10 +281,7 @@ export async function sendCallButton(
     {
       body: { text: options.body },
       ...(options.footer ? { footer: { text: options.footer } } : {}),
-      header: {
-        ...(options.title ? { title: options.title } : {}),
-        hasMediaAttachment: false,
-      },
+      header: await buildHeader(sock, options.title, options.headerMedia),
       nativeFlowMessage: {
         buttons: [{
           name: "cta_call",
@@ -294,10 +314,7 @@ export async function sendCopyCode(
     {
       body: { text: options.body },
       ...(options.footer ? { footer: { text: options.footer } } : {}),
-      header: {
-        ...(options.title ? { title: options.title } : {}),
-        hasMediaAttachment: false,
-      },
+      header: await buildHeader(sock, options.title, options.headerMedia),
       nativeFlowMessage: {
         buttons: [{
           name: "cta_copy",
@@ -312,6 +329,26 @@ export async function sendCopyCode(
   );
 }
 
+
+/** Sends an in-app signup native-flow button. Client/account support may vary. */
+export async function sendInAppSignup(
+  sock: WASocket,
+  jid: string,
+  quotedMessage: WAMessage,
+  options: InteractiveInAppSignupOptions,
+): Promise<void> {
+  assertNonEmpty(options.body, "body");
+  await sendNativeFlow(
+    sock, jid, quotedMessage,
+    {
+      body: { text: options.body },
+      ...(options.footer ? { footer: { text: options.footer } } : {}),
+      header: await buildHeader(sock, options.title, options.headerMedia),
+      nativeFlowMessage: { buttons: [{ name: "inapp_signup", buttonParamsJson: JSON.stringify({}) }] },
+    },
+    options.quoted ?? true,
+  );
+}
 
 /** Sends a native-flow button that asks the recipient to share their location. */
 export async function sendLocationRequest(
@@ -330,10 +367,7 @@ export async function sendLocationRequest(
     {
       body: { text: options.body },
       ...(options.footer ? { footer: { text: options.footer } } : {}),
-      header: {
-        ...(options.title ? { title: options.title } : {}),
-        hasMediaAttachment: false,
-      },
+      header: await buildHeader(sock, options.title, options.headerMedia),
       nativeFlowMessage: {
         buttons: [{
           name: "send_location",
@@ -361,50 +395,23 @@ export async function sendCarousel(
   }
 
   const buttonType = options.cards[0]?.button.type;
-  if (!buttonType) {
-    throw new TypeError("Every carousel card must have a button.");
-  }
+    if (!buttonType) throw new TypeError("Every carousel card must have a button.");
 
-  const cards = await Promise.all(options.cards.map(async (card, index) => {
-    assertNonEmpty(card.image, `card ${index + 1} image URL`);
-    assertNonEmpty(card.title, `card ${index + 1} title`);
-    assertNonEmpty(card.button.text, `card ${index + 1} button text`);
-
-    if (card.button.type !== buttonType) {
-      throw new TypeError("All carousel cards must use the same button type.");
-    }
-
-    const imageUrl = new URL(card.image);
-    if (imageUrl.protocol !== "https:" && imageUrl.protocol !== "http:") {
-      throw new TypeError("Carousel image URLs must use http or https.");
-    }
-
-    let button;
-    if (card.button.type === "quick_reply") {
-      assertNonEmpty(card.button.id, `card ${index + 1} button ID`);
-      button = {
-        name: "quick_reply",
-        buttonParamsJson: JSON.stringify({
-          display_text: card.button.text,
-          id: card.button.id,
-        }),
-      };
-    } else {
-      assertNonEmpty(card.button.url, `card ${index + 1} button URL`);
-      const target = new URL(card.button.url);
-      if (target.protocol !== "https:" && target.protocol !== "http:") {
-        throw new TypeError("Carousel button URLs must use http or https.");
+    const cards = await Promise.all(options.cards.map(async (card, index) => {
+      assertNonEmpty(card.image, `card ${index + 1} image URL`);
+      assertNonEmpty(card.title, `card ${index + 1} title`);
+      if (card.button.type !== buttonType) {
+        throw new TypeError("All carousel cards must use the same button type.");
       }
-      button = {
-        name: "cta_url",
-        buttonParamsJson: JSON.stringify({
-          display_text: card.button.text,
-          url: target.toString(),
-        }),
-      };
-    }
+      let imageUrl: URL;
+      try { imageUrl = new URL(card.image); }
+      catch { throw new TypeError(`Carousel card ${index + 1} image URL must be a valid absolute URL.`); }
+      if (imageUrl.protocol !== "https:" && imageUrl.protocol !== "http:") {
+        throw new TypeError("Carousel image URLs must use http or https.");
+      }
+      const button = buildCarouselButton(card.button, index + 1);
 
-    const media = await prepareWAMessageMedia(
+      const media = await prepareWAMessageMedia(
       { image: { url: imageUrl.toString() } },
       { upload: sock.waUploadToServer },
     );
