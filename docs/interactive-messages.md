@@ -155,4 +155,6 @@ Use the same button type for every card:
 
 URL cards accept optional `merchantUrl` and `webviewInteraction` (default `true`); copy-code cards accept an optional `id` that defaults to the copied code. Single-select cards use `button: { type: "single_select", title, sections }`. All cards must use the same variant.
 
-The carousel is built with Baileys' native `carouselMessage` structure. Native carousel rendering is client/version-dependent, so verify delivery and card actions on both WhatsApp mobile and Web/Desktop. The `.interactive carousel` command provides a test example.
+The carousel is built with Baileys' native `carouselMessage` structure. Native carousel rendering is client/version-dependent, so verify delivery and card actions on both WhatsApp mobile and Web/Desktop. Try the demo variants with `.interactive carousel`, `.interactive carousel-url`, `.interactive carousel-call`, `.interactive carousel-copy`, and `.interactive carousel-list`. `.interactive signup` tests `inapp_signup`, while `.interactive media` tests an image header.
+
+The `.interactive carousel` command provides a test example.
