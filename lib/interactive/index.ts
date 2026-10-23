@@ -1,6 +1,7 @@
 import type { WAMessage, WASocket } from "baileys";
 import {
   sendCallButton,
+  sendCarousel,
   sendCopyCode,
   sendQuickReply,
   sendSingleSelect,
@@ -8,6 +9,7 @@ import {
 } from "./send";
 import type {
   InteractiveCallButtonOptions,
+  InteractiveCarouselOptions,
   InteractiveCopyCodeOptions,
   InteractiveQuickReplyOptions,
   InteractiveSingleSelectOptions,
@@ -38,6 +40,11 @@ export class InteractiveSend {
   /** Send a native-flow list selector. */
   singleSelect(options: InteractiveSingleSelectOptions): Promise<void> {
     return sendSingleSelect(this.sock, this.jid, this.message, options);
+  }
+
+  /** Send a swipeable carousel with 2–10 image cards. */
+  carousel(options: InteractiveCarouselOptions): Promise<void> {
+    return sendCarousel(this.sock, this.jid, this.message, options);
   }
 
   /** Send a native-flow button that opens an http(s) URL. */
