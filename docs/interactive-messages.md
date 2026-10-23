@@ -53,6 +53,32 @@ Only absolute http:// and https:// URLs are accepted.
 
 Use an international-style phone number. The recipient's client decides how the call action is handled.
 
+## Image/video header
+
+Any quick reply, single-select, URL, call, copy-code, location request, or in-app signup message can use an optional uploaded image/video header:
+
+```ts
+await ctx.send.interactive.quickReply({
+  body: "What would you like to do?",
+  headerMedia: { type: "image", url: "https://example.com/banner.jpg" }, // or type: "video"
+  buttons: [{ text: "Continue", id: ".continue" }],
+});
+```
+
+The URL must be publicly reachable over HTTP(S). Baileys downloads and uploads the media before sending the interactive message.
+
+## In-app signup
+
+```ts
+await ctx.send.interactive.inAppSignup({
+  title: "Create an account",
+  body: "Continue with the in-app signup action.",
+  footer: "violajs",
+});
+```
+
+This sends the native-flow button name `inapp_signup` with an empty JSON parameter object. It is a low-level client action, not a full account-registration backend; actual behavior depends on WhatsApp client/account support.
+
 ## Location request
 
 Ask the recipient to share their current location:
@@ -85,7 +111,7 @@ These methods construct WhatsApp native-flow messages through Baileys' relay API
 
 ## Carousel
 
-A native carousel contains 2–10 image cards. Every card must use the same button type; this API currently supports one quick-reply button or one URL button per card. Image URLs must be publicly reachable so Baileys can download and upload each image to WhatsApp.
+A native carousel contains 2–10 image cards. Every card must use the same button type, with one button per card. Image URLs must be publicly reachable so Baileys can download and upload each image to WhatsApp. Supported variants mirror the Rust implementation: quick reply, URL, call, copy-code, and single-select.
 
 ### Quick-reply cards
 
@@ -126,5 +152,7 @@ Use the same button type for every card:
         },
       ],
     });
+
+URL cards accept optional `merchantUrl` and `webviewInteraction` (default `true`); copy-code cards accept an optional `id` that defaults to the copied code. Single-select cards use `button: { type: "single_select", title, sections }`. All cards must use the same variant.
 
 The carousel is built with Baileys' native `carouselMessage` structure. Native carousel rendering is client/version-dependent, so verify delivery and card actions on both WhatsApp mobile and Web/Desktop. The `.interactive carousel` command provides a test example.
