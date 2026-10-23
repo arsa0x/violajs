@@ -8,6 +8,7 @@ import type {
   InteractiveCallButtonOptions,
   InteractiveCarouselOptions,
   InteractiveCopyCodeOptions,
+  InteractiveLocationRequestOptions,
   InteractiveQuickReplyOptions,
   InteractiveSingleSelectOptions,
   InteractiveUrlButtonOptions,
@@ -311,6 +312,40 @@ export async function sendCopyCode(
   );
 }
 
+
+/** Sends a native-flow button that asks the recipient to share their location. */
+export async function sendLocationRequest(
+  sock: WASocket,
+  jid: string,
+  quotedMessage: WAMessage,
+  options: InteractiveLocationRequestOptions,
+): Promise<void> {
+  assertNonEmpty(options.body, "body");
+  assertNonEmpty(options.text, "location button text");
+
+  await sendNativeFlow(
+    sock,
+    jid,
+    quotedMessage,
+    {
+      body: { text: options.body },
+      ...(options.footer ? { footer: { text: options.footer } } : {}),
+      header: {
+        ...(options.title ? { title: options.title } : {}),
+        hasMediaAttachment: false,
+      },
+      nativeFlowMessage: {
+        buttons: [{
+          name: "send_location",
+          buttonParamsJson: JSON.stringify({
+            display_text: options.text,
+          }),
+        }],
+      },
+    },
+    options.quoted ?? true,
+  );
+}
 
 /** Sends a native WhatsApp carousel with image cards and consistent CTA buttons. */
 export async function sendCarousel(
