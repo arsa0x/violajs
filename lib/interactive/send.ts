@@ -395,23 +395,30 @@ export async function sendCarousel(
   }
 
   const buttonType = options.cards[0]?.button.type;
-    if (!buttonType) throw new TypeError("Every carousel card must have a button.");
+  if (!buttonType) {
+    throw new TypeError("Every carousel card must have a button.");
+  }
 
-    const cards = await Promise.all(options.cards.map(async (card, index) => {
-      assertNonEmpty(card.image, `card ${index + 1} image URL`);
-      assertNonEmpty(card.title, `card ${index + 1} title`);
-      if (card.button.type !== buttonType) {
-        throw new TypeError("All carousel cards must use the same button type.");
-      }
-      let imageUrl: URL;
-      try { imageUrl = new URL(card.image); }
-      catch { throw new TypeError(`Carousel card ${index + 1} image URL must be a valid absolute URL.`); }
-      if (imageUrl.protocol !== "https:" && imageUrl.protocol !== "http:") {
-        throw new TypeError("Carousel image URLs must use http or https.");
-      }
-      const button = buildCarouselButton(card.button, index + 1);
+  const cards = await Promise.all(options.cards.map(async (card, index) => {
+    assertNonEmpty(card.image, `card ${index + 1} image URL`);
+    assertNonEmpty(card.title, `card ${index + 1} title`);
 
-      const media = await prepareWAMessageMedia(
+    if (card.button.type !== buttonType) {
+      throw new TypeError("All carousel cards must use the same button type.");
+    }
+
+    let imageUrl: URL;
+    try {
+      imageUrl = new URL(card.image);
+    } catch {
+      throw new TypeError(`Carousel card ${index + 1} image URL must be a valid absolute URL.`);
+    }
+    if (imageUrl.protocol !== "https:" && imageUrl.protocol !== "http:") {
+      throw new TypeError("Carousel image URLs must use http or https.");
+    }
+
+    const button = buildCarouselButton(card.button, index + 1);
+    const media = await prepareWAMessageMedia(
       { image: { url: imageUrl.toString() } },
       { upload: sock.waUploadToServer },
     );
@@ -432,7 +439,6 @@ export async function sendCarousel(
       },
     };
   }));
-
   await sendNativeFlow(
     sock,
     jid,
