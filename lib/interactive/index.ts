@@ -3,6 +3,7 @@ import {
   sendCallButton,
   sendCarousel,
   sendCopyCode,
+  sendLocationRequest,
   sendQuickReply,
   sendSingleSelect,
   sendUrlButton,
@@ -11,6 +12,7 @@ import type {
   InteractiveCallButtonOptions,
   InteractiveCarouselOptions,
   InteractiveCopyCodeOptions,
+  InteractiveLocationRequestOptions,
   InteractiveQuickReplyOptions,
   InteractiveSingleSelectOptions,
   InteractiveUrlButtonOptions,
@@ -55,6 +57,11 @@ export class InteractiveSend {
   /** Send a native-flow button that starts a phone call. */
   callButton(options: InteractiveCallButtonOptions): Promise<void> {
     return sendCallButton(this.sock, this.jid, this.message, options);
+  }
+
+  /** Send a native-flow button that asks the recipient to share their location. */
+  requestLocation(options: InteractiveLocationRequestOptions): Promise<void> {
+    return sendLocationRequest(this.sock, this.jid, this.message, options);
   }
 
   /** Send a native-flow button that copies a code. */
