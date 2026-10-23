@@ -65,3 +65,27 @@ export interface InteractiveCopyCodeOptions extends InteractiveActionBaseOptions
   /** Code copied by WhatsApp when the button is tapped. */
   code: string;
 }
+
+export type InteractiveCarouselButton =
+  | { type: "quick_reply"; text: string; id: string }
+  | { type: "url"; text: string; url: string };
+
+export interface InteractiveCarouselCard {
+  /** Publicly reachable image URL. The image is uploaded to WhatsApp before sending. */
+  image: string;
+  /** Short title shown in the card body. */
+  title: string;
+  /** Optional card description. */
+  body?: string;
+  /** Each card in a carousel must use the same button type. */
+  button: InteractiveCarouselButton;
+}
+
+export interface InteractiveCarouselOptions {
+  /** Required message text displayed above the carousel cards. */
+  body: string;
+  /** Native interactive carousels require between 2 and 10 cards. */
+  cards: InteractiveCarouselCard[];
+  /** Whether to quote the incoming message. Defaults to true. */
+  quoted?: boolean;
+}
