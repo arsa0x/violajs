@@ -297,7 +297,7 @@ export async function sendCopyCode(
       },
       nativeFlowMessage: {
         buttons: [{
-          name: "copy_code",
+          name: "cta_copy",
           buttonParamsJson: JSON.stringify({
             display_text: options.text,
             copy_code: options.code,
