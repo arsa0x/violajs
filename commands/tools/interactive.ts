@@ -65,6 +65,15 @@ export default defineCommand({
       return;
     }
 
+    if (mode === "location") {
+      await ctx.send.interactive.requestLocation({
+        title: "Location request",
+        body: "Share your current location if you want to.",
+        text: "Share location",
+      });
+      return;
+    }
+
     if (mode === "copy") {
       await ctx.send.interactive.copyCode({
         title: "Copy-code demo",
