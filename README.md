@@ -238,7 +238,34 @@ await ctx.send.interactive.singleSelect({
 });
 ```
 
-Both methods quote the incoming message by default. Set `quoted: false` to send without a quoted message. Quick replies support 1–3 buttons, and single-select requires at least one section with at least one row. The built-in `.interactive` command demonstrates both variants.
+The sender also supports URL, call, copy-code, and location-request buttons:
+
+```typescript
+await ctx.send.interactive.urlButton({
+  body: "Open the project page.",
+  text: "Open GitHub",
+  url: "https://github.com/arsa0x/violajs",
+});
+
+await ctx.send.interactive.callButton({
+  body: "Need help? Call support.",
+  text: "Call support",
+  phoneNumber: "+6281234567890",
+});
+
+await ctx.send.interactive.copyCode({
+  body: "Copy this demo code.",
+  text: "Copy code",
+  code: "VIOLA-DEMO",
+});
+
+await ctx.send.interactive.requestLocation({
+  body: "Share your current location if you want to.",
+  text: "Share location",
+});
+```
+
+All methods quote the incoming message by default. Set `quoted: false` to send without a quoted message. Quick replies support 1–3 buttons, and single-select requires at least one section with at least one row. The built-in `.interactive` command demonstrates the variants.
 
 Native-flow responses are parsed as JSON and only known response-ID fields are forwarded to the command parser; malformed or unrecognized payloads are ignored rather than treated as command text.
 
