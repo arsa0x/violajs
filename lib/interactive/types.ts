@@ -5,10 +5,18 @@ export interface InteractiveQuickReplyButton {
   id: string;
 }
 
+export interface InteractiveHeaderMedia {
+  /** Publicly reachable image or video URL. Media is uploaded to WhatsApp before sending. */
+  type: "image" | "video";
+  url: string;
+}
+
 export interface InteractiveQuickReplyOptions {
   body: string;
   title?: string;
   footer?: string;
+  /** Optional image/video displayed in the message header. */
+  headerMedia?: InteractiveHeaderMedia;
   buttons: InteractiveQuickReplyButton[];
   /** Whether to quote the incoming message. Defaults to true. */
   quoted?: boolean;
@@ -29,6 +37,8 @@ export interface InteractiveSingleSelectOptions {
   body: string;
   title?: string;
   footer?: string;
+  /** Optional image/video displayed in the message header. */
+  headerMedia?: InteractiveHeaderMedia;
   selectLabel?: string;
   sections: InteractiveSelectSection[];
   /** Whether to quote the incoming message. Defaults to true. */
@@ -39,6 +49,8 @@ interface InteractiveActionBaseOptions {
   body: string;
   title?: string;
   footer?: string;
+  /** Optional image/video displayed in the message header. */
+  headerMedia?: InteractiveHeaderMedia;
   /** Whether to quote the incoming message. Defaults to true. */
   quoted?: boolean;
 }
@@ -73,7 +85,17 @@ export interface InteractiveLocationRequestOptions extends InteractiveActionBase
 
 export type InteractiveCarouselButton =
   | { type: "quick_reply"; text: string; id: string }
-  | { type: "url"; text: string; url: string };
+  | {
+      type: "url";
+      text: string;
+      url: string;
+      merchantUrl?: string;
+      /** Defaults to true to match the Rust carousel implementation. */
+      webviewInteraction?: boolean;
+    }
+  | { type: "call"; text: string; phoneNumber: string }
+  | { type: "copy"; text: string; code: string; id?: string }
+  | { type: "single_select"; title: string; sections: InteractiveSelectSection[] };
 
 export interface InteractiveCarouselCard {
   /** Publicly reachable image URL. The image is uploaded to WhatsApp before sending. */
@@ -94,3 +116,5 @@ export interface InteractiveCarouselOptions {
   /** Whether to quote the incoming message. Defaults to true. */
   quoted?: boolean;
 }
+
+export interface InteractiveInAppSignupOptions extends InteractiveActionBaseOptions {}
