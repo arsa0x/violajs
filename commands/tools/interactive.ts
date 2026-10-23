@@ -44,6 +44,27 @@ export default defineCommand({
       return;
     }
 
+    if (mode === "carousel") {
+      await ctx.send.interactive.carousel({
+        body: "Browse the violajs demo cards.",
+        cards: [
+          {
+            image: "https://picsum.photos/seed/violajs-card-one/640/480",
+            title: "Quick reply card",
+            body: "Tap to run ping.",
+            button: { type: "quick_reply", text: "Ping", id: ".ping" },
+          },
+          {
+            image: "https://picsum.photos/seed/violajs-card-two/640/480",
+            title: "URL card",
+            body: "Open the project repository.",
+            button: { type: "quick_reply", text: "Open project", id: ".interactive url" },
+          },
+        ],
+      });
+      return;
+    }
+
     if (mode === "copy") {
       await ctx.send.interactive.copyCode({
         title: "Copy-code demo",
@@ -62,6 +83,7 @@ export default defineCommand({
         { text: "Ping", id: ".ping" },
         { text: "Open list", id: ".interactive list" },
         { text: "URL button", id: ".interactive url" },
+        { text: "Carousel", id: ".interactive carousel" },
       ],
     });
   },
