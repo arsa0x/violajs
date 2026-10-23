@@ -238,7 +238,7 @@ await ctx.send.interactive.singleSelect({
 });
 ```
 
-The sender also supports URL, call, copy-code, and location-request buttons:
+The sender also supports URL, call, copy-code, location-request, and in-app signup actions. Interactive messages can optionally include an uploaded image or video in the header:
 
 ```typescript
 await ctx.send.interactive.urlButton({
@@ -259,6 +259,17 @@ await ctx.send.interactive.copyCode({
   code: "VIOLA-DEMO",
 });
 
+await ctx.send.interactive.inAppSignup({
+  title: "Create an account",
+  body: "Continue with the in-app signup action.",
+});
+
+await ctx.send.interactive.quickReply({
+  body: "This message has an image header.",
+  headerMedia: { type: "image", url: "https://example.com/banner.jpg" },
+  buttons: [{ text: "Continue", id: ".continue" }],
+});
+
 await ctx.send.interactive.requestLocation({
   body: "Share your current location if you want to.",
   text: "Share location",
@@ -272,7 +283,7 @@ Native-flow responses are parsed as JSON and only known response-ID fields are f
 
 ### Carousel
 
-Send 2–10 image cards with one consistent button type (quick reply or URL) across all cards:
+Send 2–10 image cards with one consistent button type (quick reply, URL, call, copy-code, or single-select) across all cards:
 
 ```typescript
 await ctx.send.interactive.carousel({
@@ -294,7 +305,7 @@ await ctx.send.interactive.carousel({
 });
 ```
 
-Image URLs must be publicly reachable; Baileys uploads each image to WhatsApp before relaying the carousel. Use `.interactive carousel` to try the demo. Rendering depends on WhatsApp client/version, so test on both mobile and Web/Desktop.
+URL cards default `merchantUrl` to the destination URL and enable `webviewInteraction` to match the Rust implementation. Copy-code cards default their ID to the copied code. Image URLs must be publicly reachable; Baileys uploads each image to WhatsApp before relaying the carousel. Use `.interactive carousel` to try the demo. Rendering depends on WhatsApp client/version, so test on both mobile and Web/Desktop.
 
 ---
 
