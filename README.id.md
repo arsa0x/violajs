@@ -2,7 +2,7 @@
 
 Bot WhatsApp sederhana yang dibangun menggunakan library [Baileys](https://github.com/WhiskeySockets/Baileys) dan berjalan di atas runtime [Bun](https://bun.sh/).
 
-**violajs** menggunakan arsitektur berbasis plugin dan mendukung banyak sesi (*multi-session*), sehingga memudahkan pengembangan perintah kustom serta pengelolaan beberapa akun WhatsApp.
+**violajs** menggunakan arsitektur berbasis plugin dan mendukung banyak sesi (_multi-session_), sehingga memudahkan pengembangan perintah kustom serta pengelolaan beberapa akun WhatsApp.
 
 ---
 
@@ -190,7 +190,7 @@ export default defineCommand({
 
 - **`name`** — Menentukan nama perintah.
 - **`aliases`** — Menentukan nama alternatif untuk perintah.
-- **`middleware`** — Menerapkan middleware untuk mengatur eksekusi perintah. Pada contoh ini, perintah hanya dapat digunakan di grup dan memiliki jeda penggunaan (*cooldown*).
+- **`middleware`** — Menerapkan middleware untuk mengatur eksekusi perintah. Pada contoh ini, perintah hanya dapat digunakan di grup dan memiliki jeda penggunaan (_cooldown_).
 - **`execute(ctx)`** — Mendefinisikan tindakan yang dilakukan ketika perintah dijalankan.
 - **`ctx.send.text()`** — Mengirim pesan teks.
 - **`ctx.log.info()`** — Mencatat informasi ke log.
@@ -205,7 +205,7 @@ Kontribusi selalu terbuka bagi siapa saja! Anda dapat membantu dengan mengusulka
 
 Ikuti langkah-langkah berikut untuk berkontribusi:
 
-1. *Fork* repositori ini.
+1. _Fork_ repositori ini.
 2. Buat branch baru untuk fitur yang ingin dikembangkan:
 
    ```bash
@@ -224,9 +224,19 @@ Ikuti langkah-langkah berikut untuk berkontribusi:
    git push origin feature/nama-fitur
    ```
 
-5. Buat *Pull Request* ke repositori utama.
+5. Buat _Pull Request_ ke repositori utama.
 
-Pastikan perubahan yang Anda ajukan jelas, terfokus, dan telah diuji dengan baik sebelum mengirimkan *Pull Request*.
+Pastikan perubahan yang Anda ajukan jelas, terfokus, dan telah diuji dengan baik sebelum mengirimkan _Pull Request_.
+
+---
+
+## Ucapan Terima Kasih
+
+Violajs terinspirasi oleh ide, implementasi, dan proyek sumber terbuka dari komunitas. Kami ingin mengucapkan terima kasih kepada proyek-proyek yang telah membantu pengembangannya.
+
+### Proyek
+
+- [**Rubby-MD**](https://github.com/KyuuX444/Rubby-MD) — Lisensi ISC. Digunakan untuk perintah manajemen grup WhatsApp dan lainnya.
 
 ---
 

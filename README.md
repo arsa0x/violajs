@@ -228,6 +228,16 @@ Please make sure your changes are clear, focused, and properly tested before sub
 
 ---
 
+## Acknowledgements
+
+Violajs is inspired by ideas, implementations, and open-source projects from the community. We would like to acknowledge the projects that have helped inform its development.
+
+### Projects
+
+- [**Rubby-MD**](https://github.com/KyuuX444/Rubby-MD) — ISC License. Referenced for WhatsApp group management commands and more.
+
+---
+
 ## License
 
 violajs is distributed under the [MIT License](https://github.com/arsa0x/violajs/blob/main/LICENSE).
