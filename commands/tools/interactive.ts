@@ -5,7 +5,9 @@ export default defineCommand({
   aliases: ["buttons"],
   category: "tools",
   async execute(ctx) {
-    if (ctx.args[0]?.toLowerCase() === "list") {
+    const mode = ctx.args[0]?.toLowerCase();
+
+    if (mode === "list") {
       await ctx.send.interactive.singleSelect({
         title: "Interactive demo",
         body: "Choose a command from the list.",
@@ -32,13 +34,34 @@ export default defineCommand({
       return;
     }
 
+    if (mode === "url") {
+      await ctx.send.interactive.urlButton({
+        title: "violajs",
+        body: "Open the violajs GitHub repository.",
+        text: "Open GitHub",
+        url: "https://github.com/arsa0x/violajs",
+      });
+      return;
+    }
+
+    if (mode === "copy") {
+      await ctx.send.interactive.copyCode({
+        title: "Copy-code demo",
+        body: "Tap the button to copy this example code.",
+        text: "Copy code",
+        code: "VIOLA-DEMO",
+      });
+      return;
+    }
+
     await ctx.send.interactive.quickReply({
       title: "Interactive demo",
-      body: "Tap a button to try a native-flow response.",
+      body: "Choose a native-flow message to try.",
       footer: "violajs · native-flow",
       buttons: [
         { text: "Ping", id: ".ping" },
         { text: "Open list", id: ".interactive list" },
+        { text: "URL button", id: ".interactive url" },
       ],
     });
   },
