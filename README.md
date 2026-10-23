@@ -118,6 +118,11 @@ violajs/
 ├── config.ts
 ├── index.ts
 ├── lib/
+│   ├── interactive/
+│   │   ├── index.ts
+│   │   ├── response.ts
+│   │   ├── send.ts
+│   │   └── types.ts
 │   ├── logger.ts
 │   ├── qr/
 │   │   ├── index.ts
@@ -194,6 +199,48 @@ export default defineCommand({
 - **`ctx.log.info()`** — Writes an informational log message.
 
 The example uses `groupOnly()` to restrict the command to group chats and `cooldown(100000)` to apply a cooldown of 100,000 milliseconds (100 seconds).
+
+
+## Interactive Messages
+
+The sender exposes native-flow quick replies and single-select lists through `ctx.send.interactive`. Button and row IDs can be command strings, so a tap reuses the existing parser, middleware, and dispatcher.
+
+Quick replies:
+
+```typescript
+await ctx.send.interactive.quickReply({
+  title: "Choose an action",
+  body: "What would you like to do?",
+  footer: "violajs",
+  buttons: [
+    { text: "Ping", id: ".ping" },
+    { text: "Open menu", id: ".menu" },
+  ],
+});
+```
+
+Single-select list:
+
+```typescript
+await ctx.send.interactive.singleSelect({
+  title: "Tools",
+  body: "Choose a command.",
+  selectLabel: "Select tool",
+  sections: [
+    {
+      title: "General",
+      rows: [
+        { title: "Ping", description: "Check whether the bot is online", id: ".ping" },
+        { title: "Interactive demo", id: ".interactive" },
+      ],
+    },
+  ],
+});
+```
+
+Both methods quote the incoming message by default. Set `quoted: false` to send without a quoted message. Quick replies support 1–3 buttons, and single-select requires at least one section with at least one row. The built-in `.interactive` command demonstrates both variants.
+
+Native-flow responses are parsed as JSON and only known response-ID fields are forwarded to the command parser; malformed or unrecognized payloads are ignored rather than treated as command text.
 
 ---
 
