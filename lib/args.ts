@@ -123,6 +123,32 @@ export class Args {
       }
 
       const collected: string[] = [];
+
+      if (spec.kind === "json") {
+        let parsed = false;
+
+        // JSON may arrive as multiple tokens; stop at the first valid value.
+        while (index < raw.length && !result.specByName.has(raw[index]!)) {
+          collected.push(raw[index]!);
+          index += 1;
+
+          const rawJson = collected.join(" ");
+          try {
+            result.jsonValues.set(name, JSON.parse(rawJson) as unknown);
+            result.jsonErrors.delete(name);
+            parsed = true;
+            break;
+          } catch (error) {
+            result.jsonErrors.set(name, { flag: name, raw: rawJson, error });
+          }
+        }
+
+        if (!parsed && collected.length === 0) {
+          result.jsonErrors.delete(name);
+        }
+        continue;
+      }
+
       while (
         index < raw.length &&
         !result.specByName.has(raw[index]!)
@@ -146,17 +172,6 @@ export class Args {
           if (trimmed) current.push(trimmed);
         }
         result.lists.set(name, current);
-        continue;
-      }
-
-      if (spec.kind === "json" && collected.length > 0) {
-        const rawJson = collected.join(" ");
-        try {
-          result.jsonValues.set(name, JSON.parse(rawJson) as unknown);
-          result.jsonErrors.delete(name);
-        } catch (error) {
-          result.jsonErrors.set(name, { flag: name, raw: rawJson, error });
-        }
       }
     }
 
