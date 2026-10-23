@@ -4,8 +4,8 @@ import { groupAdminOnly } from "@middlewares/group-admin";
 import { botAdminOnly } from "@middlewares/bot-admin";
 
 export default defineCommand({
-  name: "del",
-  aliases: ["delete", "hapus"],
+  name: "delete",
+  aliases: ["del", "rm", "hapus"],
   category: "admin",
   middleware: [groupOnly(), groupAdminOnly(), botAdminOnly()],
   async execute(ctx) {
@@ -26,7 +26,9 @@ export default defineCommand({
       });
     } catch (error) {
       ctx.log.error(`Failed to delete group message: ${error}`);
-      await ctx.send.text("Gagal menghapus pesan. WhatsApp mungkin tidak mengizinkan penghapusan ini.");
+      await ctx.send.text(
+        "Gagal menghapus pesan. WhatsApp mungkin tidak mengizinkan penghapusan ini.",
+      );
     }
   },
 });
