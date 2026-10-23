@@ -48,11 +48,12 @@ describe("Args", () => {
   });
 
   test("parses JSON and exposes invalid JSON errors", () => {
-    const valid = Args.parse(["--config", '{"limit":3,"enabled":true}', "--verbose"], specs);
+    const valid = Args.parse(["--config", '{"limit":3,"enabled":true}', "after-json", "--verbose"], specs);
     expect(valid.json<{ limit: number; enabled: boolean }>("--config")).toEqual({
       limit: 3,
       enabled: true,
     });
+    expect(valid.positional(0)).toBe("after-json");
     expect(valid.jsonParsed("--config", (value) => {
       if (typeof value !== "object" || value === null || !("limit" in value)) {
         throw new TypeError("Expected config object");
@@ -68,7 +69,11 @@ describe("Args", () => {
   test("parses primitive values and positional rest", () => {
     const args = Args.parse(["first", "second", "--reason", "hello"], specs);
 
-    expect(args.valueParsed("--reason", Number)).toBeUndefined();
+    expect(args.valueParsed("--reason", (raw) => {
+      const parsed = Number(raw);
+      if (!Number.isFinite(parsed)) throw new TypeError("Expected a number");
+      return parsed;
+    })).toBeUndefined();
     expect(args.positional(1)).toBe("second");
     expect(args.restFrom(1)).toEqual(["second"]);
   });
