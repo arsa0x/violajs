@@ -1,4 +1,5 @@
 import type { MimeType } from "../src/types/mime";
+import { InteractiveSend } from "./interactive";
 import type { WAMediaUpload, WAMessage, WASocket } from "baileys";
 
 /**
@@ -8,6 +9,9 @@ import type { WAMediaUpload, WAMessage, WASocket } from "baileys";
  * text, media, reactions, and more.
  */
 export class Send {
+  /** Native-flow quick replies and single-select lists. */
+  readonly interactive: InteractiveSend;
+
   /**
    * Creates a new message sender.
    *
@@ -19,7 +23,9 @@ export class Send {
     private readonly sock: WASocket,
     private readonly msg: WAMessage,
     private readonly jid: string,
-  ) {}
+  ) {
+    this.interactive = new InteractiveSend(sock, msg, jid);
+  }
 
   /**
    * Sends a text message.

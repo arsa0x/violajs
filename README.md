@@ -118,6 +118,11 @@ violajs/
 ├── config.ts
 ├── index.ts
 ├── lib/
+│   ├── interactive/
+│   │   ├── index.ts
+│   │   ├── response.ts
+│   │   ├── send.ts
+│   │   └── types.ts
 │   ├── logger.ts
 │   ├── qr/
 │   │   ├── index.ts
@@ -194,6 +199,113 @@ export default defineCommand({
 - **`ctx.log.info()`** — Writes an informational log message.
 
 The example uses `groupOnly()` to restrict the command to group chats and `cooldown(100000)` to apply a cooldown of 100,000 milliseconds (100 seconds).
+
+
+## Interactive Messages
+
+The sender exposes native-flow quick replies and single-select lists through `ctx.send.interactive`. Button and row IDs can be command strings, so a tap reuses the existing parser, middleware, and dispatcher.
+
+Quick replies:
+
+```typescript
+await ctx.send.interactive.quickReply({
+  title: "Choose an action",
+  body: "What would you like to do?",
+  footer: "violajs",
+  buttons: [
+    { text: "Ping", id: ".ping" },
+    { text: "Open menu", id: ".menu" },
+  ],
+});
+```
+
+Single-select list:
+
+```typescript
+await ctx.send.interactive.singleSelect({
+  title: "Tools",
+  body: "Choose a command.",
+  selectLabel: "Select tool",
+  sections: [
+    {
+      title: "General",
+      rows: [
+        { title: "Ping", description: "Check whether the bot is online", id: ".ping" },
+        { title: "Interactive demo", id: ".interactive" },
+      ],
+    },
+  ],
+});
+```
+
+The sender also supports URL, call, copy-code, location-request, and in-app signup actions. Interactive messages can optionally include an uploaded image or video in the header:
+
+```typescript
+await ctx.send.interactive.urlButton({
+  body: "Open the project page.",
+  text: "Open GitHub",
+  url: "https://github.com/arsa0x/violajs",
+});
+
+await ctx.send.interactive.callButton({
+  body: "Need help? Call support.",
+  text: "Call support",
+  phoneNumber: "+6281234567890",
+});
+
+await ctx.send.interactive.copyCode({
+  body: "Copy this demo code.",
+  text: "Copy code",
+  code: "VIOLA-DEMO",
+});
+
+await ctx.send.interactive.inAppSignup({
+  title: "Create an account",
+  body: "Continue with the in-app signup action.",
+});
+
+await ctx.send.interactive.quickReply({
+  body: "This message has an image header.",
+  headerMedia: { type: "image", url: "https://example.com/banner.jpg" },
+  buttons: [{ text: "Continue", id: ".continue" }],
+});
+
+await ctx.send.interactive.requestLocation({
+  body: "Share your current location if you want to.",
+  text: "Share location",
+});
+```
+
+All methods quote the incoming message by default. Set `quoted: false` to send without a quoted message. Quick replies support 1–3 buttons, and single-select requires at least one section with at least one row. The built-in `.interactive` command demonstrates the variants.
+
+Native-flow responses are parsed as JSON and only known response-ID fields are forwarded to the command parser; malformed or unrecognized payloads are ignored rather than treated as command text.
+
+
+### Carousel
+
+Send 2–10 image cards with one consistent button type (quick reply, URL, call, copy-code, or single-select) across all cards:
+
+```typescript
+await ctx.send.interactive.carousel({
+  body: "Browse these projects.",
+  cards: [
+    {
+      image: "https://example.com/project-one.jpg",
+      title: "Project One",
+      body: "A short description.",
+      button: { type: "quick_reply", text: "Details", id: ".project one" },
+    },
+    {
+      image: "https://example.com/project-two.jpg",
+      title: "Project Two",
+      body: "Another description.",
+      button: { type: "quick_reply", text: "Details", id: ".project two" },
+    },
+  ],
+});
+```
+
+URL cards default `merchantUrl` to the destination URL and enable `webviewInteraction` to match the Rust implementation. Copy-code cards default their ID to the copied code. Image URLs must be publicly reachable; Baileys uploads each image to WhatsApp before relaying the carousel. Use `.interactive carousel` to try the demo. Rendering depends on WhatsApp client/version, so test on both mobile and Web/Desktop.
 
 ---
 
