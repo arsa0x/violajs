@@ -1,0 +1,35 @@
+import { jidNormalizedUser } from "baileys";
+import { defineCommand } from "@core/command";
+import { groupOnly } from "@middlewares/group";
+import { groupAdminOnly } from "@middlewares/group-admin";
+import { botAdminOnly } from "@middlewares/bot-admin";
+import { getGroupTarget } from "@utils/group";
+
+export default defineCommand({
+  name: "kick",
+  aliases: ["tendang"],
+  category: "admin",
+  middleware: [groupOnly(), groupAdminOnly(), botAdminOnly()],
+  async execute(ctx) {
+    const target = getGroupTarget(ctx);
+    if (!target || !target.endsWith("@s.whatsapp.net")) {
+      await ctx.send.text("Tag, reply pesan anggota, atau gunakan .kick <nomor>.");
+      return;
+    }
+    const botJid = ctx.sock.user?.id;
+    if (botJid && jidNormalizedUser(target) === jidNormalizedUser(botJid)) {
+      await ctx.send.text("Bot tidak dapat mengeluarkan dirinya sendiri.");
+      return;
+    }
+    try {
+      await ctx.sock.groupParticipantsUpdate(ctx.chat.jid, [target], "remove");
+      await ctx.sock.sendMessage(ctx.chat.jid, {
+        text: `Anggota @${target.split("@")[0]} dikeluarkan dari grup.`,
+        mentions: [target],
+      }, { quoted: ctx.msg });
+    } catch (error) {
+      ctx.log.error(`Failed to remove group participant: ${error}`);
+      await ctx.send.text("Gagal mengeluarkan anggota. Periksa target dan hak admin bot.");
+    }
+  },
+});
