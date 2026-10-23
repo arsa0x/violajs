@@ -383,7 +383,7 @@ export async function sendCarousel(
         imageMessage: media.imageMessage,
         hasMediaAttachment: true,
       },
-      body: { text: card.body?.trim() || card.title },
+      body: { text: card.body?.trim() ? `${card.title}\n${card.body.trim()}` : card.title },
       nativeFlowMessage: {
         buttons: [button],
         messageParamsJson: "",
@@ -397,7 +397,6 @@ export async function sendCarousel(
     quotedMessage,
     {
       body: { text: options.body },
-      header: { hasMediaAttachment: false },
       carouselMessage: { cards },
     },
     options.quoted ?? true,
