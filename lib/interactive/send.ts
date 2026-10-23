@@ -28,17 +28,26 @@ async function sendNativeFlow(
   content: Record<string, unknown>,
   quote: boolean,
 ): Promise<void> {
+  const userJid = sock.user?.id;
+  if (!userJid) {
+    throw new Error("Cannot send an interactive message before WhatsApp is connected.");
+  }
+
   const generated = generateWAMessageFromContent(
     jid,
     {
       viewOnceMessage: {
         message: {
+          messageContextInfo: {
+            deviceListMetadata: {},
+            deviceListMetadataVersion: 2,
+          },
           interactiveMessage: content,
         },
       },
     } as never,
     {
-      userJid: sock.user?.id,
+      userJid,
       quoted: quote ? quotedMessage : undefined,
     },
   );
@@ -47,8 +56,33 @@ async function sendNativeFlow(
     throw new Error("Baileys failed to generate the interactive message.");
   }
 
+  // Baileys does not add WhatsApp's native-flow stanza metadata automatically.
+  // Without these nodes, the server may accept the relay but clients cannot
+  // render the interactive message.
+  const bizNode = {
+    tag: "biz",
+    attrs: {},
+    content: [
+      {
+        tag: "interactive",
+        attrs: { type: "native_flow", v: "1" },
+        content: [
+          {
+            tag: "native_flow",
+            attrs: { v: "9", name: "mixed" },
+          },
+        ],
+      },
+    ],
+  };
+
+  const additionalNodes = jid.endsWith("@g.us")
+    ? [bizNode]
+    : [{ tag: "bot", attrs: { biz_bot: "1" } }, bizNode];
+
   await sock.relayMessage(jid, generated.message, {
     messageId: generated.key.id,
+    additionalNodes,
   });
 }
 
