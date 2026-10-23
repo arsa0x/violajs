@@ -65,6 +65,110 @@ export default defineCommand({
       return;
     }
 
+    if (mode === "carousel-url") {
+      await ctx.send.interactive.carousel({
+        body: "Carousel URL-button demo.",
+        cards: [
+          {
+            image: "https://picsum.photos/seed/violajs-url-one/640/480",
+            title: "Project repository",
+            body: "Open GitHub.",
+            button: {
+              type: "url",
+              text: "Open GitHub",
+              url: "https://github.com/arsa0x/violajs",
+              merchantUrl: "https://github.com/arsa0x/violajs",
+              webviewInteraction: true,
+            },
+          },
+          {
+            image: "https://picsum.photos/seed/violajs-url-two/640/480",
+            title: "GitHub profile",
+            body: "Open the maintainer profile.",
+            button: { type: "url", text: "Open profile", url: "https://github.com/arsa0x" },
+          },
+        ],
+      });
+      return;
+    }
+
+    if (mode === "carousel-call") {
+      await ctx.send.interactive.carousel({
+        body: "Carousel call-button demo.",
+        cards: [
+          {
+            image: "https://picsum.photos/seed/violajs-call-one/640/480",
+            title: "Support",
+            button: { type: "call", text: "Call support", phoneNumber: "+6281234567890" },
+          },
+          {
+            image: "https://picsum.photos/seed/violajs-call-two/640/480",
+            title: "Contact",
+            button: { type: "call", text: "Call contact", phoneNumber: "+6281234567890" },
+          },
+        ],
+      });
+      return;
+    }
+
+    if (mode === "carousel-copy") {
+      await ctx.send.interactive.carousel({
+        body: "Carousel copy-code demo.",
+        cards: [
+          {
+            image: "https://picsum.photos/seed/violajs-copy-one/640/480",
+            title: "Promo one",
+            button: { type: "copy", text: "Copy code", code: "VIOLA10", id: "promo-one" },
+          },
+          {
+            image: "https://picsum.photos/seed/violajs-copy-two/640/480",
+            title: "Promo two",
+            button: { type: "copy", text: "Copy code", code: "VIOLA20" },
+          },
+        ],
+      });
+      return;
+    }
+
+    if (mode === "carousel-list") {
+      await ctx.send.interactive.carousel({
+        body: "Carousel single-select demo.",
+        cards: [
+          {
+            image: "https://picsum.photos/seed/violajs-list-one/640/480",
+            title: "General commands",
+            button: {
+              type: "single_select",
+              title: "Choose command",
+              sections: [{
+                title: "General",
+                rows: [
+                  { title: "Ping", id: ".ping", description: "Check bot status" },
+                  { title: "Help", id: ".help", description: "Show available commands" },
+                ],
+              }],
+            },
+          },
+          {
+            image: "https://picsum.photos/seed/violajs-list-two/640/480",
+            title: "Interactive commands",
+            button: {
+              type: "single_select",
+              title: "Choose command",
+              sections: [{
+                title: "Interactive",
+                rows: [
+                  { title: "Quick replies", id: ".interactive" },
+                  { title: "URL button", id: ".interactive url" },
+                ],
+              }],
+            },
+          },
+        ],
+      });
+      return;
+    }
+
     if (mode === "signup") {
       await ctx.send.interactive.inAppSignup({
         title: "In-app signup demo",
