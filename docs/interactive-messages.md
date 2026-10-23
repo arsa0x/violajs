@@ -68,3 +68,50 @@ All methods quote the incoming message by default. Set quoted: false to send wit
 ## Compatibility note
 
 These methods construct WhatsApp native-flow messages through Baileys' relay API. Successful relay does not guarantee that every WhatsApp client can render the message. Keep a plain-text fallback for workflows where desktop support is required, and validate each new button type on mobile and Web/Desktop.
+
+
+## Carousel
+
+A native carousel contains 2–10 image cards. Every card must use the same button type; this API currently supports one quick-reply button or one URL button per card. Image URLs must be publicly reachable so Baileys can download and upload each image to WhatsApp.
+
+### Quick-reply cards
+
+    await ctx.send.interactive.carousel({
+      body: "Browse these projects.",
+      cards: [
+        {
+          image: "https://example.com/project-one.jpg",
+          title: "Project One",
+          body: "A short project description.",
+          button: { type: "quick_reply", text: "Details", id: ".project one" },
+        },
+        {
+          image: "https://example.com/project-two.jpg",
+          title: "Project Two",
+          body: "Another short description.",
+          button: { type: "quick_reply", text: "Details", id: ".project two" },
+        },
+      ],
+    });
+
+### URL cards
+
+Use the same button type for every card:
+
+    await ctx.send.interactive.carousel({
+      body: "Explore these links.",
+      cards: [
+        {
+          image: "https://example.com/one.jpg",
+          title: "First link",
+          button: { type: "url", text: "Open", url: "https://example.com/one" },
+        },
+        {
+          image: "https://example.com/two.jpg",
+          title: "Second link",
+          button: { type: "url", text: "Open", url: "https://example.com/two" },
+        },
+      ],
+    });
+
+The carousel is built with Baileys' native `carouselMessage` structure. Native carousel rendering is client/version-dependent, so verify delivery and card actions on both WhatsApp mobile and Web/Desktop. The `.interactive carousel` command provides a test example.
