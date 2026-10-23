@@ -53,6 +53,19 @@ Only absolute http:// and https:// URLs are accepted.
 
 Use an international-style phone number. The recipient's client decides how the call action is handled.
 
+## Location request
+
+Ask the recipient to share their current location:
+
+```ts
+await ctx.send.interactive.requestLocation({
+  body: "Share your current location if you want to.",
+  text: "Share location",
+});
+```
+
+This uses the native-flow `send_location` action. Availability and presentation can vary by WhatsApp client and account type; test on the clients you intend to support.
+
 ## Copy-code button
 
     await ctx.send.interactive.copyCode({
