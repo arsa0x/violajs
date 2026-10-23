@@ -18,7 +18,7 @@ export default defineCommand({
     try {
       await ctx.sock.groupParticipantsUpdate(ctx.chat.jid, [target], "demote");
       await ctx.sock.sendMessage(ctx.chat.jid, {
-        text: `@ ${target.split("@")[0]} bukan admin lagi.`.replace("@ ", "@"),
+        text: `@${target.split("@")[0]} bukan admin lagi.`,
         mentions: [target],
       }, { quoted: ctx.msg });
     } catch (error) {
