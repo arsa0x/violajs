@@ -6,50 +6,60 @@ All methods are available through ctx.send.interactive and use the current chat 
 
 ## Quick replies
 
-    await ctx.send.interactive.quickReply({
-      title: "Choose an action",
-      body: "What would you like to do?",
-      buttons: [
-        { text: "Ping", id: ".ping" },
-        { text: "Help", id: ".help" },
-      ],
-    });
+```ts
+await ctx.send.interactive.quickReply({
+  title: "Choose an action",
+  body: "What would you like to do?",
+  buttons: [
+    { text: "Ping", id: ".ping" },
+    { text: "Help", id: ".help" },
+  ],
+});
+```
 
 Button IDs are normalized as interactive responses and can reuse the normal command dispatcher.
 
 ## Single select
 
-    await ctx.send.interactive.singleSelect({
-      title: "Settings",
-      body: "Choose a section.",
-      selectLabel: "Open settings",
-      sections: [{
-        title: "General",
-        rows: [
-          { title: "Profile", description: "View your profile", id: ".profile" },
-          { title: "Help", description: "Show help", id: ".help" },
-        ],
-      }],
-    });
+```ts
+await ctx.send.interactive.singleSelect({
+  title: "Settings",
+  body: "Choose a section.",
+  selectLabel: "Open settings",
+  sections: [
+    {
+      title: "General",
+      rows: [
+        { title: "Profile", description: "View your profile", id: ".profile" },
+        { title: "Help", description: "Show help", id: ".help" },
+      ],
+    },
+  ],
+});
+```
 
 ## URL button
 
-    await ctx.send.interactive.urlButton({
-      title: "Project",
-      body: "Open the project website.",
-      text: "Open website",
-      url: "https://github.com/arsa0x/violajs",
-    });
+```ts
+await ctx.send.interactive.urlButton({
+  title: "Project",
+  body: "Open the project website.",
+  text: "Open website",
+  url: "https://github.com/arsa0x/violajs",
+});
+```
 
 Only absolute http:// and https:// URLs are accepted.
 
 ## Call button
 
-    await ctx.send.interactive.callButton({
-      body: "Need help? Contact support.",
-      text: "Call support",
-      phoneNumber: "+6281234567890",
-    });
+```ts
+await ctx.send.interactive.callButton({
+  body: "Need help? Contact support.",
+  text: "Call support",
+  phoneNumber: "+6281234567890",
+});
+```
 
 Use an international-style phone number. The recipient's client decides how the call action is handled.
 
@@ -94,11 +104,13 @@ This uses the native-flow `send_location` action. Availability and presentation 
 
 ## Copy-code button
 
-    await ctx.send.interactive.copyCode({
-      body: "Use this code at checkout.",
-      text: "Copy code",
-      code: "VIOLA10",
-    });
+```ts
+await ctx.send.interactive.copyCode({
+  body: "Use this code at checkout.",
+  text: "Copy code",
+  code: "VIOLA10",
+});
+```
 
 ## Quoting behavior
 
@@ -108,50 +120,53 @@ All methods quote the incoming message by default. Set quoted: false to send wit
 
 These methods construct WhatsApp native-flow messages through Baileys' relay API. Successful relay does not guarantee that every WhatsApp client can render the message. Keep a plain-text fallback for workflows where desktop support is required, and validate each new button type on mobile and Web/Desktop.
 
-
 ## Carousel
 
 A native carousel contains 2–10 image cards. Every card must use the same button type, with one button per card. Image URLs must be publicly reachable so Baileys can download and upload each image to WhatsApp. Supported variants mirror the Rust implementation: quick reply, URL, call, copy-code, and single-select.
 
 ### Quick-reply cards
 
-    await ctx.send.interactive.carousel({
-      body: "Browse these projects.",
-      cards: [
-        {
-          image: "https://example.com/project-one.jpg",
-          title: "Project One",
-          body: "A short project description.",
-          button: { type: "quick_reply", text: "Details", id: ".project one" },
-        },
-        {
-          image: "https://example.com/project-two.jpg",
-          title: "Project Two",
-          body: "Another short description.",
-          button: { type: "quick_reply", text: "Details", id: ".project two" },
-        },
-      ],
-    });
+```ts
+await ctx.send.interactive.carousel({
+  body: "Browse these projects.",
+  cards: [
+    {
+      image: "https://example.com/project-one.jpg",
+      title: "Project One",
+      body: "A short project description.",
+      button: { type: "quick_reply", text: "Details", id: ".project one" },
+    },
+    {
+      image: "https://example.com/project-two.jpg",
+      title: "Project Two",
+      body: "Another short description.",
+      button: { type: "quick_reply", text: "Details", id: ".project two" },
+    },
+  ],
+});
+```
 
 ### URL cards
 
 Use the same button type for every card:
 
-    await ctx.send.interactive.carousel({
-      body: "Explore these links.",
-      cards: [
-        {
-          image: "https://example.com/one.jpg",
-          title: "First link",
-          button: { type: "url", text: "Open", url: "https://example.com/one" },
-        },
-        {
-          image: "https://example.com/two.jpg",
-          title: "Second link",
-          button: { type: "url", text: "Open", url: "https://example.com/two" },
-        },
-      ],
-    });
+```ts
+await ctx.send.interactive.carousel({
+  body: "Explore these links.",
+  cards: [
+    {
+      image: "https://example.com/one.jpg",
+      title: "First link",
+      button: { type: "url", text: "Open", url: "https://example.com/one" },
+    },
+    {
+      image: "https://example.com/two.jpg",
+      title: "Second link",
+      button: { type: "url", text: "Open", url: "https://example.com/two" },
+    },
+  ],
+});
+```
 
 URL cards accept optional `merchantUrl` and `webviewInteraction` (default `true`); copy-code cards accept an optional `id` that defaults to the copied code. Single-select cards use `button: { type: "single_select", title, sections }`. All cards must use the same variant.
 
