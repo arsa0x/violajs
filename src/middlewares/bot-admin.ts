@@ -8,18 +8,21 @@ export const botAdminOnly = (): Middleware => async (ctx, next) => {
   }
   try {
     const metadata = await ctx.sock.groupMetadata(ctx.chat.jid);
-    const botJid = ctx.sock.user?.id;
+    const botJid = jidNormalizedUser(ctx.sock.user?.id);
     if (!botJid) {
       await ctx.send.text("Identitas bot belum tersedia.");
       return;
     }
-    const bot = metadata.participants.find(
-      (member) => jidNormalizedUser(member.id) === jidNormalizedUser(botJid),
-    );
-    if (!bot?.admin) {
-      await ctx.send.text("Bot harus menjadi admin grup untuk menjalankan command ini.");
+
+    const bot = metadata.participants.find((par) => par.phoneNumber === botJid);
+
+    if (bot?.admin !== "admin") {
+      await ctx.send.text(
+        "Bot harus menjadi admin grup untuk menjalankan command ini.",
+      );
       return;
     }
+
     await next();
   } catch (error) {
     ctx.log.error(`Failed to verify bot admin: ${error}`);
