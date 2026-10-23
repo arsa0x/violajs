@@ -56,8 +56,8 @@ export default defineCommand({
           },
           {
             image: "https://picsum.photos/seed/violajs-card-two/640/480",
-            title: "URL card",
-            body: "Open the project repository.",
+            title: "Quick reply card 2",
+            body: "Open the URL-button demo.",
             button: { type: "quick_reply", text: "Open project", id: ".interactive url" },
           },
         ],
