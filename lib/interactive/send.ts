@@ -4,8 +4,11 @@ import {
   type WASocket,
 } from "baileys";
 import type {
+  InteractiveCallButtonOptions,
+  InteractiveCopyCodeOptions,
   InteractiveQuickReplyOptions,
   InteractiveSingleSelectOptions,
+  InteractiveUrlButtonOptions,
 } from "./types";
 
 function assertNonEmpty(value: string, name: string): void {
@@ -21,7 +24,7 @@ function assertNonEmpty(value: string, name: string): void {
  * viewOnceMessage; sock.sendMessage's ordinary text payload cannot represent
  * these buttons by itself.
  */
-async function sendNativeFlow(
+export async function sendNativeFlow(
   sock: WASocket,
   jid: string,
   quotedMessage: WAMessage,
@@ -56,9 +59,6 @@ async function sendNativeFlow(
     throw new Error("Baileys failed to generate the interactive message.");
   }
 
-  // Baileys does not add WhatsApp's native-flow stanza metadata automatically.
-  // Without these nodes, the server may accept the relay but clients cannot
-  // render the interactive message.
   const bizNode = {
     tag: "biz",
     attrs: {},
@@ -182,6 +182,127 @@ export async function sendSingleSelect(
             }),
           },
         ],
+      },
+    },
+    options.quoted ?? true,
+  );
+}
+
+/** Sends a button that opens a URL. */
+export async function sendUrlButton(
+  sock: WASocket,
+  jid: string,
+  quotedMessage: WAMessage,
+  options: InteractiveUrlButtonOptions,
+): Promise<void> {
+  assertNonEmpty(options.body, "body");
+  assertNonEmpty(options.text, "URL button text");
+  assertNonEmpty(options.url, "URL");
+  let parsedUrl: URL;
+  try {
+    parsedUrl = new URL(options.url);
+  } catch {
+    throw new TypeError("Interactive URL must be a valid absolute URL.");
+  }
+  if (parsedUrl.protocol !== "https:" && parsedUrl.protocol !== "http:") {
+    throw new TypeError("Interactive URL must use http or https.");
+  }
+
+  await sendNativeFlow(
+    sock,
+    jid,
+    quotedMessage,
+    {
+      body: { text: options.body },
+      ...(options.footer ? { footer: { text: options.footer } } : {}),
+      header: {
+        ...(options.title ? { title: options.title } : {}),
+        hasMediaAttachment: false,
+      },
+      nativeFlowMessage: {
+        buttons: [{
+          name: "cta_url",
+          buttonParamsJson: JSON.stringify({
+            display_text: options.text,
+            url: parsedUrl.toString(),
+            ...(options.merchantUrl ? { merchant_url: options.merchantUrl } : {}),
+          }),
+        }],
+      },
+    },
+    options.quoted ?? true,
+  );
+}
+
+/** Sends a button that starts a phone call. */
+export async function sendCallButton(
+  sock: WASocket,
+  jid: string,
+  quotedMessage: WAMessage,
+  options: InteractiveCallButtonOptions,
+): Promise<void> {
+  assertNonEmpty(options.body, "body");
+  assertNonEmpty(options.text, "call button text");
+  assertNonEmpty(options.phoneNumber, "phone number");
+  if (!/^\+?[0-9][0-9 ()-]{3,19}$/.test(options.phoneNumber)) {
+    throw new TypeError("Phone number must contain a valid international-style number.");
+  }
+
+  await sendNativeFlow(
+    sock,
+    jid,
+    quotedMessage,
+    {
+      body: { text: options.body },
+      ...(options.footer ? { footer: { text: options.footer } } : {}),
+      header: {
+        ...(options.title ? { title: options.title } : {}),
+        hasMediaAttachment: false,
+      },
+      nativeFlowMessage: {
+        buttons: [{
+          name: "cta_call",
+          buttonParamsJson: JSON.stringify({
+            display_text: options.text,
+            phone_number: options.phoneNumber,
+          }),
+        }],
+      },
+    },
+    options.quoted ?? true,
+  );
+}
+
+/** Sends a button that lets the recipient copy a code. */
+export async function sendCopyCode(
+  sock: WASocket,
+  jid: string,
+  quotedMessage: WAMessage,
+  options: InteractiveCopyCodeOptions,
+): Promise<void> {
+  assertNonEmpty(options.body, "body");
+  assertNonEmpty(options.text, "copy button text");
+  assertNonEmpty(options.code, "code");
+
+  await sendNativeFlow(
+    sock,
+    jid,
+    quotedMessage,
+    {
+      body: { text: options.body },
+      ...(options.footer ? { footer: { text: options.footer } } : {}),
+      header: {
+        ...(options.title ? { title: options.title } : {}),
+        hasMediaAttachment: false,
+      },
+      nativeFlowMessage: {
+        buttons: [{
+          name: "copy_code",
+          buttonParamsJson: JSON.stringify({
+            display_text: options.text,
+            copy_code: options.code,
+          }),
+        }],
       },
     },
     options.quoted ?? true,
