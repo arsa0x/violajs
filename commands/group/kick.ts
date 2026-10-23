@@ -3,7 +3,7 @@ import { defineCommand } from "@core/command";
 import { groupOnly } from "@middlewares/group";
 import { groupAdminOnly } from "@middlewares/group-admin";
 import { botAdminOnly } from "@middlewares/bot-admin";
-import { getGroupTarget } from "@utils/group";
+import { getGroupTarget, isGroupParticipant } from "@utils/group";
 
 export default defineCommand({
   name: "kick",
@@ -12,16 +12,22 @@ export default defineCommand({
   middleware: [groupOnly(), groupAdminOnly(), botAdminOnly()],
   async execute(ctx) {
     const target = getGroupTarget(ctx);
-    if (!target || !target.endsWith("@s.whatsapp.net")) {
+    if (!target) {
       await ctx.send.text("Tag, reply pesan anggota, atau gunakan .kick <nomor>.");
       return;
     }
+
     const botJid = ctx.sock.user?.id;
     if (botJid && jidNormalizedUser(target) === jidNormalizedUser(botJid)) {
       await ctx.send.text("Bot tidak dapat mengeluarkan dirinya sendiri.");
       return;
     }
+
     try {
+      if (!(await isGroupParticipant(ctx, target))) {
+        await ctx.send.text("Target bukan anggota grup ini.");
+        return;
+      }
       await ctx.sock.groupParticipantsUpdate(ctx.chat.jid, [target], "remove");
       await ctx.sock.sendMessage(ctx.chat.jid, {
         text: `Anggota @${target.split("@")[0]} dikeluarkan dari grup.`,
