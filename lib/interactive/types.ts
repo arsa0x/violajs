@@ -66,6 +66,11 @@ export interface InteractiveCopyCodeOptions extends InteractiveActionBaseOptions
   code: string;
 }
 
+export interface InteractiveLocationRequestOptions extends InteractiveActionBaseOptions {
+  /** Button label shown when asking the recipient to share their location. */
+  text: string;
+}
+
 export type InteractiveCarouselButton =
   | { type: "quick_reply"; text: string; id: string }
   | { type: "url"; text: string; url: string };
