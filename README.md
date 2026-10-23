@@ -242,6 +242,33 @@ Both methods quote the incoming message by default. Set `quoted: false` to send 
 
 Native-flow responses are parsed as JSON and only known response-ID fields are forwarded to the command parser; malformed or unrecognized payloads are ignored rather than treated as command text.
 
+
+### Carousel
+
+Send 2–10 image cards with one consistent button type (quick reply or URL) across all cards:
+
+```typescript
+await ctx.send.interactive.carousel({
+  body: "Browse these projects.",
+  cards: [
+    {
+      image: "https://example.com/project-one.jpg",
+      title: "Project One",
+      body: "A short description.",
+      button: { type: "quick_reply", text: "Details", id: ".project one" },
+    },
+    {
+      image: "https://example.com/project-two.jpg",
+      title: "Project Two",
+      body: "Another description.",
+      button: { type: "quick_reply", text: "Details", id: ".project two" },
+    },
+  ],
+});
+```
+
+Image URLs must be publicly reachable; Baileys uploads each image to WhatsApp before relaying the carousel. Use `.interactive carousel` to try the demo. Rendering depends on WhatsApp client/version, so test on both mobile and Web/Desktop.
+
 ---
 
 ## Contributing
