@@ -65,6 +65,25 @@ export default defineCommand({
       return;
     }
 
+    if (mode === "signup") {
+      await ctx.send.interactive.inAppSignup({
+        title: "In-app signup demo",
+        body: "Try the native in-app signup action.",
+        footer: "violajs · native-flow",
+      });
+      return;
+    }
+
+    if (mode === "media") {
+      await ctx.send.interactive.quickReply({
+        title: "Interactive media header",
+        body: "This message uses an image header.",
+        headerMedia: { type: "image", url: "https://picsum.photos/seed/violajs-interactive-header/800/500" },
+        buttons: [{ text: "Ping", id: ".ping" }],
+      });
+      return;
+    }
+
     if (mode === "location") {
       await ctx.send.interactive.requestLocation({
         title: "Location request",
