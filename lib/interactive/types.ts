@@ -108,15 +108,19 @@ export interface InteractiveCarouselCard {
   title: string;
   /** Optional card description. */
   body?: string;
-  /** Each card in a carousel must use the same button type. */
-  button: InteractiveCarouselButton;
+  /** Optional footer displayed on this card. */
+  footer?: string;
+  /** One or more native-flow buttons; button types may differ within a card. */
+  buttons: InteractiveCarouselButton[];
 }
 
 export interface InteractiveCarouselOptions {
   /** Required message text displayed above the carousel cards. */
   body: string;
-  /** Native interactive carousels require between 2 and 10 cards. */
+  /** Native interactive carousels require at least 2 cards. */
   cards: InteractiveCarouselCard[];
+  /** Optional footer displayed below the carousel message body. */
+  footer?: string;
   /** Whether to quote the incoming message. Defaults to true. */
   quoted?: boolean;
 }
