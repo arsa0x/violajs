@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { buildCarouselButton } from "../lib/interactive/carousel-button";
+import { buildCarouselButton, buildCarouselButtons } from "../lib/interactive/carousel-button";
 
 describe("buildCarouselButton", () => {
   test("serializes URL buttons with Rust-compatible defaults", () => {
@@ -42,3 +42,27 @@ describe("buildCarouselButton", () => {
     expect(() => buildCarouselButton({ type: "single_select", title: "Choose", sections: [] })).toThrow();
   });
 });
+
+describe("buildCarouselButtons", () => {
+  test("serializes multiple mixed button types for one card", () => {
+    const result = buildCarouselButtons([
+      { type: "quick_reply", text: "Details", id: ".details" },
+      { type: "url", text: "Open", url: "https://example.com" },
+      { type: "copy", text: "Copy", code: "PROMO" },
+    ], 2);
+
+    expect(result).toHaveLength(3);
+    expect(result.map((button) => button.name)).toEqual([
+      "quick_reply", "cta_url", "cta_copy",
+    ]);
+    expect(JSON.parse(result[1]!.buttonParamsJson)).toMatchObject({
+      merchant_url: "https://example.com",
+      webview_interaction: true,
+    });
+  });
+
+  test("rejects a carousel card with no buttons", () => {
+    expect(() => buildCarouselButtons([], 3)).toThrow("card 3");
+  });
+});
+
