@@ -441,7 +441,8 @@ export async function sendCarousel(
     options.cards.map(async (card, index) => {
       assertNonEmpty(card.title, `card ${index + 1} title`);
 
-      if (card.buttons.length === 0) {
+      const cardButtons = card.buttons ?? (card.button ? [card.button] : []);
+      if (cardButtons.length === 0) {
         throw new RangeError(`Carousel card ${index + 1} must contain at least one button.`);
       }
 
@@ -481,7 +482,7 @@ export async function sendCarousel(
         imageBuffer = Buffer.from(fallbackImage);
       }
 
-      const buttons = buildCarouselButtons(card.buttons, index + 1);
+      const buttons = buildCarouselButtons(cardButtons, index + 1);
       const media = await prepareWAMessageMedia(
         {
           image: imageBuffer,
@@ -505,8 +506,9 @@ export async function sendCarousel(
             ? `${card.title}\n${card.body.trim()}`
             : card.title,
         },
+        ...(card.footer ? { footer: { text: card.footer } } : {}),
         nativeFlowMessage: {
-          buttons: [button],
+          buttons,
           messageParamsJson: "",
         },
       };
