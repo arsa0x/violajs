@@ -31,8 +31,13 @@ async function buildHeader(
   if (!media) return { ...(title ? { title } : {}), hasMediaAttachment: false };
   assertNonEmpty(media.url, "header media URL");
   let parsedUrl: URL;
-  try { parsedUrl = new URL(media.url); }
-  catch { throw new TypeError("Interactive header media URL must be a valid absolute URL."); }
+  try {
+    parsedUrl = new URL(media.url);
+  } catch {
+    throw new TypeError(
+      "Interactive header media URL must be a valid absolute URL.",
+    );
+  }
   if (parsedUrl.protocol !== "https:" && parsedUrl.protocol !== "http:") {
     throw new TypeError("Interactive header media URL must use http or https.");
   }
@@ -41,15 +46,25 @@ async function buildHeader(
       { image: { url: parsedUrl.toString() } },
       { upload: sock.waUploadToServer },
     );
-    if (!prepared.imageMessage) throw new Error("Baileys failed to prepare interactive header image.");
-    return { ...(title ? { title } : {}), imageMessage: prepared.imageMessage, hasMediaAttachment: true };
+    if (!prepared.imageMessage)
+      throw new Error("Baileys failed to prepare interactive header image.");
+    return {
+      ...(title ? { title } : {}),
+      imageMessage: prepared.imageMessage,
+      hasMediaAttachment: true,
+    };
   }
   const prepared = await prepareWAMessageMedia(
     { video: { url: parsedUrl.toString() } },
     { upload: sock.waUploadToServer },
   );
-  if (!prepared.videoMessage) throw new Error("Baileys failed to prepare interactive header video.");
-  return { ...(title ? { title } : {}), videoMessage: prepared.videoMessage, hasMediaAttachment: true };
+  if (!prepared.videoMessage)
+    throw new Error("Baileys failed to prepare interactive header video.");
+  return {
+    ...(title ? { title } : {}),
+    videoMessage: prepared.videoMessage,
+    hasMediaAttachment: true,
+  };
 }
 
 /**
@@ -68,7 +83,9 @@ export async function sendNativeFlow(
 ): Promise<void> {
   const userJid = sock.user?.id;
   if (!userJid) {
-    throw new Error("Cannot send an interactive message before WhatsApp is connected.");
+    throw new Error(
+      "Cannot send an interactive message before WhatsApp is connected.",
+    );
   }
 
   const generated = generateWAMessageFromContent(
@@ -131,7 +148,9 @@ export async function sendQuickReply(
   assertNonEmpty(options.body, "body");
 
   if (options.buttons.length < 1 || options.buttons.length > 3) {
-    throw new RangeError("Quick-reply messages must contain between 1 and 3 buttons.");
+    throw new RangeError(
+      "Quick-reply messages must contain between 1 and 3 buttons.",
+    );
   }
 
   for (const button of options.buttons) {
@@ -172,12 +191,16 @@ export async function sendSingleSelect(
   assertNonEmpty(options.selectLabel ?? "Choose", "select label");
 
   if (options.sections.length === 0) {
-    throw new RangeError("Single-select messages must contain at least one section.");
+    throw new RangeError(
+      "Single-select messages must contain at least one section.",
+    );
   }
 
   for (const section of options.sections) {
     if (section.rows.length === 0) {
-      throw new RangeError("Single-select sections must contain at least one row.");
+      throw new RangeError(
+        "Single-select sections must contain at least one row.",
+      );
     }
 
     for (const row of section.rows) {
@@ -246,14 +269,18 @@ export async function sendUrlButton(
       ...(options.footer ? { footer: { text: options.footer } } : {}),
       header: await buildHeader(sock, options.title, options.headerMedia),
       nativeFlowMessage: {
-        buttons: [{
-          name: "cta_url",
-          buttonParamsJson: JSON.stringify({
-            display_text: options.text,
-            url: parsedUrl.toString(),
-            ...(options.merchantUrl ? { merchant_url: options.merchantUrl } : {}),
-          }),
-        }],
+        buttons: [
+          {
+            name: "cta_url",
+            buttonParamsJson: JSON.stringify({
+              display_text: options.text,
+              url: parsedUrl.toString(),
+              ...(options.merchantUrl
+                ? { merchant_url: options.merchantUrl }
+                : {}),
+            }),
+          },
+        ],
       },
     },
     options.quoted ?? true,
@@ -271,7 +298,9 @@ export async function sendCallButton(
   assertNonEmpty(options.text, "call button text");
   assertNonEmpty(options.phoneNumber, "phone number");
   if (!/^\+?[0-9][0-9 ()-]{3,19}$/.test(options.phoneNumber)) {
-    throw new TypeError("Phone number must contain a valid international-style number.");
+    throw new TypeError(
+      "Phone number must contain a valid international-style number.",
+    );
   }
 
   await sendNativeFlow(
@@ -283,13 +312,15 @@ export async function sendCallButton(
       ...(options.footer ? { footer: { text: options.footer } } : {}),
       header: await buildHeader(sock, options.title, options.headerMedia),
       nativeFlowMessage: {
-        buttons: [{
-          name: "cta_call",
-          buttonParamsJson: JSON.stringify({
-            display_text: options.text,
-            phone_number: options.phoneNumber,
-          }),
-        }],
+        buttons: [
+          {
+            name: "cta_call",
+            buttonParamsJson: JSON.stringify({
+              display_text: options.text,
+              phone_number: options.phoneNumber,
+            }),
+          },
+        ],
       },
     },
     options.quoted ?? true,
@@ -316,19 +347,20 @@ export async function sendCopyCode(
       ...(options.footer ? { footer: { text: options.footer } } : {}),
       header: await buildHeader(sock, options.title, options.headerMedia),
       nativeFlowMessage: {
-        buttons: [{
-          name: "cta_copy",
-          buttonParamsJson: JSON.stringify({
-            display_text: options.text,
-            copy_code: options.code,
-          }),
-        }],
+        buttons: [
+          {
+            name: "cta_copy",
+            buttonParamsJson: JSON.stringify({
+              display_text: options.text,
+              copy_code: options.code,
+            }),
+          },
+        ],
       },
     },
     options.quoted ?? true,
   );
 }
-
 
 /** Sends an in-app signup native-flow button. Client/account support may vary. */
 export async function sendInAppSignup(
@@ -339,12 +371,18 @@ export async function sendInAppSignup(
 ): Promise<void> {
   assertNonEmpty(options.body, "body");
   await sendNativeFlow(
-    sock, jid, quotedMessage,
+    sock,
+    jid,
+    quotedMessage,
     {
       body: { text: options.body },
       ...(options.footer ? { footer: { text: options.footer } } : {}),
       header: await buildHeader(sock, options.title, options.headerMedia),
-      nativeFlowMessage: { buttons: [{ name: "inapp_signup", buttonParamsJson: JSON.stringify({}) }] },
+      nativeFlowMessage: {
+        buttons: [
+          { name: "inapp_signup", buttonParamsJson: JSON.stringify({}) },
+        ],
+      },
     },
     options.quoted ?? true,
   );
@@ -369,12 +407,14 @@ export async function sendLocationRequest(
       ...(options.footer ? { footer: { text: options.footer } } : {}),
       header: await buildHeader(sock, options.title, options.headerMedia),
       nativeFlowMessage: {
-        buttons: [{
-          name: "send_location",
-          buttonParamsJson: JSON.stringify({
-            display_text: options.text,
-          }),
-        }],
+        buttons: [
+          {
+            name: "send_location",
+            buttonParamsJson: JSON.stringify({
+              display_text: options.text,
+            }),
+          },
+        ],
       },
     },
     options.quoted ?? true,
@@ -390,8 +430,8 @@ export async function sendCarousel(
 ): Promise<void> {
   assertNonEmpty(options.body, "body");
 
-  if (options.cards.length < 2 || options.cards.length > 10) {
-    throw new RangeError("Carousel messages must contain between 2 and 10 cards.");
+  if (options.cards.length < 2) {
+    throw new RangeError("Carousel messages must contain at least 2 cards.");
   }
 
   const buttonType = options.cards[0]?.button.type;
@@ -399,46 +439,85 @@ export async function sendCarousel(
     throw new TypeError("Every carousel card must have a button.");
   }
 
-  const cards = await Promise.all(options.cards.map(async (card, index) => {
-    assertNonEmpty(card.image, `card ${index + 1} image URL`);
-    assertNonEmpty(card.title, `card ${index + 1} title`);
+  const fallbackImage = await Bun.file("assets/banner.png").arrayBuffer();
 
-    if (card.button.type !== buttonType) {
-      throw new TypeError("All carousel cards must use the same button type.");
-    }
+  const cards = await Promise.all(
+    options.cards.map(async (card, index) => {
+      assertNonEmpty(card.title, `card ${index + 1} title`);
 
-    let imageUrl: URL;
-    try {
-      imageUrl = new URL(card.image);
-    } catch {
-      throw new TypeError(`Carousel card ${index + 1} image URL must be a valid absolute URL.`);
-    }
-    if (imageUrl.protocol !== "https:" && imageUrl.protocol !== "http:") {
-      throw new TypeError("Carousel image URLs must use http or https.");
-    }
+      if (card.button.type !== buttonType) {
+        throw new TypeError(
+          "All carousel cards must use the same button type.",
+        );
+      }
 
-    const button = buildCarouselButton(card.button, index + 1);
-    const media = await prepareWAMessageMedia(
-      { image: { url: imageUrl.toString() } },
-      { upload: sock.waUploadToServer },
-    );
+      let imageBuffer: Buffer;
 
-    if (!media.imageMessage) {
-      throw new Error(`Baileys failed to prepare image for carousel card ${index + 1}.`);
-    }
+      try {
+        if (typeof card.image !== "string" || !card.image.trim()) {
+          throw new TypeError("Image URL is empty.");
+        }
 
-    return {
-      header: {
-        imageMessage: media.imageMessage,
-        hasMediaAttachment: true,
-      },
-      body: { text: card.body?.trim() ? `${card.title}\n${card.body.trim()}` : card.title },
-      nativeFlowMessage: {
-        buttons: [button],
-        messageParamsJson: "",
-      },
-    };
-  }));
+        const imageUrl = new URL(card.image);
+
+        if (imageUrl.protocol !== "https:" && imageUrl.protocol !== "http:") {
+          throw new TypeError("Unsupported image URL protocol.");
+        }
+
+        const response = await fetch(imageUrl, {
+          signal: AbortSignal.timeout(10_000),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Image request failed: HTTP ${response.status}`);
+        }
+
+        const contentType = response.headers.get("content-type");
+
+        if (!contentType?.startsWith("image/")) {
+          throw new Error("URL did not return an image.");
+        }
+
+        imageBuffer = Buffer.from(await response.arrayBuffer());
+
+        if (imageBuffer.length === 0) {
+          throw new Error("Image response is empty.");
+        }
+      } catch (_) {
+        imageBuffer = Buffer.from(fallbackImage);
+      }
+
+      const button = buildCarouselButton(card.button, index + 1);
+      const media = await prepareWAMessageMedia(
+        {
+          image: imageBuffer,
+        },
+        { upload: sock.waUploadToServer },
+      );
+
+      if (!media.imageMessage) {
+        throw new Error(
+          `Baileys failed to prepare image for carousel card ${index + 1}.`,
+        );
+      }
+
+      return {
+        header: {
+          imageMessage: media.imageMessage,
+          hasMediaAttachment: true,
+        },
+        body: {
+          text: card.body?.trim()
+            ? `${card.title}\n${card.body.trim()}`
+            : card.title,
+        },
+        nativeFlowMessage: {
+          buttons: [button],
+          messageParamsJson: "",
+        },
+      };
+    }),
+  );
   await sendNativeFlow(
     sock,
     jid,
