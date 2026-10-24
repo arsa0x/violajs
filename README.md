@@ -1,3 +1,5 @@
+<img src="assets/banner.png"/>
+
 # violajs
 
 A simple WhatsApp bot built with [Baileys](https://github.com/WhiskeySockets/Baileys) and powered by the [Bun](https://bun.sh/) runtime.
@@ -200,7 +202,6 @@ export default defineCommand({
 
 The example uses `groupOnly()` to restrict the command to group chats and `cooldown(100000)` to apply a cooldown of 100,000 milliseconds (100 seconds).
 
-
 ## Interactive Messages
 
 The sender exposes native-flow quick replies and single-select lists through `ctx.send.interactive`. Button and row IDs can be command strings, so a tap reuses the existing parser, middleware, and dispatcher.
@@ -230,7 +231,11 @@ await ctx.send.interactive.singleSelect({
     {
       title: "General",
       rows: [
-        { title: "Ping", description: "Check whether the bot is online", id: ".ping" },
+        {
+          title: "Ping",
+          description: "Check whether the bot is online",
+          id: ".ping",
+        },
         { title: "Interactive demo", id: ".interactive" },
       ],
     },
@@ -279,7 +284,6 @@ await ctx.send.interactive.requestLocation({
 All methods quote the incoming message by default. Set `quoted: false` to send without a quoted message. Quick replies support 1–3 buttons, and single-select requires at least one section with at least one row. The built-in `.interactive` command demonstrates the variants.
 
 Native-flow responses are parsed as JSON and only known response-ID fields are forwarded to the command parser; malformed or unrecognized payloads are ignored rather than treated as command text.
-
 
 ### Carousel
 
