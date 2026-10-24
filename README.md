@@ -287,29 +287,35 @@ Native-flow responses are parsed as JSON and only known response-ID fields are f
 
 ### Carousel
 
-Send 2–10 image cards with one consistent button type (quick reply, URL, call, copy-code, or single-select) across all cards:
+Send a carousel with at least 2 image cards, an optional message footer, an optional footer per card, and one or more buttons per card. Button types can be mixed, matching the Rust carousel builder:
 
 ```typescript
 await ctx.send.interactive.carousel({
   body: "Browse these projects.",
+  footer: "Project carousel footer",
   cards: [
     {
       image: "https://example.com/project-one.jpg",
       title: "Project One",
       body: "A short description.",
-      button: { type: "quick_reply", text: "Details", id: ".project one" },
+      footer: "First card footer",
+      buttons: [
+        { type: "quick_reply", text: "Details", id: ".project one" },
+        { type: "url", text: "Open project", url: "https://example.com/project-one" },
+      ],
     },
     {
       image: "https://example.com/project-two.jpg",
       title: "Project Two",
       body: "Another description.",
-      button: { type: "quick_reply", text: "Details", id: ".project two" },
+      footer: "Second card footer",
+      buttons: [{ type: "quick_reply", text: "Details", id: ".project two" }],
     },
   ],
 });
 ```
 
-URL cards default `merchantUrl` to the destination URL and enable `webviewInteraction` to match the Rust implementation. Copy-code cards default their ID to the copied code. Image URLs must be publicly reachable; Baileys uploads each image to WhatsApp before relaying the carousel. Use `.interactive carousel` to try the demo. Rendering depends on WhatsApp client/version, so test on both mobile and Web/Desktop.
+URL buttons default `merchantUrl` to the destination URL and enable `webviewInteraction` to match the Rust implementation. Copy-code buttons default their ID to the copied code. The legacy singular `button` property still works; prefer `buttons: []` for new code. Image URLs must be publicly reachable; Baileys uploads each image to WhatsApp before relaying the carousel. Use `.interactive carousel` to try the demo. Rendering depends on WhatsApp client/version, so test on both mobile and Web/Desktop.
 
 ---
 

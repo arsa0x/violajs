@@ -58,3 +58,14 @@ export function buildCarouselButton(button: InteractiveCarouselButton, cardNumbe
       }) };
   }
 }
+
+/** Serialize all buttons for one carousel card. Rust's builder allows mixed button variants. */
+export function buildCarouselButtons(
+  buttons: InteractiveCarouselButton[],
+  cardNumber = 1,
+): SerializedCarouselButton[] {
+  if (buttons.length === 0) {
+    throw new RangeError(`Carousel card ${cardNumber} must contain at least one button.`);
+  }
+  return buttons.map((button) => buildCarouselButton(button, cardNumber));
+}

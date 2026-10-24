@@ -4,7 +4,7 @@ import {
   type WAMessage,
   type WASocket,
 } from "baileys";
-import { buildCarouselButton } from "./carousel-button";
+import { buildCarouselButtons } from "./carousel-button";
 import type {
   InteractiveCallButtonOptions,
   InteractiveCarouselOptions,
@@ -434,10 +434,6 @@ export async function sendCarousel(
     throw new RangeError("Carousel messages must contain at least 2 cards.");
   }
 
-  const buttonType = options.cards[0]?.button.type;
-  if (!buttonType) {
-    throw new TypeError("Every carousel card must have a button.");
-  }
 
   const fallbackImage = await Bun.file("assets/banner.png").arrayBuffer();
 
@@ -445,10 +441,9 @@ export async function sendCarousel(
     options.cards.map(async (card, index) => {
       assertNonEmpty(card.title, `card ${index + 1} title`);
 
-      if (card.button.type !== buttonType) {
-        throw new TypeError(
-          "All carousel cards must use the same button type.",
-        );
+      const cardButtons = card.buttons ?? (card.button ? [card.button] : []);
+      if (cardButtons.length === 0) {
+        throw new RangeError(`Carousel card ${index + 1} must contain at least one button.`);
       }
 
       let imageBuffer: Buffer;
@@ -487,7 +482,7 @@ export async function sendCarousel(
         imageBuffer = Buffer.from(fallbackImage);
       }
 
-      const button = buildCarouselButton(card.button, index + 1);
+      const buttons = buildCarouselButtons(cardButtons, index + 1);
       const media = await prepareWAMessageMedia(
         {
           image: imageBuffer,
@@ -511,8 +506,9 @@ export async function sendCarousel(
             ? `${card.title}\n${card.body.trim()}`
             : card.title,
         },
+        ...(card.footer ? { footer: { text: card.footer } } : {}),
         nativeFlowMessage: {
-          buttons: [button],
+          buttons,
           messageParamsJson: "",
         },
       };
@@ -524,6 +520,7 @@ export async function sendCarousel(
     quotedMessage,
     {
       body: { text: options.body },
+      ...(options.footer ? { footer: { text: options.footer } } : {}),
       carouselMessage: { cards },
     },
     options.quoted ?? true,

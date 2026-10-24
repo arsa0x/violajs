@@ -122,25 +122,31 @@ These methods construct WhatsApp native-flow messages through Baileys' relay API
 
 ## Carousel
 
-A native carousel contains 2–10 image cards. Every card must use the same button type, with one button per card. Image URLs must be publicly reachable so Baileys can download and upload each image to WhatsApp. Supported variants mirror the Rust implementation: quick reply, URL, call, copy-code, and single-select.
+A native carousel contains at least 2 image cards. The message can have a top-level `footer`, and each card can have its own `footer`. Each card accepts a `buttons` array with one or more native-flow buttons; button types can be mixed within a card, matching the Rust `CarouselCard::buttons(...)` builder. Supported variants are quick reply, URL, call, copy-code, and single-select. Image URLs must be publicly reachable so Baileys can download and upload each image to WhatsApp.
 
 ### Quick-reply cards
 
 ```ts
 await ctx.send.interactive.carousel({
   body: "Browse these projects.",
+  footer: "Project carousel footer",
   cards: [
     {
       image: "https://example.com/project-one.jpg",
       title: "Project One",
       body: "A short project description.",
-      button: { type: "quick_reply", text: "Details", id: ".project one" },
+      footer: "First card footer",
+      buttons: [
+        { type: "quick_reply", text: "Details", id: ".project one" },
+        { type: "url", text: "Open project", url: "https://example.com/project-one" },
+      ],
     },
     {
       image: "https://example.com/project-two.jpg",
       title: "Project Two",
       body: "Another short description.",
-      button: { type: "quick_reply", text: "Details", id: ".project two" },
+      footer: "Second card footer",
+      buttons: [{ type: "quick_reply", text: "Details", id: ".project two" }],
     },
   ],
 });
@@ -148,7 +154,7 @@ await ctx.send.interactive.carousel({
 
 ### URL cards
 
-Use the same button type for every card:
+Each card can use one or more buttons, and button types do not need to match:
 
 ```ts
 await ctx.send.interactive.carousel({
@@ -157,18 +163,18 @@ await ctx.send.interactive.carousel({
     {
       image: "https://example.com/one.jpg",
       title: "First link",
-      button: { type: "url", text: "Open", url: "https://example.com/one" },
+      buttons: [{ type: "url", text: "Open", url: "https://example.com/one" }],
     },
     {
       image: "https://example.com/two.jpg",
       title: "Second link",
-      button: { type: "url", text: "Open", url: "https://example.com/two" },
+      buttons: [{ type: "url", text: "Open", url: "https://example.com/two" }],
     },
   ],
 });
 ```
 
-URL cards accept optional `merchantUrl` and `webviewInteraction` (default `true`); copy-code cards accept an optional `id` that defaults to the copied code. Single-select cards use `button: { type: "single_select", title, sections }`. All cards must use the same variant.
+URL buttons accept optional `merchantUrl` and `webviewInteraction` (default `true`); copy-code buttons accept an optional `id` that defaults to the copied code. Single-select buttons use `{ type: "single_select", title, sections }`. The previous singular `button` property remains supported for backward compatibility; new code should use `buttons`.
 
 The carousel is built with Baileys' native `carouselMessage` structure. Native carousel rendering is client/version-dependent, so verify delivery and card actions on both WhatsApp mobile and Web/Desktop. Try the demo variants with `.interactive carousel`, `.interactive carousel-url`, `.interactive carousel-call`, `.interactive carousel-copy`, and `.interactive carousel-list`. `.interactive signup` tests `inapp_signup`, while `.interactive media` tests an image header.
 

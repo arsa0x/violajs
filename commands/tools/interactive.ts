@@ -47,18 +47,24 @@ export default defineCommand({
     if (mode === "carousel") {
       await ctx.send.interactive.carousel({
         body: "Browse the violajs demo cards.",
+        footer: "violajs · carousel footer",
         cards: [
           {
             image: "https://picsum.photos/seed/violajs-card-one/640/480",
             title: "Quick reply card",
-            body: "Tap to run ping.",
-            button: { type: "quick_reply", text: "Ping", id: ".ping" },
+            body: "Tap a button to run ping or open the project.",
+            footer: "Card footer example",
+            buttons: [
+              { type: "quick_reply", text: "Ping", id: ".ping" },
+              { type: "url", text: "Open project", url: "https://github.com/arsa0x/violajs" },
+            ],
           },
           {
             image: "https://picsum.photos/seed/violajs-card-two/640/480",
             title: "Quick reply card 2",
             body: "Open the URL-button demo.",
-            button: { type: "quick_reply", text: "Open project", id: ".interactive url" },
+            footer: "A card can have its own footer.",
+            buttons: [{ type: "quick_reply", text: "Open demo", id: ".interactive url" }],
           },
         ],
       });
