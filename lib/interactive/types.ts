@@ -95,7 +95,11 @@ export type InteractiveCarouselButton =
     }
   | { type: "call"; text: string; phoneNumber: string }
   | { type: "copy"; text: string; code: string; id?: string }
-  | { type: "single_select"; title: string; sections: InteractiveSelectSection[] };
+  | {
+      type: "single_select";
+      title: string;
+      sections: InteractiveSelectSection[];
+    };
 
 export interface InteractiveCarouselCard {
   /** Publicly reachable image URL. The image is uploaded to WhatsApp before sending. */
