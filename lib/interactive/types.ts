@@ -111,7 +111,9 @@ export interface InteractiveCarouselCard {
   /** Optional footer displayed on this card. */
   footer?: string;
   /** One or more native-flow buttons; button types may differ within a card. */
-  buttons: InteractiveCarouselButton[];
+  buttons?: InteractiveCarouselButton[];
+  /** @deprecated Use buttons. Kept for compatibility with the previous API. */
+  button?: InteractiveCarouselButton;
 }
 
 export interface InteractiveCarouselOptions {
