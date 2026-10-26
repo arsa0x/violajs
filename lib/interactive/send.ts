@@ -17,6 +17,8 @@ import type {
   InteractiveUrlButtonOptions,
 } from "./types";
 
+const fallbackImage = await Bun.file("assets/banner.png").arrayBuffer();
+
 function assertNonEmpty(value: string, name: string): void {
   if (!value.trim()) {
     throw new TypeError(`Interactive message ${name} cannot be empty.`);
@@ -28,40 +30,66 @@ async function buildHeader(
   title: string | undefined,
   media: InteractiveHeaderMedia | undefined,
 ): Promise<Record<string, unknown>> {
-  if (!media) return { ...(title ? { title } : {}), hasMediaAttachment: false };
-  assertNonEmpty(media.url, "header media URL");
-  let parsedUrl: URL;
-  try {
-    parsedUrl = new URL(media.url);
-  } catch {
-    throw new TypeError(
-      "Interactive header media URL must be a valid absolute URL.",
-    );
-  }
-  if (parsedUrl.protocol !== "https:" && parsedUrl.protocol !== "http:") {
-    throw new TypeError("Interactive header media URL must use http or https.");
-  }
-  if (media.type === "image") {
-    const prepared = await prepareWAMessageMedia(
-      { image: { url: parsedUrl.toString() } },
-      { upload: sock.waUploadToServer },
-    );
-    if (!prepared.imageMessage)
-      throw new Error("Baileys failed to prepare interactive header image.");
+  const headerTitle = title ? { title } : {};
+
+  if (!media) {
     return {
-      ...(title ? { title } : {}),
+      ...headerTitle,
+      hasMediaAttachment: false,
+    };
+  }
+
+  let mediaBytes: Buffer;
+  let mediaType = media.type;
+
+  try {
+    assertNonEmpty(media.url, "header media URL");
+
+    const url = new URL(media.url);
+
+    if (url.protocol !== "https:" && url.protocol !== "http:") {
+      throw new TypeError(
+        "Interactive header media URL must use http or https.",
+      );
+    }
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch header media: HTTP ${response.status}.`);
+    }
+
+    mediaBytes = Buffer.from(await response.arrayBuffer());
+  } catch (error) {
+    mediaBytes = Buffer.from(fallbackImage);
+    mediaType = "image";
+  }
+
+  const prepared = await prepareWAMessageMedia(
+    mediaType === "image" ? { image: mediaBytes } : { video: mediaBytes },
+    {
+      upload: sock.waUploadToServer,
+    },
+  );
+
+  if (mediaType === "image") {
+    if (!prepared.imageMessage) {
+      throw new Error("Baileys failed to prepare interactive header image.");
+    }
+
+    return {
+      ...headerTitle,
       imageMessage: prepared.imageMessage,
       hasMediaAttachment: true,
     };
   }
-  const prepared = await prepareWAMessageMedia(
-    { video: { url: parsedUrl.toString() } },
-    { upload: sock.waUploadToServer },
-  );
-  if (!prepared.videoMessage)
+
+  if (!prepared.videoMessage) {
     throw new Error("Baileys failed to prepare interactive header video.");
+  }
+
   return {
-    ...(title ? { title } : {}),
+    ...headerTitle,
     videoMessage: prepared.videoMessage,
     hasMediaAttachment: true,
   };
@@ -434,16 +462,15 @@ export async function sendCarousel(
     throw new RangeError("Carousel messages must contain at least 2 cards.");
   }
 
-
-  const fallbackImage = await Bun.file("assets/banner.png").arrayBuffer();
-
   const cards = await Promise.all(
     options.cards.map(async (card, index) => {
       assertNonEmpty(card.title, `card ${index + 1} title`);
 
       const cardButtons = card.buttons ?? (card.button ? [card.button] : []);
       if (cardButtons.length === 0) {
-        throw new RangeError(`Carousel card ${index + 1} must contain at least one button.`);
+        throw new RangeError(
+          `Carousel card ${index + 1} must contain at least one button.`,
+        );
       }
 
       let imageBuffer: Buffer;
