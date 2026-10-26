@@ -1,6 +1,6 @@
-
 import type { Context } from "@core/context";
 import type { Middleware } from "./middleware";
+import type { FlagSpec } from "@lib/args";
 
 export type Category =
   | "tools"
@@ -17,5 +17,6 @@ export type Command = {
   aliases?: string[];
   category?: Category;
   middleware?: Middleware[];
+  flags?: FlagSpec[];
   execute: (ctx: Context) => Promise<void>;
 };
