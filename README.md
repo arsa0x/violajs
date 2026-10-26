@@ -207,7 +207,7 @@ The example uses `groupOnly()` to restrict the command to group chats and `coold
 ## Documentations
 
 - [Interactive Messages](docs/interactive-messages.md) — Documentation for interactive WhatsApp messages, including carousels, buttons, and footers.
-- [Argument Parser (`Args`)](docs/args.md) — Documentation for flag definitions, argument parsing, supported flag types, and accessing parsed arguments.
+- [Argument Parser (`Args`)](docs/argument-parser.md) — Documentation for flag definitions, argument parsing, supported flag types, and accessing parsed arguments.
 
 ---
 
