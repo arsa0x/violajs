@@ -74,7 +74,7 @@ export class Nekopoi {
 type PageReuslt<type> = {
   total: number;
   totalPages: number;
-  result: type[];
+  result?: type[];
 };
 
 type SearchResult = {
