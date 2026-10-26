@@ -5,32 +5,31 @@ import { config } from "config";
 
 export default defineCommand({
   name: "nekopoi",
-  aliases: ["neko", "knp"],
+  aliases: ["neko"],
+  flags: [
+    FlagSpec.value(["--search", "-s"]).description(
+      "Search hentai by query, e.g. .nekopoi -s enjo kouhai",
+    ),
+    FlagSpec.value(["--page", "-p"]).description(
+      "Usage: .nekopoi -g milf -p 2",
+    ),
+    FlagSpec.value(["--id", "-d"]).description(
+      "Get hentai by id, e.g. .nekopoi -i <id>",
+    ),
+    // biar gk lupa
+    // "post" = per episode
+    // "hentai" = kumpulan episode
+    FlagSpec.bool("--post").description("Usage: .nekopoi -i <id> --post"),
+  ],
   execute: async (ctx): Promise<void> => {
-    const args = Args.parse(ctx.args, [
-      FlagSpec.value(["--search", "-s"]).description(
-        "Search hentai by query, e.g. .nekopoi -s enjo kouhai",
-      ),
-      FlagSpec.value(["--page", "-p"]).description(
-        "Usage: .nekopoi -g milf -p 2",
-      ),
-      FlagSpec.value(["--id", "-d"]).description(
-        "Get hentai by id, e.g. .nekopoi -i <id>",
-      ),
-      // biar gk lupa
-      // "post" = per episode
-      // "hentai" = kumpulan episode
-      FlagSpec.value("--post").description("Usage: .nekopoi -i <id> --post"),
-    ]);
-
     const nekopoi = new Nekopoi(config);
 
-    if (args.has("--id")) {
+    if (ctx.args?.has("--id")) {
       ctx.log.info("TO DO");
     }
-    if (args.has("--search")) {
-      const searchQuery = args.value("--search");
-      const page = parseInt(args.value("--page") ?? "0", 10);
+    if (ctx.args?.has("--search")) {
+      const searchQuery = ctx.args.value("--search");
+      const page = parseInt(ctx.args.value("--page") ?? "0", 10);
 
       if (!searchQuery) {
         ctx.log.error("Nekopoi search query is empty");
@@ -38,8 +37,17 @@ export default defineCommand({
       }
       const nekopoiSearch = await nekopoi.search(searchQuery, page);
 
+      if (!nekopoiSearch.result?.length) {
+        await ctx.send.interactive.inAppSignup({
+          body: `Nekopoi Search Result\nSearch query: ${searchQuery}`,
+          footer: "Nekopoi",
+          title: "Failed to found hentai",
+        });
+        return;
+      }
+
       await ctx.send.interactive.carousel({
-        body: "Nekopoi Search Result",
+        body: `Nekopoi Search Result\nSearch query: ${searchQuery}`,
         cards: nekopoiSearch.result.map((res) => ({
           image: res.image,
           title: res.title,
