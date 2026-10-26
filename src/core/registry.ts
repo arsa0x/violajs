@@ -8,6 +8,18 @@ export class CommandRegistry {
     const name = command.name.trim().toLowerCase();
     if (!name) throw new Error("Command name cannot be empty");
 
+    const reservedFlags = new Set(["--help", "-h"]);
+
+    for (const flag of command.flags ?? []) {
+      for (const flagName of flag.names) {
+        if (reservedFlags.has(flagName)) {
+          throw new Error(
+            `Flag "${flagName}" is reserved for built-in command help.`,
+          );
+        }
+      }
+    }
+
     this.assertAvailable(name);
     this.lookup.set(name, command);
     this.canonical.set(name, command);
