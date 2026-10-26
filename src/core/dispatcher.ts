@@ -23,7 +23,11 @@ export class CommandDispatcher {
 
     if (ctx.args.flag("--help")) {
       await runMiddleware(this.globalMiddleware, ctx, async () => {
-        await ctx.send.text(generateCommandHelp(command));
+        const name = command.name;
+        await ctx.send.interactive.inAppSignup({
+          title: name.charAt(0).toUpperCase() + name.slice(1),
+          body: generateCommandHelp(command),
+        });
       });
       return;
     }
