@@ -13,7 +13,7 @@ export default defineCommand({
     FlagSpec.value(["--page", "-p"]).description(
       "Usage: .nekopoi -g milf -p 2",
     ),
-    FlagSpec.value(["--id", "-d"]).description(
+    FlagSpec.value(["--id", "-i"]).description(
       "Get hentai by id, e.g. .nekopoi -i <id>",
     ),
     // biar gk lupa
