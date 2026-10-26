@@ -16,6 +16,7 @@ export type Command = {
   name: string;
   aliases?: string[];
   category?: Category;
+  description?: string;
   middleware?: Middleware[];
   flags?: FlagSpec[];
   execute: (ctx: Context) => Promise<void>;
