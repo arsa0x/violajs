@@ -4,7 +4,7 @@ import type { FlagSpec } from "@lib/args";
 const HELP_NAMES = ["-h", "--help"] as const;
 
 function formatFlag(flag: FlagSpec): string {
-  const names = [...flag.names].join(", ");
+  const names = [...flag.names].map((n) => `\`\`\`${n}\`\`\``).join(", ");
 
   const argument =
     flag.kind === "bool"
@@ -17,23 +17,22 @@ function formatFlag(flag: FlagSpec): string {
 
   const description = flag.getDescription();
 
-  return [`  ${names}${argument}`, description ? ` — ${description}` : ""].join(
-    "",
-  );
+  return [
+    `\n  ${names}${argument}\n> `,
+    description ? `${description}` : "",
+  ].join("");
 }
 
 export function generateCommandHelp(command: Command): string {
   const lines = [
-    `*Command: ${command.name}*`,
-    "",
-    `*Description:* ${command.description ?? "No description provided."}`,
+    `*Description:* ${command.description ?? "-"}`,
     `*Aliases:* ${
       command.aliases?.length ? command.aliases.join(", ") : "None"
     }`,
-    `*Category:* ${command.category ?? "Uncategorized"}`,
+    `*Category:* ${command.category ?? "-"}`,
     "",
     "*Flags:*",
-    `  ${HELP_NAMES.join(", ")} — Show this help message.`,
+    `  ${HELP_NAMES.map((n) => `\`\`\`${n}\`\`\``).join(", ")}\n> Show this help message.`,
   ];
 
   for (const flag of command.flags ?? []) {
