@@ -229,7 +229,7 @@ The example uses `groupOnly()` to restrict the command to group chats and `coold
 
 - [Interactive Messages](docs/interactive-messages.md) — Documentation for interactive WhatsApp messages, including carousels, buttons, and footers.
 - [Argument Parser (`Args`)](docs/argument-parser.md) — Documentation for flag definitions, argument parsing, supported flag types, and accessing parsed arguments.
-- [Scraper Commands](docs/scraper-commands.md) — Downloader, web search, Spotify/YouTube metadata, and QR commands.
+- [Scraper Commands](docs/scraper-commands.md) — Downloader, web search, Spotify/YouTube metadata, Alight Motion preset lookup, and QR commands.
 
 ---
 
