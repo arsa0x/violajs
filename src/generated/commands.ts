@@ -11,9 +11,11 @@ import command_7 from "../../commands/group/open.ts";
 import command_8 from "../../commands/group/promote.ts";
 import command_9 from "../../commands/group/revokelink.ts";
 import command_10 from "../../commands/group/tagall.ts";
-import command_11 from "../../commands/tools/ouo.ts";
-import command_12 from "../../commands/tools/ping.js";
-import command_13 from "../../commands/tools/sticker.ts";
+import command_11 from "../../commands/nsfw/nekopoi.ts";
+import command_12 from "../../commands/tools/interactive.ts";
+import command_13 from "../../commands/tools/ouo.ts";
+import command_14 from "../../commands/tools/ping.js";
+import command_15 from "../../commands/tools/sticker.ts";
 
 export const commands = [
   command_0,
@@ -30,4 +32,6 @@ export const commands = [
   command_11,
   command_12,
   command_13,
+  command_14,
+  command_15,
 ];
