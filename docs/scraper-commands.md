@@ -17,6 +17,7 @@ All commands use native `fetch` and the existing Cheerio dependency where HTML p
 | Command | Aliases | Usage | Notes |
 | --- | --- | --- | --- |
 | `search` | `websearch`, `ddg` | `.search <query>` | Returns up to five results from DuckDuckGo HTML search. |
+| `amfinder` | `presetfind`, `ampf` | `.amfinder <TikTok video URL>` | Looks for Alight Motion presets linked to a public TikTok video. Depends on the AM Finder service and its session cookie. |
 | `spotify` | `spinfo`, `spotifyinfo` | `.spotify <Spotify URL>` | Reads public embed metadata; it does not download Spotify audio. |
 | `ytinfo` | `youtubeinfo`, `ytmeta` | `.ytinfo <YouTube video URL>` | Reads public YouTube oEmbed metadata; it does not download the video. |
 
