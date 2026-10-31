@@ -201,7 +201,7 @@ Pada contoh tersebut, `groupOnly()` membatasi penggunaan perintah hanya pada per
 
 ## Dokumentasi
 
-- [Perintah Scraper](docs/scraper-commands.md) — Downloader, pencarian web, metadata Spotify/YouTube, dan QR.
+- [Perintah Scraper](docs/scraper-commands.md) — Downloader, pencarian web, metadata Spotify/YouTube, pencarian preset Alight Motion, dan QR.
 
 ---
 
