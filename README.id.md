@@ -199,6 +199,12 @@ Pada contoh tersebut, `groupOnly()` membatasi penggunaan perintah hanya pada per
 
 ---
 
+## Dokumentasi
+
+- [Perintah Scraper](docs/scraper-commands.md) — Downloader, pencarian web, metadata Spotify/YouTube, pencarian preset Alight Motion, dan QR.
+
+---
+
 ## Kontribusi
 
 Kontribusi selalu terbuka bagi siapa saja! Anda dapat membantu dengan mengusulkan fitur baru, melaporkan bug, atau memperbaiki dokumentasi.
@@ -237,6 +243,7 @@ Violajs terinspirasi oleh ide, implementasi, dan proyek sumber terbuka dari komu
 ### Proyek
 
 - [**Rubby-MD**](https://github.com/KyuuX444/Rubby-MD) — Lisensi ISC. Digunakan untuk perintah manajemen grup WhatsApp dan lainnya.
+- [**KumpulanScraper**](https://github.com/XZEERH/KumpulanScraper) — Referensi ide fitur scraper; tidak ada berkas sumber yang disalin.
 
 ---
 

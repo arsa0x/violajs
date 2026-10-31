@@ -229,6 +229,7 @@ The example uses `groupOnly()` to restrict the command to group chats and `coold
 
 - [Interactive Messages](docs/interactive-messages.md) — Documentation for interactive WhatsApp messages, including carousels, buttons, and footers.
 - [Argument Parser (`Args`)](docs/argument-parser.md) — Documentation for flag definitions, argument parsing, supported flag types, and accessing parsed arguments.
+- [Scraper Commands](docs/scraper-commands.md) — Downloader, web search, Spotify/YouTube metadata, Alight Motion preset lookup, and QR commands.
 
 ---
 
@@ -270,6 +271,7 @@ Violajs is inspired by ideas, implementations, and open-source projects from the
 ### Projects
 
 - [**Rubby-MD**](https://github.com/KyuuX444/Rubby-MD) — ISC License. Referenced for WhatsApp group management commands and more.
+- [**KumpulanScraper**](https://github.com/XZEERH/KumpulanScraper) — Referenced for scraper feature ideas; no source files were copied.
 
 ---
 
