@@ -56,7 +56,7 @@ bun run start create --session session_name
 Alternatively, run the entry point directly:
 
 ```bash
-bun run index.ts create --session session_name
+bun index.ts create --session session_name
 ```
 
 Replace `session_name` with your desired session name.
@@ -68,13 +68,13 @@ If no session name is specified when running the bot, the default session is `de
 Start a specific session:
 
 ```bash
-bun run index.ts --session session_name
+bun index.ts --session session_name
 ```
 
 Or start the default session:
 
 ```bash
-bun run index.ts
+bun index.ts
 ```
 
 ### Run All Sessions
@@ -82,13 +82,13 @@ bun run index.ts
 To start all available sessions, use:
 
 ```bash
-bun run index.ts --all
+bun index.ts --all
 ```
 
 Alternatively, use the shorthand option:
 
 ```bash
-bun run index.ts -a
+bun index.ts -a
 ```
 
 ---
