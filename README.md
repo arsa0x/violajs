@@ -115,53 +115,74 @@ Once the build is complete, run the executable on Linux or macOS:
 
 ```bash
 violajs/
-├── commands/
-│   └── tools/
+├── assets
+│   └── banner.png
+├── bun.lock
+├── commands
+│   ├── group
+│   ├── nsfw
+│   └── tools
 ├── config.ts
+├── config.ts.example
+├── docs
 ├── index.ts
-├── lib/
-│   ├── interactive/
-│   │   ├── index.ts
-│   │   ├── response.ts
-│   │   ├── send.ts
-│   │   └── types.ts
-│   ├── logger.ts
-│   ├── qr/
-│   │   ├── index.ts
-│   │   ├── qr.c
-│   │   └── qr.h
-│   └── send.ts
+├── lib
+│   ├── args.ts
+│   ├── interactive
+│   │   ├── carousel-button.ts
+│   │   ├── index.ts
+│   │   ├── response.ts
+│   │   ├── send.ts
+│   │   └── types.ts
+│   ├── logger.ts
+│   ├── nekopoi.ts
+│   ├── qr.ts
+│   └── send.ts
+├── LICENSE
+├── package.json
 ├── production.ts
-├── sessions/
-├── src/
-│   ├── app.ts
-│   ├── build.ts
-│   ├── cli.ts
-│   ├── core/
-│   │   ├── command.ts
-│   │   ├── context.ts
-│   │   ├── dispatcher.ts
-│   │   ├── loader.ts
-│   │   ├── middleware.ts
-│   │   ├── parser.ts
-│   │   ├── registry.ts
-│   │   ├── socket.ts
-│   │   └── staticLoader.ts
-│   ├── generated/
-│   │   └── commands.ts
-│   ├── middlewares/
-│   │   ├── cooldown.ts
-│   │   ├── group.ts
-│   │   ├── logger.ts
-│   │   └── owner.ts
-│   ├── storage/
-│   │   ├── auth.ts
-│   │   └── cache.ts
-│   └── types/
-│       ├── command.ts
-│       ├── config.ts
-│       ├── middleware.ts
-│       └── mime.ts
+├── README.id.md
+├── README.md
+├── sessions
+│   └── default
+│       ├── auth.sqlite
+│       ├── auth.sqlite-shm
+│       └── auth.sqlite-wal
+├── src
+│   ├── app.ts
+│   ├── build.ts
+│   ├── cli.ts
+│   ├── core
+│   │   ├── command.ts
+│   │   ├── context.ts
+│   │   ├── dispatcher.ts
+│   │   ├── loader.ts
+│   │   ├── middleware.ts
+│   │   ├── parser.ts
+│   │   ├── registry.ts
+│   │   ├── socket.ts
+│   │   └── staticLoader.ts
+│   ├── generated
+│   │   └── commands.ts
+│   ├── middlewares
+│   │   ├── bot-admin.ts
+│   │   ├── cooldown.ts
+│   │   ├── group-admin.ts
+│   │   ├── group.ts
+│   │   ├── logger.ts
+│   │   └── owner.ts
+│   ├── storage
+│   │   ├── auth.ts
+│   │   └── cache.ts
+│   ├── types
+│   │   ├── command.ts
+│   │   ├── config.ts
+│   │   ├── middleware.ts
+│   │   └── mime.ts
+│   └── utils
+│       ├── command-help.ts
+│       └── group.ts
+├── tests
 └── tsconfig.json
 ```
 
