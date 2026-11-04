@@ -17,6 +17,9 @@ import type {
   InteractiveUrlButtonOptions,
 } from "./types";
 
+const FETCH_TIMEOUT_MS = 8_000;
+const MAX_MEDIA_BYTES = 5 * 1024 * 1024;
+
 const fallbackImage = await Bun.file("assets/banner.png").arrayBuffer();
 
 function assertNonEmpty(value: string, name: string): void {
@@ -25,58 +28,99 @@ function assertNonEmpty(value: string, name: string): void {
   }
 }
 
+async function fetchMedia(
+  rawUrl: string,
+  type: "image" | "video",
+): Promise<Buffer> {
+  assertNonEmpty(rawUrl, "header media URL");
+
+  const url = new URL(rawUrl);
+  if (url.protocol !== "https:" && url.protocol !== "http:") {
+    throw new TypeError("Interactive header media URL must use http or https.");
+  }
+
+  const response = await fetch(url, {
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+    headers: {
+      "User-Agent": "Mozilla/5.0 (compatible; my-bot/1.0)",
+      Accept: `${type}/*`,
+    },
+  });
+
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+  const contentType = response.headers.get("content-type") ?? "";
+  if (!contentType.startsWith(`${type}/`)) {
+    throw new Error(`Unexpected content-type "${contentType}"`);
+  }
+
+  const bytes = Buffer.from(await response.arrayBuffer());
+  if (bytes.length === 0) throw new Error("Empty body");
+  if (bytes.length > MAX_MEDIA_BYTES) throw new Error("Media too large");
+
+  return bytes;
+}
+
+async function mapLimit<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T, index: number) => Promise<R>,
+): Promise<R[]> {
+  const results = new Array<R>(items.length);
+  let next = 0;
+
+  await Promise.all(
+    Array.from({ length: Math.min(limit, items.length) }, async () => {
+      while (next < items.length) {
+        const i = next++;
+        results[i] = await fn(items[i]!, i);
+      }
+    }),
+  );
+
+  return results;
+}
+
+async function resolveMedia(
+  media: InteractiveHeaderMedia,
+): Promise<{ bytes: Buffer; type: "image" | "video"; usedFallback: boolean }> {
+  const candidates = [media.url, ...(media.fallbackUrls ?? [])];
+  const failures: string[] = [];
+
+  for (const candidate of candidates) {
+    try {
+      const bytes = await fetchMedia(candidate, media.type);
+      return { bytes, type: media.type, usedFallback: false };
+    } catch (error) {
+      failures.push(`${candidate} -> ${(error as Error).message}`);
+    }
+  }
+
+  return {
+    bytes: Buffer.from(fallbackImage),
+    type: "image",
+    usedFallback: true,
+  };
+}
+
 async function buildHeader(
   sock: WASocket,
   title: string | undefined,
   media: InteractiveHeaderMedia | undefined,
 ): Promise<Record<string, unknown>> {
   const headerTitle = title ? { title } : {};
+  if (!media) return { ...headerTitle, hasMediaAttachment: false };
 
-  if (!media) {
-    return {
-      ...headerTitle,
-      hasMediaAttachment: false,
-    };
-  }
-
-  let mediaBytes: Buffer;
-  let mediaType = media.type;
-
-  try {
-    assertNonEmpty(media.url, "header media URL");
-
-    const url = new URL(media.url);
-
-    if (url.protocol !== "https:" && url.protocol !== "http:") {
-      throw new TypeError(
-        "Interactive header media URL must use http or https.",
-      );
-    }
-
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch header media: HTTP ${response.status}.`);
-    }
-
-    mediaBytes = Buffer.from(await response.arrayBuffer());
-  } catch (error) {
-    mediaBytes = Buffer.from(fallbackImage);
-    mediaType = "image";
-  }
+  const { bytes, type } = await resolveMedia(media);
 
   const prepared = await prepareWAMessageMedia(
-    mediaType === "image" ? { image: mediaBytes } : { video: mediaBytes },
-    {
-      upload: sock.waUploadToServer,
-    },
+    type === "image" ? { image: bytes } : { video: bytes },
+    { upload: sock.waUploadToServer },
   );
 
-  if (mediaType === "image") {
-    if (!prepared.imageMessage) {
+  if (type === "image") {
+    if (!prepared.imageMessage)
       throw new Error("Baileys failed to prepare interactive header image.");
-    }
-
     return {
       ...headerTitle,
       imageMessage: prepared.imageMessage,
@@ -84,10 +128,8 @@ async function buildHeader(
     };
   }
 
-  if (!prepared.videoMessage) {
+  if (!prepared.videoMessage)
     throw new Error("Baileys failed to prepare interactive header video.");
-  }
-
   return {
     ...headerTitle,
     videoMessage: prepared.videoMessage,
@@ -225,12 +267,6 @@ export async function sendSingleSelect(
   }
 
   for (const section of options.sections) {
-    if (section.rows.length === 0) {
-      throw new RangeError(
-        "Single-select sections must contain at least one row.",
-      );
-    }
-
     for (const row of section.rows) {
       assertNonEmpty(row.title, "row title");
       assertNonEmpty(row.id, "row id");
@@ -462,85 +498,51 @@ export async function sendCarousel(
     throw new RangeError("Carousel messages must contain at least 2 cards.");
   }
 
-  const cards = await Promise.all(
-    options.cards.map(async (card, index) => {
-      assertNonEmpty(card.title, `card ${index + 1} title`);
+  const cards = await mapLimit(options.cards, 4, async (card, index) => {
+    assertNonEmpty(card.title, `card ${index + 1} title`);
 
-      const cardButtons = card.buttons ?? (card.button ? [card.button] : []);
-      if (cardButtons.length === 0) {
-        throw new RangeError(
-          `Carousel card ${index + 1} must contain at least one button.`,
-        );
-      }
-
-      let imageBuffer: Buffer;
-
-      try {
-        if (typeof card.image !== "string" || !card.image.trim()) {
-          throw new TypeError("Image URL is empty.");
-        }
-
-        const imageUrl = new URL(card.image);
-
-        if (imageUrl.protocol !== "https:" && imageUrl.protocol !== "http:") {
-          throw new TypeError("Unsupported image URL protocol.");
-        }
-
-        const response = await fetch(imageUrl, {
-          signal: AbortSignal.timeout(10_000),
-        });
-
-        if (!response.ok) {
-          throw new Error(`Image request failed: HTTP ${response.status}`);
-        }
-
-        const contentType = response.headers.get("content-type");
-
-        if (!contentType?.startsWith("image/")) {
-          throw new Error("URL did not return an image.");
-        }
-
-        imageBuffer = Buffer.from(await response.arrayBuffer());
-
-        if (imageBuffer.length === 0) {
-          throw new Error("Image response is empty.");
-        }
-      } catch (_) {
-        imageBuffer = Buffer.from(fallbackImage);
-      }
-
-      const buttons = buildCarouselButtons(cardButtons, index + 1);
-      const media = await prepareWAMessageMedia(
-        {
-          image: imageBuffer,
-        },
-        { upload: sock.waUploadToServer },
+    const cardButtons = card.buttons ?? (card.button ? [card.button] : []);
+    if (cardButtons.length === 0) {
+      throw new RangeError(
+        `Carousel card ${index + 1} must contain at least one button.`,
       );
+    }
 
-      if (!media.imageMessage) {
-        throw new Error(
-          `Baileys failed to prepare image for carousel card ${index + 1}.`,
-        );
-      }
+    const { bytes } = await resolveMedia({
+      type: "image",
+      url: card.image,
+      fallbackUrls: card.imageFallbacks,
+    });
 
-      return {
-        header: {
-          imageMessage: media.imageMessage,
-          hasMediaAttachment: true,
-        },
-        body: {
-          text: card.body?.trim()
-            ? `${card.title}\n${card.body.trim()}`
-            : card.title,
-        },
-        ...(card.footer ? { footer: { text: card.footer } } : {}),
-        nativeFlowMessage: {
-          buttons,
-          messageParamsJson: "",
-        },
-      };
-    }),
-  );
+    const buttons = buildCarouselButtons(cardButtons, index + 1);
+    const media = await prepareWAMessageMedia(
+      { image: bytes },
+      { upload: sock.waUploadToServer },
+    );
+
+    if (!media.imageMessage) {
+      throw new Error(
+        `Baileys failed to prepare image for carousel card ${index + 1}.`,
+      );
+    }
+
+    return {
+      header: {
+        imageMessage: media.imageMessage,
+        hasMediaAttachment: true,
+      },
+      body: {
+        text: card.body?.trim()
+          ? `${card.title}\n${card.body.trim()}`
+          : card.title,
+      },
+      ...(card.footer ? { footer: { text: card.footer } } : {}),
+      nativeFlowMessage: {
+        buttons,
+        messageParamsJson: "",
+      },
+    };
+  });
   await sendNativeFlow(
     sock,
     jid,

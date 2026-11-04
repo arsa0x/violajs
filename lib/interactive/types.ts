@@ -9,6 +9,7 @@ export interface InteractiveHeaderMedia {
   /** Publicly reachable image or video URL. Media is uploaded to WhatsApp before sending. */
   type: "image" | "video";
   url: string;
+  fallbackUrls?: string[];
 }
 
 export interface InteractiveQuickReplyOptions {
@@ -104,6 +105,7 @@ export type InteractiveCarouselButton =
 export interface InteractiveCarouselCard {
   /** Publicly reachable image URL. The image is uploaded to WhatsApp before sending. */
   image: string;
+  imageFallbacks?: string[];
   /** Short title shown in the card body. */
   title: string;
   /** Optional card description. */

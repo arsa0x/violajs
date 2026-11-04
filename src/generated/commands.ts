@@ -15,16 +15,17 @@ import command_11 from "../../commands/group/promote.ts";
 import command_12 from "../../commands/group/revokelink.ts";
 import command_13 from "../../commands/group/tagall.ts";
 import command_14 from "../../commands/nsfw/nekopoi.ts";
-import command_15 from "../../commands/search/amfinder.ts";
-import command_16 from "../../commands/search/spotify.ts";
-import command_17 from "../../commands/search/web.ts";
-import command_18 from "../../commands/search/youtube.ts";
-import command_19 from "../../commands/tools/interactive.ts";
-import command_20 from "../../commands/tools/menu.ts";
-import command_21 from "../../commands/tools/ouo.ts";
-import command_22 from "../../commands/tools/ping.js";
-import command_23 from "../../commands/tools/qr.ts";
-import command_24 from "../../commands/tools/sticker.ts";
+import command_15 from "../../commands/nsfw/pornhub.ts";
+import command_16 from "../../commands/search/amfinder.ts";
+import command_17 from "../../commands/search/spotify.ts";
+import command_18 from "../../commands/search/web.ts";
+import command_19 from "../../commands/search/youtube.ts";
+import command_20 from "../../commands/tools/interactive.ts";
+import command_21 from "../../commands/tools/menu.ts";
+import command_22 from "../../commands/tools/ouo.ts";
+import command_23 from "../../commands/tools/ping.js";
+import command_24 from "../../commands/tools/qr.ts";
+import command_25 from "../../commands/tools/sticker.ts";
 
 export const commands = [
   command_0,
@@ -52,4 +53,5 @@ export const commands = [
   command_22,
   command_23,
   command_24,
+  command_25,
 ];

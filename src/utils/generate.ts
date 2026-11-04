@@ -101,7 +101,7 @@ for (const cmd of cmds) {
   menuGroups[category]!.push({
     title,
     description,
-    id: title,
+    id: `${title} --help`,
   });
 }
 
