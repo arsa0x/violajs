@@ -50,13 +50,7 @@ Make sure to review the configuration options before starting the bot.
 Create a new WhatsApp session by specifying a session name:
 
 ```bash
-bun run start create --session session_name
-```
-
-Alternatively, run the entry point directly:
-
-```bash
-bun index.ts create --session session_name
+bun start create --session session_name
 ```
 
 Replace `session_name` with your desired session name.
@@ -68,13 +62,13 @@ If no session name is specified when running the bot, the default session is `de
 Start a specific session:
 
 ```bash
-bun index.ts --session session_name
+bun start --session session_name
 ```
 
 Or start the default session:
 
 ```bash
-bun index.ts
+bun start
 ```
 
 ### Run All Sessions
@@ -82,13 +76,7 @@ bun index.ts
 To start all available sessions, use:
 
 ```bash
-bun index.ts --all
-```
-
-Alternatively, use the shorthand option:
-
-```bash
-bun index.ts -a
+bun start --all
 ```
 
 ---
@@ -107,83 +95,6 @@ Once the build is complete, run the executable on Linux or macOS:
 
 ```bash
 ./dist/violajs
-```
-
----
-
-## Project Structure
-
-```bash
-violajs/
-├── assets
-│   └── banner.png
-├── bun.lock
-├── commands
-│   ├── group
-│   ├── nsfw
-│   └── tools
-├── config.ts
-├── config.ts.example
-├── docs
-├── index.ts
-├── lib
-│   ├── args.ts
-│   ├── interactive
-│   │   ├── carousel-button.ts
-│   │   ├── index.ts
-│   │   ├── response.ts
-│   │   ├── send.ts
-│   │   └── types.ts
-│   ├── logger.ts
-│   ├── nekopoi.ts
-│   ├── qr.ts
-│   └── send.ts
-├── LICENSE
-├── package.json
-├── production.ts
-├── README.id.md
-├── README.md
-├── sessions
-│   └── default
-│       ├── auth.sqlite
-│       ├── auth.sqlite-shm
-│       └── auth.sqlite-wal
-├── src
-│   ├── app.ts
-│   ├── build.ts
-│   ├── cli.ts
-│   ├── core
-│   │   ├── command.ts
-│   │   ├── context.ts
-│   │   ├── dispatcher.ts
-│   │   ├── loader.ts
-│   │   ├── middleware.ts
-│   │   ├── parser.ts
-│   │   ├── registry.ts
-│   │   ├── socket.ts
-│   │   └── staticLoader.ts
-│   ├── generated
-│   │   └── commands.ts
-│   ├── middlewares
-│   │   ├── bot-admin.ts
-│   │   ├── cooldown.ts
-│   │   ├── group-admin.ts
-│   │   ├── group.ts
-│   │   ├── logger.ts
-│   │   └── owner.ts
-│   ├── storage
-│   │   ├── auth.ts
-│   │   └── cache.ts
-│   ├── types
-│   │   ├── command.ts
-│   │   ├── config.ts
-│   │   ├── middleware.ts
-│   │   └── mime.ts
-│   └── utils
-│       ├── command-help.ts
-│       └── group.ts
-├── tests
-└── tsconfig.json
 ```
 
 ---

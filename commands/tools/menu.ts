@@ -1,5 +1,4 @@
 import { defineCommand } from "@core/command";
-import type { InteractiveSelectSection } from "@lib/interactive";
 import type { Category } from "../../src/types/command";
 import { MENU } from "src/generated/menu";
 

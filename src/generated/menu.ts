@@ -6,6 +6,7 @@ export const MENU = {
     rows: [
     { title: "interactive", description: "No description provided", id: "interactive" },
     { title: "menu", description: "Show the bot command menu", id: "menu" },
+    { title: "ouo", description: "No description provided", id: "ouo" },
     { title: "qr", description: "Generate a text QR code", id: "qr" },
     { title: "sticker", description: "Sticker maker", id: "sticker" },
     ],
@@ -46,7 +47,7 @@ export const MENU = {
   nsfw: {
     title: "NSFW",
     rows: [
-
+    { title: "nekopoi", description: "No description provided", id: "nekopoi" },
     ],
   },
   ai: {
@@ -70,8 +71,6 @@ export const MENU = {
   uncategorized: {
     title: "Uncategorized",
     rows: [
-    { title: "nekopoi", description: "No description provided", id: "nekopoi" },
-    { title: "ouo", description: "No description provided", id: "ouo" },
     { title: "ping", description: "No description provided", id: "ping" },
     ],
   },
