@@ -105,9 +105,9 @@ export async function resolveOuo(input: string): Promise<string> {
 export default defineCommand({
   name: "ouo",
   aliases: ["ouoresolve"],
-
+  category: "tools",
   async execute(ctx) {
-    const input = ctx.args[0];
+    const input = ctx.rawArgs[0];
 
     if (!input) {
       await ctx.send.text("Usage: .ouo <url>");

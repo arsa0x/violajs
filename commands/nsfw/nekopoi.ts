@@ -6,6 +6,7 @@ import { config } from "config";
 export default defineCommand({
   name: "nekopoi",
   aliases: ["neko"],
+  category: "nsfw",
   flags: [
     FlagSpec.value(["--search", "-s"]).description(
       "Search hentai by query, e.g. .nekopoi -s enjo kouhai",
