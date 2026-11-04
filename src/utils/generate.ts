@@ -43,7 +43,7 @@ const imports: string[] = [];
 const commands: string[] = [];
 
 for (const [index, file] of files.entries()) {
-  const variable = `cmd_${index}`;
+  const variable = `_${index}`;
 
   let importPath = path.relative(generatedDir, file);
   importPath = importPath.replaceAll(path.sep, "/");
@@ -53,7 +53,7 @@ for (const [index, file] of files.entries()) {
   }
 
   imports.push(`import ${variable} from "${importPath}";`);
-  commands.push(`  ${variable}`);
+  commands.push(`${variable}`);
 }
 
 const commandsLine = `export const commands = [${commands}];`;
