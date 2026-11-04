@@ -72,6 +72,7 @@ await fs.writeFile(commandFile, generatedCommands, "utf8");
 
 import { commands as cmds } from "../generated/commands";
 import type { Category } from "../types/command";
+import { config } from "config";
 
 const categoryTitles: Record<Category, string> = {
   tools: "Tools",
@@ -101,7 +102,7 @@ for (const cmd of cmds) {
   menuGroups[category]!.push({
     title,
     description,
-    id: `${title} --help`,
+    id: `${config.prefix}${title} --help`,
   });
 }
 
