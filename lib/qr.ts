@@ -6,12 +6,12 @@ const QUIET = 4;
 
 const ECC_PER_BLOCK = [
   -1, 7, 10, 15, 20, 26, 18, 20, 24, 30, 18, 20, 24, 26, 30, 22, 24, 28, 30, 28,
-  28, 28, 28, 30, 30, 26, 28, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-  30,
+  28, 28, 28, 30, 30, 26, 28, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+  30, 30,
 ];
 const NUM_BLOCKS = [
-  -1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 7, 8, 8, 9, 9, 10, 12,
-  12, 12, 13, 14, 15, 16, 17, 18, 19, 19, 20, 21, 22, 24, 25,
+  -1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 7, 8, 8, 9, 9, 10,
+  12, 12, 12, 13, 14, 15, 16, 17, 18, 19, 19, 20, 21, 22, 24, 25,
 ];
 
 const ALNUM = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:";
@@ -185,7 +185,11 @@ class QR {
     const na = p.length;
     for (let i = 0; i < na; i++)
       for (let j = 0; j < na; j++) {
-        if ((i === 0 && j === 0) || (i === 0 && j === na - 1) || (i === na - 1 && j === 0))
+        if (
+          (i === 0 && j === 0) ||
+          (i === 0 && j === na - 1) ||
+          (i === na - 1 && j === 0)
+        )
           continue;
         this.drawAlign(p[i]!, p[j]!);
       }
@@ -252,13 +256,18 @@ class QR {
         const c = this.get(x, y);
         dark += c;
         if (x < n - 1 && y < n - 1) {
-          if (c === this.get(x + 1, y) && c === this.get(x, y + 1) && c === this.get(x + 1, y + 1))
+          if (
+            c === this.get(x + 1, y) &&
+            c === this.get(x, y + 1) &&
+            c === this.get(x + 1, y + 1)
+          )
             score += 3;
         }
       }
 
     const total = n * n;
-    const k = Math.floor((Math.abs(dark * 20 - total * 10) + total - 1) / total) - 1;
+    const k =
+      Math.floor((Math.abs(dark * 20 - total * 10) + total - 1) / total) - 1;
     score += k * 10;
     return score;
   }
@@ -282,14 +291,22 @@ class QR {
 
 function maskHit(m: number, x: number, y: number): boolean {
   switch (m) {
-    case 0: return (x + y) % 2 === 0;
-    case 1: return y % 2 === 0;
-    case 2: return x % 3 === 0;
-    case 3: return (x + y) % 3 === 0;
-    case 4: return (Math.floor(x / 3) + Math.floor(y / 2)) % 2 === 0;
-    case 5: return ((x * y) % 2) + ((x * y) % 3) === 0;
-    case 6: return ((((x * y) % 2) + ((x * y) % 3)) % 2) === 0;
-    default: return ((((x + y) % 2) + ((x * y) % 3)) % 2) === 0;
+    case 0:
+      return (x + y) % 2 === 0;
+    case 1:
+      return y % 2 === 0;
+    case 2:
+      return x % 3 === 0;
+    case 3:
+      return (x + y) % 3 === 0;
+    case 4:
+      return (Math.floor(x / 3) + Math.floor(y / 2)) % 2 === 0;
+    case 5:
+      return ((x * y) % 2) + ((x * y) % 3) === 0;
+    case 6:
+      return (((x * y) % 2) + ((x * y) % 3)) % 2 === 0;
+    default:
+      return (((x + y) % 2) + ((x * y) % 3)) % 2 === 0;
   }
 }
 
@@ -300,7 +317,9 @@ function ccBits(mode: Mode, ver: number): number {
   const num = [10, 12, 14];
   const aln = [9, 11, 13];
   const byt = [8, 16, 16];
-  return (mode === Mode.Numeric ? num[i] : mode === Mode.Alnum ? aln[i] : byt[i])!;
+  return (
+    mode === Mode.Numeric ? num[i] : mode === Mode.Alnum ? aln[i] : byt[i]
+  )!;
 }
 
 function dataBits(mode: Mode, n: number): number {
@@ -329,7 +348,8 @@ export function qrEncode(text: string): string | null {
 
   let ver = 0;
   for (let v = 1; v <= 40; v++) {
-    const cap = Math.floor(rawModules(v) / 8) - ECC_PER_BLOCK[v]! * NUM_BLOCKS[v]!;
+    const cap =
+      Math.floor(rawModules(v) / 8) - ECC_PER_BLOCK[v]! * NUM_BLOCKS[v]!;
     if (4 + ccBits(mode, v) + dataBits(mode, len) <= cap * 8) {
       ver = v;
       break;
@@ -348,15 +368,21 @@ export function qrEncode(text: string): string | null {
   bits.put(len, ccBits(mode, ver));
 
   if (mode === Mode.Numeric) {
-    for (let i = 0; i < len; ) {
+    for (let i = 0; i < len;) {
       const k = Math.min(len - i, 3);
-      bits.put(parseInt(text.slice(i, i + k), 10), k === 3 ? 10 : k === 2 ? 7 : 4);
+      bits.put(
+        parseInt(text.slice(i, i + k), 10),
+        k === 3 ? 10 : k === 2 ? 7 : 4,
+      );
       i += k;
     }
   } else if (mode === Mode.Alnum) {
     for (let i = 0; i < len; i += 2) {
       if (i + 1 < len)
-        bits.put(ALNUM.indexOf(text[i]!) * 45 + ALNUM.indexOf(text[i + 1]!), 11);
+        bits.put(
+          ALNUM.indexOf(text[i]!) * 45 + ALNUM.indexOf(text[i + 1]!),
+          11,
+        );
       else bits.put(ALNUM.indexOf(text[i]!), 6);
     }
   } else {
@@ -390,7 +416,8 @@ export function qrEncode(text: string): string | null {
       const d = dptr[b]!;
       if (i < d.length) finalCw.push(d[i]!);
     }
-  for (let i = 0; i < ecl; i++) for (let b = 0; b < nb; b++) finalCw.push(ecc[b]![i]!);
+  for (let i = 0; i < ecl; i++)
+    for (let b = 0; b < nb; b++) finalCw.push(ecc[b]![i]!);
 
   // --- Matrix ---
   const q = new QR(ver);
@@ -413,19 +440,4 @@ export function qrEncode(text: string): string | null {
   q.drawFormat(best);
 
   return q.render();
-}
-
-// CLI: bun qr.ts "text to encode"
-if (import.meta.main) {
-  const input = process.argv.slice(2).join(" ");
-  if (!input) {
-    console.error('usage: bun qr.ts "text"');
-    process.exit(1);
-  }
-  const out = qrEncode(input);
-  if (!out) {
-    console.error("input too long");
-    process.exit(1);
-  }
-  process.stdout.write(out);
 }

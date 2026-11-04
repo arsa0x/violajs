@@ -10,7 +10,8 @@ export type Category =
   | "ai"
   | "game"
   | "search"
-  | "admin";
+  | "admin"
+  | "uncategorized";
 
 export type Command = {
   name: string;
