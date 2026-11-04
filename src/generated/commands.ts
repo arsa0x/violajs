@@ -1,57 +1,30 @@
 // This file is generated. Do not edit manually.
 
-import command_0 from "../../commands/downloader/aio.ts";
-import command_1 from "../../commands/downloader/github.ts";
-import command_2 from "../../commands/downloader/mediafire.ts";
-import command_3 from "../../commands/group/add.ts";
-import command_4 from "../../commands/group/close.ts";
-import command_5 from "../../commands/group/del.ts";
-import command_6 from "../../commands/group/demote.ts";
-import command_7 from "../../commands/group/hidetag.ts";
-import command_8 from "../../commands/group/kick.ts";
-import command_9 from "../../commands/group/linkgc.ts";
-import command_10 from "../../commands/group/open.ts";
-import command_11 from "../../commands/group/promote.ts";
-import command_12 from "../../commands/group/revokelink.ts";
-import command_13 from "../../commands/group/tagall.ts";
-import command_14 from "../../commands/nsfw/nekopoi.ts";
-import command_15 from "../../commands/nsfw/pornhub.ts";
-import command_16 from "../../commands/search/amfinder.ts";
-import command_17 from "../../commands/search/spotify.ts";
-import command_18 from "../../commands/search/web.ts";
-import command_19 from "../../commands/search/youtube.ts";
-import command_20 from "../../commands/tools/interactive.ts";
-import command_21 from "../../commands/tools/menu.ts";
-import command_22 from "../../commands/tools/ouo.ts";
-import command_23 from "../../commands/tools/ping.js";
-import command_24 from "../../commands/tools/qr.ts";
-import command_25 from "../../commands/tools/sticker.ts";
+import cmd_0 from "../../commands/downloader/aio.ts";
+import cmd_1 from "../../commands/downloader/github.ts";
+import cmd_2 from "../../commands/downloader/mediafire.ts";
+import cmd_3 from "../../commands/group/add.ts";
+import cmd_4 from "../../commands/group/close.ts";
+import cmd_5 from "../../commands/group/del.ts";
+import cmd_6 from "../../commands/group/demote.ts";
+import cmd_7 from "../../commands/group/hidetag.ts";
+import cmd_8 from "../../commands/group/kick.ts";
+import cmd_9 from "../../commands/group/linkgc.ts";
+import cmd_10 from "../../commands/group/open.ts";
+import cmd_11 from "../../commands/group/promote.ts";
+import cmd_12 from "../../commands/group/revokelink.ts";
+import cmd_13 from "../../commands/group/tagall.ts";
+import cmd_14 from "../../commands/nsfw/nekopoi.ts";
+import cmd_15 from "../../commands/nsfw/pornhub.ts";
+import cmd_16 from "../../commands/search/amfinder.ts";
+import cmd_17 from "../../commands/search/spotify.ts";
+import cmd_18 from "../../commands/search/web.ts";
+import cmd_19 from "../../commands/search/youtube.ts";
+import cmd_20 from "../../commands/tools/interactive.ts";
+import cmd_21 from "../../commands/tools/menu.ts";
+import cmd_22 from "../../commands/tools/ouo.ts";
+import cmd_23 from "../../commands/tools/ping.js";
+import cmd_24 from "../../commands/tools/qr.ts";
+import cmd_25 from "../../commands/tools/sticker.ts";
 
-export const commands = [
-  command_0,
-  command_1,
-  command_2,
-  command_3,
-  command_4,
-  command_5,
-  command_6,
-  command_7,
-  command_8,
-  command_9,
-  command_10,
-  command_11,
-  command_12,
-  command_13,
-  command_14,
-  command_15,
-  command_16,
-  command_17,
-  command_18,
-  command_19,
-  command_20,
-  command_21,
-  command_22,
-  command_23,
-  command_24,
-  command_25,
-];
+export const commands = [  cmd_0,  cmd_1,  cmd_2,  cmd_3,  cmd_4,  cmd_5,  cmd_6,  cmd_7,  cmd_8,  cmd_9,  cmd_10,  cmd_11,  cmd_12,  cmd_13,  cmd_14,  cmd_15,  cmd_16,  cmd_17,  cmd_18,  cmd_19,  cmd_20,  cmd_21,  cmd_22,  cmd_23,  cmd_24,  cmd_25];

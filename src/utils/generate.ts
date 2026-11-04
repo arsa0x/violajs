@@ -43,7 +43,7 @@ const imports: string[] = [];
 const commands: string[] = [];
 
 for (const [index, file] of files.entries()) {
-  const variable = `command_${index}`;
+  const variable = `cmd_${index}`;
 
   let importPath = path.relative(generatedDir, file);
   importPath = importPath.replaceAll(path.sep, "/");
@@ -53,18 +53,17 @@ for (const [index, file] of files.entries()) {
   }
 
   imports.push(`import ${variable} from "${importPath}";`);
-  commands.push(`  ${variable},`);
+  commands.push(`  ${variable}`);
 }
 
-// 1. Generate commands.ts
+const commandsLine = `export const commands = [${commands}];`;
+
 const generatedCommands = [
   "// This file is generated. Do not edit manually.",
   "",
   ...imports,
   "",
-  "export const commands = [",
-  ...commands,
-  "];",
+  commandsLine,
   "",
 ].join("\n");
 
