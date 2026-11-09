@@ -21,7 +21,6 @@ export type Command = {
 
   // Documentation metadata
   usage?: string[];
-  examples?: string[];
 
   middleware?: Middleware[];
   flags?: FlagSpec[];

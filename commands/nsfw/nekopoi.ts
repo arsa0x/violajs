@@ -7,6 +7,7 @@ export default defineCommand({
   name: "nekopoi",
   aliases: ["neko"],
   category: "nsfw",
+  usage: [".nekopoi -s enjo kouhai", ".nekopoi -i 112233"],
   flags: [
     FlagSpec.value(["--search", "-s"]).description(
       "Search hentai by query, e.g. .nekopoi -s enjo kouhai",
