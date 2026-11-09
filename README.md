@@ -165,6 +165,12 @@ The example uses `groupOnly()` to restrict the command to group chats and `coold
 - [Scraper Commands](docs/scraper-commands.md) — Downloader, web search, Spotify/YouTube metadata, Alight Motion preset lookup, and QR commands.
 - [Menu Command](docs/menu-command.md) — Usage, categories, and behavior of the interactive command menu.
 
+Regenerate the command reference after changing command definitions or metadata:
+
+```bash
+bun run docs:generate
+```
+
 ---
 
 ## Contributing
