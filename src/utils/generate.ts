@@ -138,20 +138,6 @@ function escapeCell(value: string): string {
   return value.replaceAll("|", "\\|").replaceAll("\n", " ").trim();
 }
 
-function formatFlag(flag: FlagSpec): string {
-  const names = flag.names.map((name) => `\`${name}\``).join(", ");
-  const argument =
-    flag.kind === "bool"
-      ? ""
-      : flag.kind === "json"
-        ? " <json>"
-        : flag.kind === "list"
-          ? " <item,...>"
-          : " <value>";
-
-  return `${names}${argument} (${flag.kind})`;
-}
-
 function formatFlagDetails(command: Command): string[] {
   const flags = command.flags ?? [];
   if (flags.length === 0) return [];
@@ -224,7 +210,7 @@ for (const [category, title] of Object.entries(categoryTitles) as [Category, str
       ? escapeCell(command.description)
       : "—";
     const flags = command.flags?.length
-      ? command.flags.map(formatFlag).join("<br>")
+      ? `[${command.flags.length} flags](#${command.name.toLowerCase().replaceAll(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")})`
       : "—";
 
     docLines.push(
