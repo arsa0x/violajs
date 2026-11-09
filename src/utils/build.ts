@@ -1,11 +1,10 @@
 import { log } from "@lib/logger";
-import fs from "fs/promises";
 
 const result = await Bun.build({
-  entrypoints: ["./production.ts"],
+  entrypoints: ["./index.ts"],
   compile: true,
   target: "bun",
-  outdir: "./dist",
+  outdir: "./dist/violajs",
   minify: {
     identifiers: true,
     whitespace: true,
@@ -22,7 +21,5 @@ if (!result.success) {
 
   process.exit(1);
 }
-
-await fs.rename("dist/production", "dist/violajs");
 
 log.info("Build successful.");
