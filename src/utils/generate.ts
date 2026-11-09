@@ -1,4 +1,3 @@
-import { log } from "@lib/logger";
 import fs from "fs/promises";
 import path from "path";
 
@@ -32,12 +31,9 @@ async function collect(dir: string): Promise<void> {
 }
 
 await collect(entryDir);
-
 files.sort();
 
-await fs.mkdir(generatedDir, {
-  recursive: true,
-});
+await fs.mkdir(generatedDir, { recursive: true });
 
 const imports: string[] = [];
 const commands: string[] = [];
@@ -53,7 +49,7 @@ for (const [index, file] of files.entries()) {
   }
 
   imports.push(`import ${variable} from "${importPath}";`);
-  commands.push(`${variable}`);
+  commands.push(variable);
 }
 
 const commandsLine = `export const commands = [${commands}];`;
@@ -69,23 +65,15 @@ const generatedCommands = [
 
 await fs.writeFile(commandFile, generatedCommands, "utf8");
 
-import { commands as cmds } from "../generated/commands";
-import type { Category } from "../types/command";
+// Import only after writing the registry so newly added commands are included
+// in this same generator run.
+const { commands: cmds } = await import("../generated/commands");
+
 import { config } from "config";
+import { CATEGORY_TITLES } from "./category";
+import { log } from "@lib/logger";
 
-const categoryTitles: Record<Category, string> = {
-  tools: "Tools",
-  downloader: "Downloader",
-  search: "Search",
-  admin: "Group administration",
-  nsfw: "NSFW",
-  ai: "AI",
-  game: "Game",
-  maker: "Maker",
-  uncategorized: "Uncategorized",
-};
-
-const menuGroups: Record<string, any[]> = Object.keys(categoryTitles).reduce(
+const menuGroups: Record<string, any[]> = Object.keys(CATEGORY_TITLES).reduce(
   (acc, key) => {
     acc[key] = [];
     return acc;
@@ -98,6 +86,7 @@ for (const cmd of cmds) {
     cmd.category && menuGroups[cmd.category] ? cmd.category : "uncategorized";
   const title = cmd.name;
   const description = cmd.description || "No description provided";
+
   menuGroups[category]!.push({
     title,
     description,
@@ -105,7 +94,7 @@ for (const cmd of cmds) {
   });
 }
 
-const menuEntries = Object.entries(categoryTitles).map(([key, title]) => {
+const menuEntries = Object.entries(CATEGORY_TITLES).map(([key, title]) => {
   const rows = menuGroups[key] || [];
   const rowsStr = rows
     .map(
