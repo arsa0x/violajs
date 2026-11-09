@@ -7,6 +7,7 @@ export const MENU = {
     { title: "interactive", description: "No description provided", id: ".interactive --help" },
     { title: "menu", description: "Show the bot command menu", id: ".menu --help" },
     { title: "ouo", description: "No description provided", id: ".ouo --help" },
+    { title: "ping", description: "No description provided", id: ".ping --help" },
     { title: "qr", description: "Generate a text QR code", id: ".qr --help" },
     { title: "sticker", description: "Sticker maker", id: ".sticker --help" },
     ],
@@ -72,7 +73,7 @@ export const MENU = {
   uncategorized: {
     title: "Uncategorized",
     rows: [
-    { title: "ping", description: "No description provided", id: ".ping --help" },
+
     ],
   },
 };

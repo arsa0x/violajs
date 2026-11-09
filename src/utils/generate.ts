@@ -4,8 +4,8 @@ import path from "path";
 
 const entryDir = path.resolve("./commands");
 const generatedDir = path.resolve("./src/generated");
-const commandFile = path.join(generatedDir, "commands.ts");
-const menuFile = path.join(generatedDir, "menu.ts");
+const commandFile = path.join(generatedDir, "commands.js");
+const menuFile = path.join(generatedDir, "menu.js");
 
 const files: string[] = [];
 
