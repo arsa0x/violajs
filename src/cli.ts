@@ -117,7 +117,7 @@ export function cli(
     default: {
       if (values.all) {
         if (options.pairing) {
-          log.error("Phone number pairing cannot be used with --all.");
+          log.error("Phone pairing cannot be used with --all.");
           process.exit(1);
         }
 

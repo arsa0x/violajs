@@ -103,6 +103,24 @@ Note: Development mode is intended for local development and debugging. Use the 
 
 ---
 
+## Building a Standalone Executable
+
+violajs can be compiled into a standalone executable file using Bun.
+
+Run the build command:
+
+```bash
+bun run build
+```
+
+Once the build is complete, run the executable on Linux or macOS:
+
+```bash
+./dist/violajs
+```
+
+---
+
 ## Creating a Command Plugin
 
 Adding a command is simple. Create a `.ts` or `.js` file inside the appropriate category directory under `commands/`.
