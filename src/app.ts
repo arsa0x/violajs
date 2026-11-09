@@ -6,7 +6,7 @@ import { CommandDispatcher } from "./core/dispatcher";
 import { parseCommand } from "./core/parser";
 import { CommandRegistry } from "./core/registry";
 import { createWAClient } from "./core/socket";
-import { cli } from "./cli";
+import { cli, type BotOptions } from "./cli";
 
 const sessionPath = "./sessions";
 
@@ -14,7 +14,11 @@ export async function startApp(registry: CommandRegistry): Promise<void> {
   cli(bot, registry, sessionPath);
 }
 
-async function bot(registry: CommandRegistry, name: string) {
+async function bot(
+  registry: CommandRegistry,
+  name: string,
+  options?: BotOptions,
+) {
   const log = createSessionLogger(name);
 
   log.info(`Loaded ${registry.list().length} commands`);
@@ -22,7 +26,7 @@ async function bot(registry: CommandRegistry, name: string) {
   const dispatcher = new CommandDispatcher(registry, [
     // logger()
   ]);
-  const sock = await createWAClient(name, log);
+  const sock = await createWAClient(name, log, options);
 
   sock.ev.on("messages.upsert", async ({ messages, type }) => {
     if (type !== "notify") return;

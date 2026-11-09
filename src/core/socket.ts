@@ -4,6 +4,7 @@ import https from "https";
 import { qrEncode } from "@lib/qr";
 import { MemoryMediaCache } from "../storage/cache";
 import { logger, type Log } from "@lib/logger";
+import type { BotOptions } from "src/cli";
 
 export const customFetchAgent = new https.Agent({
   keepAlive: true,
@@ -20,7 +21,12 @@ const RECONNECT_DELAY = 5_000;
 export const createWAClient: (
   name: string,
   log: Log,
-) => Promise<WASocket> = async (name: string, log: Log) => {
+  options?: BotOptions,
+) => Promise<WASocket> = async (
+  name: string,
+  log: Log,
+  options?: BotOptions,
+) => {
   const { saveCreds, state } = await useSQLiteAuthState(`./sessions/${name}`);
 
   let sock: WASocket;
@@ -36,12 +42,20 @@ export const createWAClient: (
     });
 
     sock.ev.on("creds.update", saveCreds);
-
     sock.ev.on(
       "connection.update",
       async ({ connection, lastDisconnect, qr }) => {
         if (qr) {
-          log.info("\n", qrEncode(qr));
+          if (options?.pairing && !sock.authState.creds.registered) {
+            // | V | I | O | L | A | T | S | C |
+            const code = await sock.requestPairingCode(
+              options.phone!,
+              "VIOLATSC",
+            );
+            log.info("Pairing code:", code);
+          } else {
+            log.info("\n", qrEncode(qr));
+          }
         }
 
         if (connection === "open") {
