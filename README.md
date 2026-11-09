@@ -37,9 +37,9 @@ bun install
 
 ### 3. Configure the Bot
 
-Create a `config.ts` file, or rename `config.ts.example` to `config.ts`.
+The configuration file (config.ts) will be generated automatically from config.ts.example when you first run the bot or its generation script (`bun run generate`).
 
-Make sure to review the configuration options before starting the bot.
+Review and update the generated config.ts file to match your preferences before starting the bot.
 
 ---
 
@@ -78,6 +78,8 @@ To start all available sessions, use:
 ```bash
 bun start --all
 ```
+
+---
 
 ## Development Mode
 

@@ -23,14 +23,17 @@ export function getGroupTarget(ctx: Context): string | undefined {
     message?.videoMessage?.contextInfo;
   if (contextInfo?.participant) return contextInfo.participant;
 
-  const number = ctx.args[0]?.replace(/\D/g, "");
+  const number = ctx.rawArgs[0]?.replace(/\D/g, "");
   if (number && number.length >= 7 && number.length <= 15) {
     return `${number}@s.whatsapp.net`;
   }
   return undefined;
 }
 
-export async function isGroupParticipant(ctx: Context, jid: string): Promise<boolean> {
+export async function isGroupParticipant(
+  ctx: Context,
+  jid: string,
+): Promise<boolean> {
   const metadata = await ctx.sock.groupMetadata(ctx.chat.jid);
   const target = jidNormalizedUser(jid);
   return metadata.participants.some(

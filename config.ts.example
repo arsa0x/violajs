@@ -1,8 +1,15 @@
 import type { BotConfig } from "./src/types/config";
 
 export const config: BotConfig = {
-  prefix: '.',
+  prefix: ".",
   // Ganti dengan JID/nomor owner.
   // Selalu akhiri nomor telepon dengan '@s.whatsapp.net'
-  owners: new Set(['628xxxxxxxxxx@s.whatsapp.net']),
-}
+  owners: new Set([]),
+
+  nekopoi_base: Bun.env.NEKOPOI_BASE,
+  nekopoi_build_code: Bun.env.NEKOPOI_BUILD_CODE,
+  nekopoi_paths: Bun.env.NEKOPOI_PATHS,
+  nekopoi_signature: Bun.env.NEKOPOI_SIGNATURE,
+  nekopoi_user_agent: Bun.env.NEKOPOI_USER_AGENT,
+  nekopoi_token: Bun.env.NEKOPOI_TOKEN,
+};
