@@ -3,8 +3,17 @@ import { log } from "@lib/logger";
 import { existsSync, readdirSync, rmSync } from "fs";
 import { parseArgs } from "util";
 
+export interface BotOptions {
+  pairing?: boolean;
+  phone?: string;
+}
+
 export function cli(
-  bot: (registry: CommandRegistry, name: string) => Promise<void>,
+  bot: (
+    registry: CommandRegistry,
+    name: string,
+    options?: BotOptions,
+  ) => Promise<void>,
   registry: CommandRegistry,
   sessionPath: string,
 ) {
@@ -23,12 +32,41 @@ export function cli(
         short: "a",
         default: false,
       },
+      pairing: {
+        type: "boolean",
+        short: "p",
+        default: false,
+      },
+      phone: {
+        type: "string",
+        short: "n",
+      },
     },
     strict: false,
     allowPositionals: true,
   });
 
   const cmd = positionals[0];
+
+  const options: BotOptions = {
+    pairing: values.pairing as boolean,
+    phone: values.phone as string,
+  };
+
+  if (options.pairing && !options.phone) {
+    log.error("Phone number is required when using --pairing.");
+    process.exit(1);
+  }
+
+  if (options.phone && !options.pairing) {
+    log.error("Use --pairing when specifying --phone.");
+    process.exit(1);
+  }
+
+  if (options.phone && !/^\d+$/.test(options.phone)) {
+    log.error("Invalid phone number. Use international format without +.");
+    process.exit(1);
+  }
 
   switch (cmd) {
     case "create": {
@@ -43,7 +81,7 @@ export function cli(
       if (existsSync(getPath(target))) {
         log.warn("Session", target, "already exists");
       } else {
-        bot(registry, target);
+        bot(registry, target, options);
       }
       break;
     }
@@ -75,6 +113,11 @@ export function cli(
     }
     default: {
       if (values.all) {
+        if (options.pairing) {
+          log.error("Phone pairing cannot be used with --all.");
+          process.exit(1);
+        }
+
         Promise.all(
           readdirSync(sessionPath).map((s) => bot(registry, s)),
         ).catch((err) => log.error("Error executing parallel sessions:", err));
