@@ -36,5 +36,9 @@
     "baileys": "^7.0.0-rc14",
     "cheerio": "^1.2.0",
     "link-preview-js": "^5.0.1"
+  },
+  "packageManager": "bun",
+  "engines": {
+    "bun": ">=1.4.0"
   }
 }
