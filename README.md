@@ -160,7 +160,7 @@ The example uses `groupOnly()` to restrict the command to group chats and `coold
 
 ## Documentations
 
-- [Interactive Messages](docs/interactive-messages.md) — Documentation for interactive WhatsApp messages, including carousels, buttons, and footers.
+- [Commands](docs/commands.md) — Automatically generated command reference, grouped by category with aliases and flags.\n- [Interactive Messages](docs/interactive-messages.md) — Documentation for interactive WhatsApp messages, including carousels, buttons, and footers.
 - [Argument Parser (`Args`)](docs/argument-parser.md) — Documentation for flag definitions, argument parsing, supported flag types, and accessing parsed arguments.
 - [Scraper Commands](docs/scraper-commands.md) — Downloader, web search, Spotify/YouTube metadata, Alight Motion preset lookup, and QR commands.
 - [Menu Command](docs/menu-command.md) — Usage, categories, and behavior of the interactive command menu.
