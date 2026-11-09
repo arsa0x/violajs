@@ -73,7 +73,6 @@ await fs.writeFile(commandFile, generatedCommands, "utf8");
 const { commands: cmds } = await import("../generated/commands");
 
 import type { Category, Command } from "../types/command";
-import type { FlagSpec } from "@lib/args";
 import { config } from "config";
 
 const categoryTitles: Record<Category, string> = {
