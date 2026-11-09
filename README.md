@@ -4,7 +4,7 @@
 
 A simple WhatsApp bot built with [Baileys](https://github.com/WhiskeySockets/Baileys) and powered by the [Bun](https://bun.sh/) runtime.
 
-**violajs** features a plugin-based architecture and multi-session support, making it easy to extend with custom commands and manage multiple WhatsApp accounts. See [Commands](docs/commands.md) for supported commands.
+**violajs** features a plugin-based architecture and multi-session support, making it easy to extend with custom commands and event handlers. See [Commands](docs/commands.md) and [Event Plugins](docs/events.md) for more information.
 
 ---
 
@@ -83,7 +83,7 @@ bun start --all
 
 ## Development Mode
 
-violajs includes a development mode with automatic command reloading, allowing you to modify commands without restarting the bot.
+violajs includes a development mode with automatic command and event plugin reloading, allowing you to modify plugins without restarting the bot.
 
 Start the bot in development mode using:
 
@@ -93,37 +93,19 @@ bun run dev
 
 ### Features
 
-- Hot Reload — Automatically detects changes to command files.
-- New Commands — Automatically loads newly created commands.
-- Command Updates — Reloads commands when their source files are modified.
-- Command Removal — Automatically unregisters deleted commands.
-- No Restart Required — Apply command changes without restarting the application or reconnecting WhatsApp.
+- Hot Reload — Automatically detects changes to command and event plugin files.
+- New Plugins — Automatically loads newly created command and event plugins.
+- Plugin Updates — Replaces the registered command or event handlers when a plugin file changes.
+- Plugin Removal — Automatically unregisters deleted commands and event handlers.
+- No Restart Required — Apply plugin changes without restarting the application or reconnecting WhatsApp.
 
 Note: Development mode is intended for local development and debugging. Use the regular start command or standalone executable for production deployments.
 
 ---
 
-## Building a Standalone Executable
+## Creating a Command Plugin
 
-violajs can be compiled into a standalone executable file using Bun.
-
-Run the build command:
-
-```bash
-bun run build
-```
-
-Once the build is complete, run the executable on Linux or macOS:
-
-```bash
-./dist/violajs
-```
-
----
-
-## Creating a Plugin
-
-Adding new functionality to violajs is simple. Create a `.ts` or `.js` file inside the appropriate category directory under `commands/`.
+Adding a command is simple. Create a `.ts` or `.js` file inside the appropriate category directory under `commands/`.
 
 For example, the following plugin defines a `ping` command:
 
@@ -138,8 +120,6 @@ export default defineCommand({
   middleware: [groupOnly(), cooldown(100000)],
   async execute(ctx) {
     await ctx.send.text("Pong!");
-
-    // Log a successful response
     ctx.log.info("Message sent successfully");
   },
 });
@@ -158,9 +138,40 @@ The example uses `groupOnly()` to restrict the command to group chats and `coold
 
 ---
 
+## Creating an Event Plugin
+
+Event plugins react to WhatsApp messages, group changes, and connection updates. Create a `.ts` or `.js` file inside `events/` and define it with `defineEvent()`.
+
+```typescript
+import { defineEvent } from "@core/event";
+
+export default defineEvent({
+  name: "group-welcome",
+  events: {
+    "group.participant.join": async ({ sock, event }) => {
+      await sock.sendMessage(event.groupJid, {
+        text: `Welcome ${event.participants.length} new member(s)!`,
+      });
+    },
+
+    "message.received": async ({ event, log }) => {
+      if (event.text) log.info(`Message received: ${event.text}`);
+    },
+  },
+});
+```
+
+Event handlers run in parallel. If one handler fails, its error is logged without preventing other handlers from running. Event plugins can subscribe to normalized internal events or raw Baileys events prefixed with `baileys.`.
+
+See [Event Plugins](docs/events.md) for the event list, payloads, and execution behavior.
+
+---
+
 ## Documentations
 
-- [Commands](docs/commands.md) — Automatically generated command reference, grouped by category with aliases and flags.\n- [Interactive Messages](docs/interactive-messages.md) — Documentation for interactive WhatsApp messages, including carousels, buttons, and footers.
+- [Commands](docs/commands.md) — Automatically generated command reference, grouped by category with aliases and flags.
+- [Event Plugins](docs/events.md) — Event plugin declaration, available internal and raw events, and execution behavior.
+- [Interactive Messages](docs/interactive-messages.md) — Documentation for interactive WhatsApp messages, including carousels, buttons, and footers.
 - [Argument Parser (`Args`)](docs/argument-parser.md) — Documentation for flag definitions, argument parsing, supported flag types, and accessing parsed arguments.
 - [Scraper Commands](docs/scraper-commands.md) — Downloader, web search, Spotify/YouTube metadata, Alight Motion preset lookup, and QR commands.
 - [Menu Command](docs/menu-command.md) — Usage, categories, and behavior of the interactive command menu.

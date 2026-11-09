@@ -1,4 +1,5 @@
 import type { CommandRegistry } from "@core/registry";
+import type { EventRegistry } from "@core/events/registry";
 import { log } from "@lib/logger";
 import { existsSync, readdirSync, rmSync } from "fs";
 import { parseArgs } from "util";
@@ -11,10 +12,12 @@ export interface BotOptions {
 export function cli(
   bot: (
     registry: CommandRegistry,
+    eventRegistry: EventRegistry,
     name: string,
     options?: BotOptions,
   ) => Promise<void>,
   registry: CommandRegistry,
+  eventRegistry: EventRegistry,
   sessionPath: string,
 ) {
   const getPath = (name: string) => `${sessionPath}/${name}`;
@@ -81,7 +84,7 @@ export function cli(
       if (existsSync(getPath(target))) {
         log.warn("Session", target, "already exists");
       } else {
-        bot(registry, target, options);
+        bot(registry, eventRegistry, target, options);
       }
       break;
     }
@@ -114,15 +117,17 @@ export function cli(
     default: {
       if (values.all) {
         if (options.pairing) {
-          log.error("Phone pairing cannot be used with --all.");
+          log.error("Phone number pairing cannot be used with --all.");
           process.exit(1);
         }
 
         Promise.all(
-          readdirSync(sessionPath).map((s) => bot(registry, s)),
+          readdirSync(sessionPath).map((session) =>
+            bot(registry, eventRegistry, session),
+          ),
         ).catch((err) => log.error("Error executing parallel sessions:", err));
       } else if (values.session) {
-        bot(registry, values.session.toString());
+        bot(registry, eventRegistry, values.session.toString());
       }
       break;
     }

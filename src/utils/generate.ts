@@ -2,13 +2,16 @@ import fs from "fs/promises";
 import path from "path";
 
 const entryDir = path.resolve("./commands");
+const eventsDir = path.resolve("./events");
 const generatedDir = path.resolve("./src/generated");
 const commandFile = path.join(generatedDir, "commands.js");
+const eventFile = path.join(generatedDir, "events.js");
 const menuFile = path.join(generatedDir, "menu.js");
 
 const files: string[] = [];
+const eventFiles: string[] = [];
 
-async function collect(dir: string): Promise<void> {
+async function collect(dir: string, output: string[]): Promise<void> {
   const entries = await fs.readdir(dir, {
     withFileTypes: true,
   });
@@ -17,53 +20,65 @@ async function collect(dir: string): Promise<void> {
     const fullPath = path.join(dir, entry.name);
 
     if (entry.isDirectory()) {
-      await collect(fullPath);
+      await collect(fullPath, output);
       continue;
     }
 
     if (
-      (entry.isFile() && path.extname(entry.name) === ".ts") ||
-      path.extname(entry.name) === ".js"
+      entry.isFile() &&
+      [".ts", ".js"].includes(path.extname(entry.name))
     ) {
-      files.push(fullPath);
+      output.push(fullPath);
     }
   }
 }
 
-await collect(entryDir);
+await collect(entryDir, files);
+await collect(eventsDir, eventFiles);
 files.sort();
+eventFiles.sort();
 
 await fs.mkdir(generatedDir, { recursive: true });
 
-const imports: string[] = [];
-const commands: string[] = [];
+function generateImports(
+  sourceFiles: string[],
+  outputFile: string,
+  exportName: string,
+): string {
+  const imports: string[] = [];
+  const entries: string[] = [];
 
-for (const [index, file] of files.entries()) {
-  const variable = `_${index}`;
+  for (const [index, file] of sourceFiles.entries()) {
+    const variable = `_${index}`;
+    let importPath = path.relative(generatedDir, file);
+    importPath = importPath.replaceAll(path.sep, "/");
 
-  let importPath = path.relative(generatedDir, file);
-  importPath = importPath.replaceAll(path.sep, "/");
+    if (!importPath.startsWith(".")) importPath = `./${importPath}`;
 
-  if (!importPath.startsWith(".")) {
-    importPath = `./${importPath}`;
+    imports.push(`import ${variable} from "${importPath}";`);
+    entries.push(variable);
   }
 
-  imports.push(`import ${variable} from "${importPath}";`);
-  commands.push(variable);
+  return [
+    "// This file is generated. Do not edit manually.",
+    "",
+    ...imports,
+    "",
+    `export const ${exportName} = [${entries.join(", ")}];`,
+    "",
+  ].join("\n");
 }
 
-const commandsLine = `export const commands = [${commands}];`;
-
-const generatedCommands = [
-  "// This file is generated. Do not edit manually.",
-  "",
-  ...imports,
-  "",
-  commandsLine,
-  "",
-].join("\n");
-
-await fs.writeFile(commandFile, generatedCommands, "utf8");
+await fs.writeFile(
+  commandFile,
+  generateImports(files, commandFile, "commands"),
+  "utf8",
+);
+await fs.writeFile(
+  eventFile,
+  generateImports(eventFiles, eventFile, "events"),
+  "utf8",
+);
 
 // Import only after writing the registry so newly added commands are included
 // in this same generator run.
@@ -117,4 +132,6 @@ const generatedMenu = [
 
 await fs.writeFile(menuFile, generatedMenu, "utf8");
 
-log.info(`Generated ${files.length} commands and menu.ts successfully.`);
+log.info(
+  `Generated ${files.length} commands, ${eventFiles.length} event plugins and menu.ts successfully.`,
+);
