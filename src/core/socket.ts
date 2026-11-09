@@ -15,49 +15,62 @@ export const customFetchAgent = new https.Agent({
 
 const mediaCacheStore = new MemoryMediaCache(1000);
 
+const RECONNECT_DELAY = 5_000;
+
 export const createWAClient: (
   name: string,
   log: Log,
 ) => Promise<WASocket> = async (name: string, log: Log) => {
   const { saveCreds, state } = await useSQLiteAuthState(`./sessions/${name}`);
 
-  const sock = makeWASocket({
-    auth: state,
-    syncFullHistory: false,
-    markOnlineOnConnect: false,
-    fetchAgent: customFetchAgent,
-    mediaCache: mediaCacheStore,
-    logger: logger(log),
-  });
+  let sock: WASocket;
 
-  sock.ev.on("creds.update", saveCreds);
+  const connect = () => {
+    sock = makeWASocket({
+      auth: state,
+      syncFullHistory: false,
+      markOnlineOnConnect: false,
+      fetchAgent: customFetchAgent,
+      mediaCache: mediaCacheStore,
+      logger: logger(log),
+    });
 
-  sock.ev.on(
-    "connection.update",
-    async ({ connection, lastDisconnect, qr }) => {
-      if (qr) {
-        log.info("\n", qrEncode(qr));
-      }
+    sock.ev.on("creds.update", saveCreds);
 
-      if (connection === "open") {
-        log.info("WhatsApp connected");
-        return;
-      }
-
-      if (connection === "close") {
-        const statusCode = (
-          lastDisconnect?.error as
-            { output?: { statusCode?: number } } | undefined
-        )?.output?.statusCode;
-
-        if (statusCode !== DisconnectReason.loggedOut) {
-          log.error(`Connection closed: ${statusCode ?? "unknown"}`);
-        } else {
-          log.error("Logged out; delete session and pair again.");
+    sock.ev.on(
+      "connection.update",
+      async ({ connection, lastDisconnect, qr }) => {
+        if (qr) {
+          log.info("\n", qrEncode(qr));
         }
-      }
-    },
-  );
 
-  return sock;
+        if (connection === "open") {
+          log.info("WhatsApp connected");
+          return;
+        }
+
+        if (connection === "close") {
+          const statusCode = (
+            lastDisconnect?.error as
+              { output?: { statusCode?: number } } | undefined
+          )?.output?.statusCode;
+
+          if (statusCode === DisconnectReason.loggedOut) {
+            log.error("Logged out; delete session and pair again.");
+            return;
+          }
+
+          log.error("Connection closed:", statusCode ?? "unknown");
+          log.info("Reconnecting in", RECONNECT_DELAY / 1000, "seconds...");
+
+          setTimeout(() => {
+            connect();
+          }, RECONNECT_DELAY);
+        }
+      },
+    );
+    return sock;
+  };
+
+  return connect();
 };
