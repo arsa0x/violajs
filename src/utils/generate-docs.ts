@@ -1,21 +1,10 @@
 import fs from "fs/promises";
 import path from "path";
 import type { Category, Command } from "../types/command";
+import { CATEGORY_TITLES } from "./category";
 
 const entryDir = path.resolve("./commands");
 const docsFile = path.resolve("./docs/commands.md");
-
-const categoryTitles: Record<Category, string> = {
-  tools: "Tools",
-  downloader: "Downloader",
-  search: "Search",
-  admin: "Group administration",
-  nsfw: "NSFW",
-  ai: "AI",
-  game: "Game",
-  maker: "Maker",
-  uncategorized: "Uncategorized",
-};
 
 async function collectCommandFiles(dir: string): Promise<string[]> {
   const entries = await fs.readdir(dir, { withFileTypes: true });
@@ -88,7 +77,7 @@ const groupedCommands = new Map<Category, Command[]>();
 
 for (const command of commands) {
   const category =
-    command.category && categoryTitles[command.category]
+    command.category && CATEGORY_TITLES[command.category]
       ? command.category
       : "uncategorized";
   const group = groupedCommands.get(category) ?? [];
@@ -107,13 +96,13 @@ const docLines = [
   "",
 ];
 
-for (const [category, title] of Object.entries(categoryTitles) as [Category, string][]) {
+for (const [category, title] of Object.entries(CATEGORY_TITLES) as [Category, string][]) {
   if (groupedCommands.get(category)?.length) {
     docLines.push("- [" + title + "](#" + slug(title) + ")");
   }
 }
 
-for (const [category, title] of Object.entries(categoryTitles) as [Category, string][]) {
+for (const [category, title] of Object.entries(CATEGORY_TITLES) as [Category, string][]) {
   const group = groupedCommands.get(category);
   if (!group?.length) continue;
 

@@ -1,4 +1,3 @@
-import { log } from "@lib/logger";
 import fs from "fs/promises";
 import path from "path";
 
@@ -70,22 +69,11 @@ await fs.writeFile(commandFile, generatedCommands, "utf8");
 // in this same generator run.
 const { commands: cmds } = await import("../generated/commands");
 
-import type { Category, Command } from "../types/command";
 import { config } from "config";
+import { CATEGORY_TITLES } from "./category";
+import { log } from "@lib/logger";
 
-const categoryTitles: Record<Category, string> = {
-  tools: "Tools",
-  downloader: "Downloader",
-  search: "Search",
-  admin: "Group administration",
-  nsfw: "NSFW",
-  ai: "AI",
-  game: "Game",
-  maker: "Maker",
-  uncategorized: "Uncategorized",
-};
-
-const menuGroups: Record<string, any[]> = Object.keys(categoryTitles).reduce(
+const menuGroups: Record<string, any[]> = Object.keys(CATEGORY_TITLES).reduce(
   (acc, key) => {
     acc[key] = [];
     return acc;
@@ -106,7 +94,7 @@ for (const cmd of cmds) {
   });
 }
 
-const menuEntries = Object.entries(categoryTitles).map(([key, title]) => {
+const menuEntries = Object.entries(CATEGORY_TITLES).map(([key, title]) => {
   const rows = menuGroups[key] || [];
   const rowsStr = rows
     .map(
@@ -128,3 +116,5 @@ const generatedMenu = [
 ].join("\n");
 
 await fs.writeFile(menuFile, generatedMenu, "utf8");
+
+log.info(`Generated ${files.length} commands and menu.ts successfully.`);
