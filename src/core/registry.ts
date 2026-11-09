@@ -45,4 +45,78 @@ export class CommandRegistry {
       throw new Error(`Command or alias already registered: ${key}`);
     }
   }
+
+  unregister(name: string): boolean {
+    const key = name.trim().toLowerCase();
+    const command = this.canonical.get(key);
+
+    if (!command) return false;
+
+    this.removeCommand(command);
+    return true;
+  }
+
+  replace(command: Command, previousName?: string): void {
+    const name = command.name.trim().toLowerCase();
+
+    if (!name) {
+      throw new Error("Command name cannot be empty");
+    }
+
+    const reservedFlags = new Set(["--help", "-h"]);
+
+    for (const flag of command.flags ?? []) {
+      for (const flagName of flag.names) {
+        if (reservedFlags.has(flagName)) {
+          throw new Error(
+            `Flag "${flagName}" is reserved for built-in command help.`,
+          );
+        }
+      }
+    }
+
+    const aliases = (command.aliases ?? [])
+      .map((alias) => alias.trim().toLowerCase())
+      .filter(Boolean);
+
+    const keys = [name, ...aliases];
+
+    if (new Set(keys).size !== keys.length) {
+      throw new Error(`Duplicate command name or alias: ${name}`);
+    }
+
+    const previous = previousName
+      ? this.canonical.get(previousName.trim().toLowerCase())
+      : this.canonical.get(name);
+
+    for (const key of keys) {
+      const existing = this.lookup.get(key);
+
+      if (existing && existing !== previous) {
+        throw new Error(`Command or alias already registered: ${key}`);
+      }
+    }
+
+    if (previous) {
+      this.removeCommand(previous);
+    }
+
+    this.canonical.set(name, command);
+
+    for (const key of keys) {
+      this.lookup.set(key, command);
+    }
+  }
+
+  private removeCommand(command: Command): void {
+    const name = command.name.trim().toLowerCase();
+
+    this.canonical.delete(name);
+
+    for (const [key, value] of this.lookup) {
+      if (value === command) {
+        this.lookup.delete(key);
+      }
+    }
+  }
 }

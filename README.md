@@ -79,6 +79,26 @@ To start all available sessions, use:
 bun start --all
 ```
 
+## Development Mode
+
+violajs includes a development mode with automatic command reloading, allowing you to modify commands without restarting the bot.
+
+Start the bot in development mode using:
+
+```bash
+bun run dev
+```
+
+### Features
+
+- Hot Reload — Automatically detects changes to command files.
+- New Commands — Automatically loads newly created commands.
+- Command Updates — Reloads commands when their source files are modified.
+- Command Removal — Automatically unregisters deleted commands.
+- No Restart Required — Apply command changes without restarting the application or reconnecting WhatsApp.
+
+Note: Development mode is intended for local development and debugging. Use the regular start command or standalone executable for production deployments.
+
 ---
 
 ## Building a Standalone Executable
