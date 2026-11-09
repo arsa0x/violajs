@@ -64,7 +64,7 @@ const generatedCommands = [
   "",
   commandsLine,
   "",
-].join("\\n");
+].join("\n");
 
 await fs.writeFile(commandFile, generatedCommands, "utf8");
 
@@ -113,9 +113,9 @@ const menuEntries = Object.entries(categoryTitles).map(([key, title]) => {
       (r) =>
         `    { title: ${JSON.stringify(r.title)}, description: ${JSON.stringify(r.description)}, id: ${JSON.stringify(r.id)} },`,
     )
-    .join("\\n");
+    .join("\n");
 
-  return `  ${key}: {\\n    title: ${JSON.stringify(title)},\\n    rows: [\\n${rowsStr}\\n    ],\\n  },`;
+  return `  ${key}: {\n    title: ${JSON.stringify(title)},\n    rows: [\n${rowsStr}\n    ],\n  },`;
 });
 
 const generatedMenu = [
@@ -125,14 +125,14 @@ const generatedMenu = [
   ...menuEntries,
   "};",
   "",
-].join("\\n");
+].join("\n");
 
 await fs.writeFile(menuFile, generatedMenu, "utf8");
 
 // Keep the command reference derived from the command definitions themselves.
 // The menu is a UI representation and intentionally does not own documentation data.
 function escapeCell(value: string): string {
-  return value.replaceAll("|", "\\\\|").replaceAll("\\n", " ").trim();
+  return value.replaceAll("|", "\\|").replaceAll("\n", " ").trim();
 }
 
 function formatFlag(flag: FlagSpec): string {
@@ -246,6 +246,6 @@ docLines.push(
   "",
 );
 
-await fs.writeFile(docsFile, docLines.join("\\n"), "utf8");
+await fs.writeFile(docsFile, docLines.join("\n"), "utf8");
 
 log.info(`Generated ${files.length} commands, menu, and command documentation successfully.`);
