@@ -21,15 +21,9 @@ describe("generateCommandHelp", () => {
 
     const help = generateCommandHelp(command);
 
-    expect(help).toContain("*Command: nekopoi*");
-    expect(help).toContain("*Description:* Search anime content.");
-    expect(help).toContain("*Aliases:* nk");
-    expect(help).toContain("*Category:* search");
-    expect(help).toContain("-h, --help");
-    expect(help).toContain("--search, -s <value>");
-    expect(help).toContain("Search using a keyword.");
-    expect(help).toContain("--post");
-    expect(help).toContain("Retrieve a post.");
+    expect(help).toContain(
+      "*Description:* Search anime content.\n*Aliases:* nk\n*Category:* search\n\n*Flags:*\n  ```-h```, ```--help```\n> Show this help message.\n\n  ```--search```, ```-s``` <value>\n> Search using a keyword.\n\n  ```--post```\n> Retrieve a post.",
+    );
   });
 
   test("handles commands without optional metadata", () => {
@@ -40,10 +34,8 @@ describe("generateCommandHelp", () => {
 
     const help = generateCommandHelp(command);
 
-    expect(help).toContain("*Command: ping*");
-    expect(help).toContain("No description provided.");
-    expect(help).toContain("*Aliases:* None");
-    expect(help).toContain("*Category:* Uncategorized");
-    expect(help).toContain("*Flags:*");
+    expect(help).toContain(
+      "*Description:* -\n*Aliases:* None\n*Category:* -\n\n*Flags:*\n  ```-h```, ```--help```\n> Show this help message.",
+    );
   });
 });

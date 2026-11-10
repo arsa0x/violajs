@@ -28,7 +28,7 @@ describe("buildCarouselButton", () => {
       webviewInteraction: false,
     });
     expect(JSON.parse(result.buttonParamsJson)).toMatchObject({
-      merchant_url: "https://merchant.example.com",
+      merchant_url: "https://merchant.example.com/",
       webview_interaction: false,
     });
   });
@@ -121,7 +121,9 @@ describe("buildCarouselButtons", () => {
       "cta_copy",
     ]);
     expect(JSON.parse(result[1]!.buttonParamsJson)).toMatchObject({
-      merchant_url: "https://example.com",
+      display_text: "Open",
+      merchant_url: "https://example.com/",
+      url: "https://example.com/",
       webview_interaction: true,
     });
   });
