@@ -1,9 +1,9 @@
 import type { Middleware } from "../types/middleware";
-import type { Context } from "./context";
+import type { CommandContext } from "./context";
 
 export async function runMiddleware(
   middleware: readonly Middleware[],
-  ctx: Context,
+  ctx: CommandContext,
   handler: () => Promise<void>,
 ): Promise<void> {
   let index = -1;
@@ -38,7 +38,7 @@ export async function runMiddleware(
 
 export function withMiddleware(
   middleware: readonly Middleware[],
-  handler: (ctx: Context) => Promise<void>,
-): (ctx: Context) => Promise<void> {
+  handler: (ctx: CommandContext) => Promise<void>,
+): (ctx: CommandContext) => Promise<void> {
   return (ctx) => runMiddleware(middleware, ctx, () => handler(ctx));
 }

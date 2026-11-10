@@ -1,6 +1,6 @@
-import type { Context } from "@core/context";
+import type { CommandContext } from "@core/context";
 
 export type Middleware = (
-  ctx: Context,
+  ctx: CommandContext,
   next: () => Promise<void>,
 ) => Promise<void>;
