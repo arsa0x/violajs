@@ -1,9 +1,11 @@
+import { config } from "@/config";
+
 export interface ParsedCommand {
   name: string;
   args: string[];
 }
 
-export function parseCommand(text: string, prefix = "."): ParsedCommand | null {
+export function parseCommand(text: string, prefix = config.prefix): ParsedCommand | null {
   const input = text.trim();
   if (!input.startsWith(prefix)) return null;
 
