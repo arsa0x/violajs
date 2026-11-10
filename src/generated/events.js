@@ -1,3 +1,5 @@
 // This file is generated. Do not edit manually.
 
-export const events = [];
+import _0 from "../../events/group.ts";
+
+export const events = [_0];
