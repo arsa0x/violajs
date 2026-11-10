@@ -5,7 +5,10 @@ export interface ParsedCommand {
   args: string[];
 }
 
-export function parseCommand(text: string, prefix = config.prefix): ParsedCommand | null {
+export function parseCommand(
+  text: string,
+  prefix = config.prefix,
+): ParsedCommand | null {
   const input = text.trim();
   if (!input.startsWith(prefix)) return null;
 
