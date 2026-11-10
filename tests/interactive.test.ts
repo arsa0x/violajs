@@ -47,7 +47,9 @@ describe("extractInteractiveResponse", () => {
   test("supports legacy button and list response messages", () => {
     expect(
       extractInteractiveResponse(
-        message({ message: { buttonsResponseMessage: { selectedButtonId: ".yes" } } }),
+        message({
+          message: { buttonsResponseMessage: { selectedButtonId: ".yes" } },
+        }),
       ),
     ).toBe(".yes");
 
@@ -65,7 +67,12 @@ describe("extractInteractiveResponse", () => {
   });
 
   test("ignores malformed, primitive, and unknown JSON payloads", () => {
-    for (const paramsJson of ["{broken", '"just text"', "[]", '{"display_text":"Help"}']) {
+    for (const paramsJson of [
+      "{broken",
+      '"just text"',
+      "[]",
+      '{"display_text":"Help"}',
+    ]) {
       expect(
         extractInteractiveResponse(
           message({
@@ -81,7 +88,11 @@ describe("extractInteractiveResponse", () => {
   });
 
   test("ignores messages without an interactive response", () => {
-    expect(extractInteractiveResponse(message({ message: { conversation: "hello" } }))).toBeNull();
+    expect(
+      extractInteractiveResponse(
+        message({ message: { conversation: "hello" } }),
+      ),
+    ).toBeNull();
     expect(extractInteractiveResponse(message({}))).toBeNull();
   });
 });

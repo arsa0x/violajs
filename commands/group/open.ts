@@ -11,10 +11,14 @@ export default defineCommand({
   async execute(ctx) {
     try {
       await ctx.sock.groupSettingUpdate(ctx.chat.jid, "not_announcement");
-      await ctx.send.text("Grup dibuka. Semua anggota sekarang dapat mengirim pesan.");
+      await ctx.send.text(
+        "Grup dibuka. Semua anggota sekarang dapat mengirim pesan.",
+      );
     } catch (error) {
       ctx.log.error(`Failed to open group: ${error}`);
-      await ctx.send.text("Gagal membuka grup. Pastikan bot masih menjadi admin.");
+      await ctx.send.text(
+        "Gagal membuka grup. Pastikan bot masih menjadi admin.",
+      );
     }
   },
 });

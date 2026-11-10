@@ -56,7 +56,11 @@ export default defineCommand({
             footer: "Card footer example",
             buttons: [
               { type: "quick_reply", text: "Ping", id: ".ping" },
-              { type: "url", text: "Open project", url: "https://github.com/arsa0x/violajs" },
+              {
+                type: "url",
+                text: "Open project",
+                url: "https://github.com/arsa0x/violajs",
+              },
             ],
           },
           {
@@ -64,7 +68,13 @@ export default defineCommand({
             title: "Quick reply card 2",
             body: "Open the URL-button demo.",
             footer: "A card can have its own footer.",
-            buttons: [{ type: "quick_reply", text: "Open demo", id: ".interactive url" }],
+            buttons: [
+              {
+                type: "quick_reply",
+                text: "Open demo",
+                id: ".interactive url",
+              },
+            ],
           },
         ],
       });
@@ -91,7 +101,11 @@ export default defineCommand({
             image: "https://picsum.photos/seed/violajs-url-two/640/480",
             title: "GitHub profile",
             body: "Open the maintainer profile.",
-            button: { type: "url", text: "Open profile", url: "https://github.com/arsa0x" },
+            button: {
+              type: "url",
+              text: "Open profile",
+              url: "https://github.com/arsa0x",
+            },
           },
         ],
       });
@@ -105,12 +119,20 @@ export default defineCommand({
           {
             image: "https://picsum.photos/seed/violajs-call-one/640/480",
             title: "Support",
-            button: { type: "call", text: "Call support", phoneNumber: "+6281234567890" },
+            button: {
+              type: "call",
+              text: "Call support",
+              phoneNumber: "+6281234567890",
+            },
           },
           {
             image: "https://picsum.photos/seed/violajs-call-two/640/480",
             title: "Contact",
-            button: { type: "call", text: "Call contact", phoneNumber: "+6281234567890" },
+            button: {
+              type: "call",
+              text: "Call contact",
+              phoneNumber: "+6281234567890",
+            },
           },
         ],
       });
@@ -124,7 +146,12 @@ export default defineCommand({
           {
             image: "https://picsum.photos/seed/violajs-copy-one/640/480",
             title: "Promo one",
-            button: { type: "copy", text: "Copy code", code: "VIOLA10", id: "promo-one" },
+            button: {
+              type: "copy",
+              text: "Copy code",
+              code: "VIOLA10",
+              id: "promo-one",
+            },
           },
           {
             image: "https://picsum.photos/seed/violajs-copy-two/640/480",
@@ -146,13 +173,23 @@ export default defineCommand({
             button: {
               type: "single_select",
               title: "Choose command",
-              sections: [{
-                title: "General",
-                rows: [
-                  { title: "Ping", id: ".ping", description: "Check bot status" },
-                  { title: "Help", id: ".help", description: "Show available commands" },
-                ],
-              }],
+              sections: [
+                {
+                  title: "General",
+                  rows: [
+                    {
+                      title: "Ping",
+                      id: ".ping",
+                      description: "Check bot status",
+                    },
+                    {
+                      title: "Help",
+                      id: ".help",
+                      description: "Show available commands",
+                    },
+                  ],
+                },
+              ],
             },
           },
           {
@@ -161,13 +198,15 @@ export default defineCommand({
             button: {
               type: "single_select",
               title: "Choose command",
-              sections: [{
-                title: "Interactive",
-                rows: [
-                  { title: "Quick replies", id: ".interactive" },
-                  { title: "URL button", id: ".interactive url" },
-                ],
-              }],
+              sections: [
+                {
+                  title: "Interactive",
+                  rows: [
+                    { title: "Quick replies", id: ".interactive" },
+                    { title: "URL button", id: ".interactive url" },
+                  ],
+                },
+              ],
             },
           },
         ],
@@ -188,7 +227,10 @@ export default defineCommand({
       await ctx.send.interactive.quickReply({
         title: "Interactive media header",
         body: "This message uses an image header.",
-        headerMedia: { type: "image", url: "https://picsum.photos/seed/violajs-interactive-header/800/500" },
+        headerMedia: {
+          type: "image",
+          url: "https://picsum.photos/seed/violajs-interactive-header/800/500",
+        },
         buttons: [{ text: "Ping", id: ".ping" }],
       });
       return;

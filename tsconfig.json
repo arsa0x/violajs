@@ -5,8 +5,8 @@
       "@types/*": ["./src/types/*"],
       "@middlewares/*": ["./src/middlewares/*"],
       "@core/*": ["./src/core/*"],
-      "@utils/*" : ["./src/utils/*"],
-      "@lib/*": ["./lib/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@lib/*": ["./lib/*"]
     },
 
     // Environment setup & latest features
@@ -34,6 +34,6 @@
     // Some stricter flags (disabled by default)
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noPropertyAccessFromIndexSignature": false,
-  },
+    "noPropertyAccessFromIndexSignature": false
+  }
 }

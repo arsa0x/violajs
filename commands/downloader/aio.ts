@@ -51,8 +51,11 @@ function formatOption(option: MediaOption, index: number): string | undefined {
   if (typeof url !== "string" || !/^https?:\/\//i.test(url)) return;
 
   const quality =
-    option.quality ?? option.label ?? option.resolution ??
-    (option.height ? `${option.height}p` : undefined) ?? "Kualitas tidak diketahui";
+    option.quality ??
+    option.label ??
+    option.resolution ??
+    (option.height ? `${option.height}p` : undefined) ??
+    "Kualitas tidak diketahui";
   const format = String(option.extension ?? option.ext ?? option.format ?? "")
     .replace(/^\./, "")
     .toUpperCase();
@@ -76,7 +79,9 @@ export default defineCommand({
     try {
       target = parsePublicUrl(input);
     } catch (error) {
-      await ctx.send.text(error instanceof Error ? error.message : "URL tidak valid.");
+      await ctx.send.text(
+        error instanceof Error ? error.message : "URL tidak valid.",
+      );
       return;
     }
 
@@ -120,14 +125,17 @@ export default defineCommand({
         return;
       }
 
-      const title = typeof payload.title === "string" ? payload.title : "Media ditemukan";
-      const source = typeof payload.source === "string" ? payload.source : target.hostname;
+      const title =
+        typeof payload.title === "string" ? payload.title : "Media ditemukan";
+      const source =
+        typeof payload.source === "string" ? payload.source : target.hostname;
       await ctx.send.text(
         `*${title}*\nSumber: ${source}\n\n${formatted.join("\n\n")}`,
       );
     } catch (error) {
       ctx.log.warn("AIO scraper failed", error);
-      const message = error instanceof Error ? error.message : "Kesalahan tidak diketahui.";
+      const message =
+        error instanceof Error ? error.message : "Kesalahan tidak diketahui.";
       await ctx.send.text(`Gagal memproses URL: ${message}`);
     }
   },

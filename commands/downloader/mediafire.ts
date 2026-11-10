@@ -14,7 +14,10 @@ function parseMediaFireUrl(input: string): URL {
 
   if (
     !["http:", "https:"].includes(url.protocol) ||
-    !(url.hostname === "mediafire.com" || url.hostname.endsWith(".mediafire.com"))
+    !(
+      url.hostname === "mediafire.com" ||
+      url.hostname.endsWith(".mediafire.com")
+    )
   ) {
     throw new Error("Masukkan tautan dari mediafire.com.");
   }
@@ -38,7 +41,8 @@ export default defineCommand({
       const response = await fetch(pageUrl, {
         headers: {
           "User-Agent": USER_AGENT,
-          Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+          Accept:
+            "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
           "Accept-Language": "en-US,en;q=0.9",
         },
         redirect: "follow",
@@ -49,13 +53,17 @@ export default defineCommand({
         throw new Error(`MediaFire membalas HTTP ${response.status}.`);
       }
       const finalUrl = new URL(response.url);
-      if (!(finalUrl.hostname === "mediafire.com" || finalUrl.hostname.endsWith(".mediafire.com"))) {
+      if (!(
+        finalUrl.hostname === "mediafire.com" ||
+        finalUrl.hostname.endsWith(".mediafire.com")
+      )) {
         throw new Error("Tautan dialihkan ke domain yang tidak dikenal.");
       }
 
       const html = await response.text();
       const $ = cheerio.load(html);
-      const title = $("div.dl-btn-label").first().text().trim() ||
+      const title =
+        $("div.dl-btn-label").first().text().trim() ||
         $("meta[property='og:title']").attr("content") ||
         $("title").text().trim() ||
         "File MediaFire";
@@ -67,22 +75,33 @@ export default defineCommand({
         $("[data-scrapable-href]").first().attr("data-scrapable-href");
 
       if (!candidate) {
-        throw new Error("Tautan unduhan tidak ditemukan. File mungkin dihapus, privat, atau halaman berubah.");
+        throw new Error(
+          "Tautan unduhan tidak ditemukan. File mungkin dihapus, privat, atau halaman berubah.",
+        );
       }
 
       const downloadUrl = new URL(candidate, response.url);
       if (
         !["http:", "https:"].includes(downloadUrl.protocol) ||
-        !(downloadUrl.hostname === "mediafire.com" || downloadUrl.hostname.endsWith(".mediafire.com"))
+        !(
+          downloadUrl.hostname === "mediafire.com" ||
+          downloadUrl.hostname.endsWith(".mediafire.com")
+        )
       ) {
-        throw new Error("Tautan unduhan yang dikembalikan bukan domain MediaFire.");
+        throw new Error(
+          "Tautan unduhan yang dikembalikan bukan domain MediaFire.",
+        );
       }
 
-      await ctx.send.text(`*MediaFire: ${title}*\n\nTautan unduhan:\n${downloadUrl.href}`);
+      await ctx.send.text(
+        `*MediaFire: ${title}*\n\nTautan unduhan:\n${downloadUrl.href}`,
+      );
     } catch (error) {
       ctx.log.warn("MediaFire resolver failed", error);
       await ctx.send.text(
-        error instanceof Error ? `Gagal resolve MediaFire: ${error.message}` : "Gagal resolve tautan MediaFire.",
+        error instanceof Error
+          ? `Gagal resolve MediaFire: ${error.message}`
+          : "Gagal resolve tautan MediaFire.",
       );
     }
   },

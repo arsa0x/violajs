@@ -27,4 +27,31 @@ import _23 from "../../commands/tools/ping.js";
 import _24 from "../../commands/tools/qr.ts";
 import _25 from "../../commands/tools/sticker.ts";
 
-export const commands = [_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25];
+export const commands = [
+  _0,
+  _1,
+  _2,
+  _3,
+  _4,
+  _5,
+  _6,
+  _7,
+  _8,
+  _9,
+  _10,
+  _11,
+  _12,
+  _13,
+  _14,
+  _15,
+  _16,
+  _17,
+  _18,
+  _19,
+  _20,
+  _21,
+  _22,
+  _23,
+  _24,
+  _25,
+];

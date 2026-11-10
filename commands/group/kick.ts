@@ -13,7 +13,9 @@ export default defineCommand({
   async execute(ctx) {
     const target = getGroupTarget(ctx);
     if (!target) {
-      await ctx.send.text("Tag, reply pesan anggota, atau gunakan .kick <nomor>.");
+      await ctx.send.text(
+        "Tag, reply pesan anggota, atau gunakan .kick <nomor>.",
+      );
       return;
     }
 
@@ -29,13 +31,19 @@ export default defineCommand({
         return;
       }
       await ctx.sock.groupParticipantsUpdate(ctx.chat.jid, [target], "remove");
-      await ctx.sock.sendMessage(ctx.chat.jid, {
-        text: `Anggota @${target.split("@")[0]} dikeluarkan dari grup.`,
-        mentions: [target],
-      }, { quoted: ctx.msg });
+      await ctx.sock.sendMessage(
+        ctx.chat.jid,
+        {
+          text: `Anggota @${target.split("@")[0]} dikeluarkan dari grup.`,
+          mentions: [target],
+        },
+        { quoted: ctx.msg },
+      );
     } catch (error) {
       ctx.log.error(`Failed to remove group participant: ${error}`);
-      await ctx.send.text("Gagal mengeluarkan anggota. Periksa target dan hak admin bot.");
+      await ctx.send.text(
+        "Gagal mengeluarkan anggota. Periksa target dan hak admin bot.",
+      );
     }
   },
 });

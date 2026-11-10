@@ -110,7 +110,8 @@ export class EventDynamicLoader {
       entries.map(async (entry) => {
         const path = join(dir, entry.name);
         if (entry.isDirectory()) return this.collectFiles(path);
-        if (entry.isFile() && EXTENSIONS.has(extname(entry.name))) return [path];
+        if (entry.isFile() && EXTENSIONS.has(extname(entry.name)))
+          return [path];
         return [];
       }),
     );

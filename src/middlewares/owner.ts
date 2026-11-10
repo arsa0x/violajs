@@ -1,10 +1,10 @@
-import type { Middleware } from "../types/middleware"
+import type { Middleware } from "../types/middleware";
 
 export const ownerOnly = (): Middleware => async (ctx, next) => {
   if (!ctx.sender.isOwner) {
-    await ctx.send.text('Command ini hanya dapat digunakan oleh owner.')
-    return
+    await ctx.send.text("Command ini hanya dapat digunakan oleh owner.");
+    return;
   }
 
-  await next()
-}
+  await next();
+};

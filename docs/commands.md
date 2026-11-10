@@ -14,14 +14,14 @@ All commands and plugins currently available in violajs.
 
 ## Tools
 
-| Command | Aliases | Description | Usage | Flags |
-| --- | --- | --- | --- | --- |
-| `interactive` | `buttons` | — | — | — |
-| `menu` | `help`, `allmenu` | Show the bot command menu | — | — |
-| `ouo` | `ouoresolve` | — | — | — |
-| `ping` | `p` | — | — | — |
-| `qr` | `qrcode` | Generate a text QR code | — | — |
-| `sticker` | `s`, `stiker` | Sticker maker | — | [6 flags](#sticker) |
+| Command       | Aliases           | Description               | Usage | Flags               |
+| ------------- | ----------------- | ------------------------- | ----- | ------------------- |
+| `interactive` | `buttons`         | —                         | —     | —                   |
+| `menu`        | `help`, `allmenu` | Show the bot command menu | —     | —                   |
+| `ouo`         | `ouoresolve`      | —                         | —     | —                   |
+| `ping`        | `p`               | —                         | —     | —                   |
+| `qr`          | `qrcode`          | Generate a text QR code   | —     | —                   |
+| `sticker`     | `s`, `stiker`     | Sticker maker             | —     | [6 flags](#sticker) |
 
 ### Flag details
 
@@ -34,46 +34,45 @@ All commands and plugins currently available in violajs.
 - `--flip`: Flip image top-bottom (vertical)
 - `--flop`: Flip image left-right (horizontal)
 
-
 ## Downloader
 
-| Command | Aliases | Description | Usage | Flags |
-| --- | --- | --- | --- | --- |
-| `aio` | `dl`, `alldl` | Resolve media links using an all-in-one downloader service | — | — |
-| `githubdl` | `ghdl`, `repozip` | Get a ZIP archive link for a public GitHub repository | — | — |
-| `mediafire` | `mf`, `mfire` | Resolve a public MediaFire file link | — | — |
+| Command     | Aliases           | Description                                                | Usage | Flags |
+| ----------- | ----------------- | ---------------------------------------------------------- | ----- | ----- |
+| `aio`       | `dl`, `alldl`     | Resolve media links using an all-in-one downloader service | —     | —     |
+| `githubdl`  | `ghdl`, `repozip` | Get a ZIP archive link for a public GitHub repository      | —     | —     |
+| `mediafire` | `mf`, `mfire`     | Resolve a public MediaFire file link                       | —     | —     |
 
 ## Search
 
-| Command | Aliases | Description | Usage | Flags |
-| --- | --- | --- | --- | --- |
-| `amfinder` | `presetfind`, `ampf` | Find Alight Motion presets related to a public TikTok video | — | — |
-| `search` | `websearch`, `ddg` | Search the web and return the first few results | — | — |
-| `spotify` | `spinfo`, `spotifyinfo` | Get public Spotify track, album, or playlist metadata | — | — |
-| `ytinfo` | `youtubeinfo`, `ytmeta` | Get public YouTube video metadata | — | — |
+| Command    | Aliases                 | Description                                                 | Usage | Flags |
+| ---------- | ----------------------- | ----------------------------------------------------------- | ----- | ----- |
+| `amfinder` | `presetfind`, `ampf`    | Find Alight Motion presets related to a public TikTok video | —     | —     |
+| `search`   | `websearch`, `ddg`      | Search the web and return the first few results             | —     | —     |
+| `spotify`  | `spinfo`, `spotifyinfo` | Get public Spotify track, album, or playlist metadata       | —     | —     |
+| `ytinfo`   | `youtubeinfo`, `ytmeta` | Get public YouTube video metadata                           | —     | —     |
 
 ## Group administration
 
-| Command | Aliases | Description | Usage | Flags |
-| --- | --- | --- | --- | --- |
-| `add` | `tambah`, `+` | — | — | — |
-| `close` | `tutup` | — | — | — |
-| `delete` | `del`, `rm`, `hapus` | — | — | — |
-| `demote` | `unadmin` | — | — | — |
-| `hidetag` | `h` | — | — | — |
-| `kick` | `tendang` | — | — | — |
-| `linkgc` | `linkgrup`, `linkgroup` | — | — | — |
-| `open` | `buka` | — | — | — |
-| `promote` | `admin` | — | — | — |
-| `revokelink` | `resetlink`, `revoke` | — | — | — |
-| `tagall` | `everyone`, `all` | — | — | — |
+| Command      | Aliases                 | Description | Usage | Flags |
+| ------------ | ----------------------- | ----------- | ----- | ----- |
+| `add`        | `tambah`, `+`           | —           | —     | —     |
+| `close`      | `tutup`                 | —           | —     | —     |
+| `delete`     | `del`, `rm`, `hapus`    | —           | —     | —     |
+| `demote`     | `unadmin`               | —           | —     | —     |
+| `hidetag`    | `h`                     | —           | —     | —     |
+| `kick`       | `tendang`               | —           | —     | —     |
+| `linkgc`     | `linkgrup`, `linkgroup` | —           | —     | —     |
+| `open`       | `buka`                  | —           | —     | —     |
+| `promote`    | `admin`                 | —           | —     | —     |
+| `revokelink` | `resetlink`, `revoke`   | —           | —     | —     |
+| `tagall`     | `everyone`, `all`       | —           | —     | —     |
 
 ## NSFW
 
-| Command | Aliases | Description | Usage | Flags |
-| --- | --- | --- | --- | --- |
-| `nekopoi` | `neko` | — | `.nekopoi -s enjo kouhai`<br>`.nekopoi -i 112233` | [4 flags](#nekopoi) |
-| `pornhub` | `ph` | 18+ only. | — | [4 flags](#pornhub) |
+| Command   | Aliases | Description | Usage                                             | Flags               |
+| --------- | ------- | ----------- | ------------------------------------------------- | ------------------- |
+| `nekopoi` | `neko`  | —           | `.nekopoi -s enjo kouhai`<br>`.nekopoi -i 112233` | [4 flags](#nekopoi) |
+| `pornhub` | `ph`    | 18+ only.   | —                                                 | [4 flags](#pornhub) |
 
 ### Flag details
 
@@ -90,7 +89,6 @@ All commands and plugins currently available in violajs.
 - `--page`, `-p` <value>: Result page number, starting at 1 (default: 1)
 - `--ordering` <value>: Sort order: featured | newest | mostviewed | rating (default: newest)
 - `--period` <value>: Time window: weekly | monthly | alltime (default: alltime)
-
 
 ---
 

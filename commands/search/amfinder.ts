@@ -13,7 +13,11 @@ function parseTikTokUrl(input: string): URL {
   }
 
   const host = url.hostname.toLowerCase().replace(/^www\./, "");
-  if (!["tiktok.com", "m.tiktok.com", "vm.tiktok.com", "vt.tiktok.com"].includes(host)) {
+  if (
+    !["tiktok.com", "m.tiktok.com", "vm.tiktok.com", "vt.tiktok.com"].includes(
+      host,
+    )
+  ) {
     throw new Error("URL harus berasal dari TikTok.");
   }
   if (!["http:", "https:"].includes(url.protocol)) {
@@ -50,11 +54,17 @@ export default defineCommand({
         },
         signal: AbortSignal.timeout(15_000),
       });
-      if (!home.ok) throw new Error(`AM Finder membalas HTTP ${home.status} saat membuka halaman.`);
+      if (!home.ok)
+        throw new Error(
+          `AM Finder membalas HTTP ${home.status} saat membuka halaman.`,
+        );
 
       const html = await home.text();
       const cookie = findCookie(home.headers, html);
-      if (!cookie) throw new Error("Cookie sesi AM Finder tidak ditemukan. Layanan mungkin telah berubah.");
+      if (!cookie)
+        throw new Error(
+          "Cookie sesi AM Finder tidak ditemukan. Layanan mungkin telah berubah.",
+        );
 
       const endpoint = new URL("/api/find", BASE);
       endpoint.searchParams.set("url", target.href);
@@ -70,7 +80,8 @@ export default defineCommand({
       if (response.status === 401 || response.status === 403) {
         throw new Error("Layanan menolak sesi. Coba lagi nanti.");
       }
-      if (!response.ok) throw new Error(`AM Finder membalas HTTP ${response.status}.`);
+      if (!response.ok)
+        throw new Error(`AM Finder membalas HTTP ${response.status}.`);
 
       const data = (await response.json()) as {
         ok?: boolean;
@@ -93,8 +104,11 @@ export default defineCommand({
         }>;
       };
 
-      if (data.ok === false) throw new Error(data.error || "AM Finder gagal memproses video.");
-      const presets = Array.isArray(data.presets) ? data.presets.slice(0, 8) : [];
+      if (data.ok === false)
+        throw new Error(data.error || "AM Finder gagal memproses video.");
+      const presets = Array.isArray(data.presets)
+        ? data.presets.slice(0, 8)
+        : [];
       const video = data.video ?? {};
       const author = data.author ?? {};
 
@@ -105,8 +119,12 @@ export default defineCommand({
 
       const header = [
         "*Alight Motion Preset Finder*",
-        author.nickname ? `Creator: ${author.nickname}${author.uniqueId ? ` (@${author.uniqueId})` : ""}` : undefined,
-        video.description ? `Video: ${video.description.replace(/\s+/g, " ").slice(0, 220)}` : undefined,
+        author.nickname
+          ? `Creator: ${author.nickname}${author.uniqueId ? ` (@${author.uniqueId})` : ""}`
+          : undefined,
+        video.description
+          ? `Video: ${video.description.replace(/\s+/g, " ").slice(0, 220)}`
+          : undefined,
         `Preset ditemukan: ${presets.length}`,
         "",
       ].filter((line): line is string => line !== undefined);
@@ -120,14 +138,20 @@ export default defineCommand({
           details ? details.replace(/\s+/g, " ").slice(0, 240) : undefined,
           url ? `Link: ${url}` : undefined,
           preset.source ? `Ditemukan dari: ${preset.source}` : undefined,
-        ].filter((line): line is string => line !== undefined).join("\n");
+        ]
+          .filter((line): line is string => line !== undefined)
+          .join("\n");
       });
 
-      await ctx.send.text(`${header.join("\n")}${items.join("\n\n")}\n\nVideo sumber: ${video.url ?? target.href}`);
+      await ctx.send.text(
+        `${header.join("\n")}${items.join("\n\n")}\n\nVideo sumber: ${video.url ?? target.href}`,
+      );
     } catch (error) {
       ctx.log.warn("AM Finder lookup failed", error);
       await ctx.send.text(
-        error instanceof Error ? `Gagal mencari preset: ${error.message}` : "Gagal mencari preset.",
+        error instanceof Error
+          ? `Gagal mencari preset: ${error.message}`
+          : "Gagal mencari preset.",
       );
     }
   },

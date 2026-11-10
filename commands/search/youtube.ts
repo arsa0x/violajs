@@ -23,7 +23,12 @@ function parseYouTubeUrl(input: string): URL {
   if (!["http:", "https:"].includes(url.protocol)) {
     throw new Error("Hanya URL HTTP/HTTPS yang didukung.");
   }
-  if ((host === "youtube.com" || host === "m.youtube.com") && !url.pathname.startsWith("/watch") && !url.pathname.startsWith("/shorts/") && !url.pathname.startsWith("/embed/")) {
+  if (
+    (host === "youtube.com" || host === "m.youtube.com") &&
+    !url.pathname.startsWith("/watch") &&
+    !url.pathname.startsWith("/shorts/") &&
+    !url.pathname.startsWith("/embed/")
+  ) {
     throw new Error("Tautan YouTube harus mengarah ke video atau Shorts.");
   }
   return url;
@@ -53,9 +58,12 @@ export default defineCommand({
       });
 
       if (response.status === 404 || response.status === 401) {
-        throw new Error("Video tidak ditemukan, privat, atau tidak dapat disematkan.");
+        throw new Error(
+          "Video tidak ditemukan, privat, atau tidak dapat disematkan.",
+        );
       }
-      if (!response.ok) throw new Error(`YouTube membalas HTTP ${response.status}.`);
+      if (!response.ok)
+        throw new Error(`YouTube membalas HTTP ${response.status}.`);
 
       const data = (await response.json()) as YouTubeOEmbed;
       if (!data.title) throw new Error("Metadata video tidak tersedia.");
@@ -73,7 +81,9 @@ export default defineCommand({
     } catch (error) {
       ctx.log.warn("YouTube metadata lookup failed", error);
       await ctx.send.text(
-        error instanceof Error ? `Gagal mengambil metadata YouTube: ${error.message}` : "Gagal mengambil metadata YouTube.",
+        error instanceof Error
+          ? `Gagal mengambil metadata YouTube: ${error.message}`
+          : "Gagal mengambil metadata YouTube.",
       );
     }
   },

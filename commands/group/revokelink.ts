@@ -11,7 +11,9 @@ export default defineCommand({
   async execute(ctx) {
     try {
       const code = await ctx.sock.groupRevokeInvite(ctx.chat.jid);
-      await ctx.send.text(`Link undangan berhasil direset. Link baru:\nhttps://chat.whatsapp.com/${code}`);
+      await ctx.send.text(
+        `Link undangan berhasil direset. Link baru:\nhttps://chat.whatsapp.com/${code}`,
+      );
     } catch (error) {
       ctx.log.error(`Failed to revoke group invite link: ${error}`);
       await ctx.send.text("Gagal mereset link grup.");

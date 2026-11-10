@@ -12,7 +12,9 @@ export default defineCommand({
   async execute(ctx) {
     const target = getGroupTarget(ctx);
     if (!target) {
-      await ctx.send.text("Tag, reply pesan anggota, atau gunakan .promote <nomor>.");
+      await ctx.send.text(
+        "Tag, reply pesan anggota, atau gunakan .promote <nomor>.",
+      );
       return;
     }
     try {
@@ -21,10 +23,14 @@ export default defineCommand({
         return;
       }
       await ctx.sock.groupParticipantsUpdate(ctx.chat.jid, [target], "promote");
-      await ctx.sock.sendMessage(ctx.chat.jid, {
-        text: `@${target.split("@")[0]} sekarang menjadi admin grup.`,
-        mentions: [target],
-      }, { quoted: ctx.msg });
+      await ctx.sock.sendMessage(
+        ctx.chat.jid,
+        {
+          text: `@${target.split("@")[0]} sekarang menjadi admin grup.`,
+          mentions: [target],
+        },
+        { quoted: ctx.msg },
+      );
     } catch (error) {
       ctx.log.error(`Failed to promote group participant: ${error}`);
       await ctx.send.text("Gagal menjadikan anggota sebagai admin.");

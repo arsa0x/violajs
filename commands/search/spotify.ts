@@ -23,9 +23,17 @@ function parseSpotifyUrl(input: string): URL {
     throw new Error("URL harus berasal dari Spotify.");
   }
 
-  const normalizedPath = url.pathname.replace(/^\/intl-[a-z]{2}(?:-[a-z]{2})?\//i, "/");
-  if (!/^\/(track|album|playlist|episode|show)\//.test(normalizedPath) && url.hostname !== "spotify.link") {
-    throw new Error("Tautan Spotify harus mengarah ke track, album, playlist, episode, atau show.");
+  const normalizedPath = url.pathname.replace(
+    /^\/intl-[a-z]{2}(?:-[a-z]{2})?\//i,
+    "/",
+  );
+  if (
+    !/^\/(track|album|playlist|episode|show)\//.test(normalizedPath) &&
+    url.hostname !== "spotify.link"
+  ) {
+    throw new Error(
+      "Tautan Spotify harus mengarah ke track, album, playlist, episode, atau show.",
+    );
   }
   return url;
 }
@@ -53,17 +61,23 @@ export default defineCommand({
       });
 
       if (response.status === 404 || response.status === 400) {
-        throw new Error("Konten Spotify tidak ditemukan atau tidak dapat disematkan.");
+        throw new Error(
+          "Konten Spotify tidak ditemukan atau tidak dapat disematkan.",
+        );
       }
-      if (!response.ok) throw new Error(`Spotify membalas HTTP ${response.status}.`);
+      if (!response.ok)
+        throw new Error(`Spotify membalas HTTP ${response.status}.`);
 
       const data = (await response.json()) as SpotifyEmbed;
-      if (!data.title) throw new Error("Metadata tidak tersedia untuk tautan ini.");
+      if (!data.title)
+        throw new Error("Metadata tidak tersedia untuk tautan ini.");
 
       const lines = [
         `*${data.title}*`,
         data.author_name ? `Artis / pemilik: ${data.author_name}` : undefined,
-        data.provider_name ? `Sumber: ${data.provider_name}` : "Sumber: Spotify",
+        data.provider_name
+          ? `Sumber: ${data.provider_name}`
+          : "Sumber: Spotify",
         data.thumbnail_url ? `Cover: ${data.thumbnail_url}` : undefined,
         "",
         `Buka di Spotify: ${target.href}`,
@@ -73,7 +87,9 @@ export default defineCommand({
     } catch (error) {
       ctx.log.warn("Spotify metadata lookup failed", error);
       await ctx.send.text(
-        error instanceof Error ? `Gagal mengambil metadata Spotify: ${error.message}` : "Gagal mengambil metadata Spotify.",
+        error instanceof Error
+          ? `Gagal mengambil metadata Spotify: ${error.message}`
+          : "Gagal mengambil metadata Spotify.",
       );
     }
   },

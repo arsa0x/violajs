@@ -13,11 +13,7 @@ export class FlagSpec {
   readonly kind: FlagKind;
   readonly help?: string;
 
-  private constructor(
-    names: readonly string[],
-    kind: FlagKind,
-    help?: string,
-  ) {
+  private constructor(names: readonly string[], kind: FlagKind, help?: string) {
     if (names.length === 0) {
       throw new TypeError("A flag must have at least one name.");
     }
@@ -92,7 +88,9 @@ export class Args {
     for (const spec of specs) {
       for (const name of spec.names) {
         if (this.specByName.has(name)) {
-          throw new TypeError(`Flag name "${name}" is declared more than once.`);
+          throw new TypeError(
+            `Flag name "${name}" is declared more than once.`,
+          );
         }
         this.specByName.set(name, spec);
       }
@@ -149,10 +147,7 @@ export class Args {
         continue;
       }
 
-      while (
-        index < raw.length &&
-        !result.specByName.has(raw[index]!)
-      ) {
+      while (index < raw.length && !result.specByName.has(raw[index]!)) {
         collected.push(raw[index]!);
         index += 1;
       }
@@ -194,10 +189,7 @@ export class Args {
   }
 
   /** Parses a value using a caller-supplied conversion function. */
-  valueParsed<T>(
-    name: string,
-    parser: (raw: string) => T,
-  ): T | undefined {
+  valueParsed<T>(name: string, parser: (raw: string) => T): T | undefined {
     const raw = this.value(name);
     if (raw === undefined) return undefined;
 
@@ -228,10 +220,7 @@ export class Args {
   }
 
   /** Parses JSON and then validates/converts it with a caller-supplied parser. */
-  jsonParsed<T>(
-    name: string,
-    parser: (value: unknown) => T,
-  ): T | undefined {
+  jsonParsed<T>(name: string, parser: (value: unknown) => T): T | undefined {
     const value = this.json(name);
     if (value === undefined) return undefined;
 
@@ -258,7 +247,12 @@ export class Args {
     return this.positionals.slice(index);
   }
 
-  descriptions(): Array<{ name: string; aliases: string[]; kind: FlagKind; description?: string }> {
+  descriptions(): Array<{
+    name: string;
+    aliases: string[];
+    kind: FlagKind;
+    description?: string;
+  }> {
     return this.specs.map((spec) => ({
       name: spec.name,
       aliases: spec.names.slice(1),

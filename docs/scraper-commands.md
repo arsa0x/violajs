@@ -6,26 +6,26 @@ All commands use native `fetch` and the existing Cheerio dependency where HTML p
 
 ## Downloader
 
-| Command | Aliases | Usage | Notes |
-| --- | --- | --- | --- |
-| `aio` | `dl`, `alldl` | `.aio <media URL>` | Resolves media through the public VideoDownloadTools endpoint. The service may fail, change its response, or reject a platform. |
-| `mediafire` | `mf`, `mfire` | `.mediafire <MediaFire URL>` | Extracts the public direct-download URL from a MediaFire page. It returns a link instead of downloading the file to the bot host. |
-| `githubdl` | `ghdl`, `repozip` | `.githubdl <owner/repo or GitHub URL>` | Gets repository metadata and a ZIP archive URL through the GitHub API. Public repositories only. |
+| Command     | Aliases           | Usage                                  | Notes                                                                                                                             |
+| ----------- | ----------------- | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `aio`       | `dl`, `alldl`     | `.aio <media URL>`                     | Resolves media through the public VideoDownloadTools endpoint. The service may fail, change its response, or reject a platform.   |
+| `mediafire` | `mf`, `mfire`     | `.mediafire <MediaFire URL>`           | Extracts the public direct-download URL from a MediaFire page. It returns a link instead of downloading the file to the bot host. |
+| `githubdl`  | `ghdl`, `repozip` | `.githubdl <owner/repo or GitHub URL>` | Gets repository metadata and a ZIP archive URL through the GitHub API. Public repositories only.                                  |
 
 ## Search and metadata
 
-| Command | Aliases | Usage | Notes |
-| --- | --- | --- | --- |
-| `search` | `websearch`, `ddg` | `.search <query>` | Returns up to five results from DuckDuckGo HTML search. |
-| `amfinder` | `presetfind`, `ampf` | `.amfinder <TikTok video URL>` | Looks for Alight Motion presets linked to a public TikTok video. Depends on the AM Finder service and its session cookie. |
-| `spotify` | `spinfo`, `spotifyinfo` | `.spotify <Spotify URL>` | Reads public embed metadata; it does not download Spotify audio. |
-| `ytinfo` | `youtubeinfo`, `ytmeta` | `.ytinfo <YouTube video URL>` | Reads public YouTube oEmbed metadata; it does not download the video. |
+| Command    | Aliases                 | Usage                          | Notes                                                                                                                     |
+| ---------- | ----------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| `search`   | `websearch`, `ddg`      | `.search <query>`              | Returns up to five results from DuckDuckGo HTML search.                                                                   |
+| `amfinder` | `presetfind`, `ampf`    | `.amfinder <TikTok video URL>` | Looks for Alight Motion presets linked to a public TikTok video. Depends on the AM Finder service and its session cookie. |
+| `spotify`  | `spinfo`, `spotifyinfo` | `.spotify <Spotify URL>`       | Reads public embed metadata; it does not download Spotify audio.                                                          |
+| `ytinfo`   | `youtubeinfo`, `ytmeta` | `.ytinfo <YouTube video URL>`  | Reads public YouTube oEmbed metadata; it does not download the video.                                                     |
 
 ## Tools
 
-| Command | Aliases | Usage | Notes |
-| --- | --- | --- | --- |
-| `qr` | `qrcode` | `.qr <text or URL>` | Renders a small QR code as Unicode text. Input is limited to 250 characters to keep messages manageable. |
+| Command | Aliases  | Usage               | Notes                                                                                                    |
+| ------- | -------- | ------------------- | -------------------------------------------------------------------------------------------------------- |
+| `qr`    | `qrcode` | `.qr <text or URL>` | Renders a small QR code as Unicode text. Input is limited to 250 characters to keep messages manageable. |
 
 ## Reliability and privacy
 

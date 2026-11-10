@@ -11,10 +11,14 @@ export default defineCommand({
   async execute(ctx) {
     try {
       await ctx.sock.groupSettingUpdate(ctx.chat.jid, "announcement");
-      await ctx.send.text("Grup ditutup. Hanya admin yang dapat mengirim pesan.");
+      await ctx.send.text(
+        "Grup ditutup. Hanya admin yang dapat mengirim pesan.",
+      );
     } catch (error) {
       ctx.log.error(`Failed to close group: ${error}`);
-      await ctx.send.text("Gagal menutup grup. Pastikan bot masih menjadi admin.");
+      await ctx.send.text(
+        "Gagal menutup grup. Pastikan bot masih menjadi admin.",
+      );
     }
   },
 });

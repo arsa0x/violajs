@@ -15,8 +15,14 @@ function parseRepository(input: string): { owner: string; repo: string } {
   }
 
   const parts = path.replace(/^\/+|\/+$/g, "").split("/");
-  if (parts.length < 2 || !/^[A-Za-z0-9_.-]+$/.test(parts[0]!) || !/^[A-Za-z0-9_.-]+$/.test(parts[1]!)) {
-    throw new Error("Format repository tidak valid. Gunakan owner/repo atau URL GitHub.");
+  if (
+    parts.length < 2 ||
+    !/^[A-Za-z0-9_.-]+$/.test(parts[0]!) ||
+    !/^[A-Za-z0-9_.-]+$/.test(parts[1]!)
+  ) {
+    throw new Error(
+      "Format repository tidak valid. Gunakan owner/repo atau URL GitHub.",
+    );
   }
 
   return { owner: parts[0]!, repo: parts[1]! };
@@ -30,7 +36,9 @@ export default defineCommand({
   async execute(ctx) {
     const input = ctx.rawArgs.join(" ").trim();
     if (!input) {
-      await ctx.send.text("Penggunaan: .githubdl <owner/repo atau URL repository>");
+      await ctx.send.text(
+        "Penggunaan: .githubdl <owner/repo atau URL repository>",
+      );
       return;
     }
 
@@ -52,9 +60,12 @@ export default defineCommand({
         throw new Error("Repository tidak ditemukan atau bersifat privat.");
       }
       if (response.status === 403) {
-        throw new Error("GitHub membatasi request (rate limit). Coba lagi nanti.");
+        throw new Error(
+          "GitHub membatasi request (rate limit). Coba lagi nanti.",
+        );
       }
-      if (!response.ok) throw new Error(`GitHub API membalas HTTP ${response.status}.`);
+      if (!response.ok)
+        throw new Error(`GitHub API membalas HTTP ${response.status}.`);
 
       const data = (await response.json()) as {
         full_name?: string;
@@ -68,7 +79,8 @@ export default defineCommand({
         size?: number;
       };
 
-      if (data.private) throw new Error("Repository privat tidak dapat diunduh.");
+      if (data.private)
+        throw new Error("Repository privat tidak dapat diunduh.");
       const branch = data.default_branch || "main";
       const archiveUrl = `https://github.com/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/archive/refs/heads/${encodeURIComponent(branch)}.zip`;
       const details = [
@@ -76,7 +88,9 @@ export default defineCommand({
         data.description ? data.description : undefined,
         `Branch default: ${branch}`,
         data.language ? `Bahasa: ${data.language}` : undefined,
-        typeof data.stargazers_count === "number" ? `Stars: ${data.stargazers_count}` : undefined,
+        typeof data.stargazers_count === "number"
+          ? `Stars: ${data.stargazers_count}`
+          : undefined,
         data.archived ? "Status: archived" : undefined,
         "",
         `Repository: ${data.html_url ?? `https://github.com/${owner}/${repo}`}`,
@@ -87,7 +101,9 @@ export default defineCommand({
     } catch (error) {
       ctx.log.warn("GitHub archive resolver failed", error);
       await ctx.send.text(
-        error instanceof Error ? `Gagal mengambil repository: ${error.message}` : "Gagal mengambil repository.",
+        error instanceof Error
+          ? `Gagal mengambil repository: ${error.message}`
+          : "Gagal mengambil repository.",
       );
     }
   },

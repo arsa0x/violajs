@@ -19,8 +19,7 @@ export function attachBaileysEventAdapter(
     } else if (payload.connection === "close") {
       const statusCode = (
         payload.lastDisconnect?.error as
-          | { output?: { statusCode?: number } }
-          | undefined
+          { output?: { statusCode?: number } } | undefined
       )?.output?.statusCode;
 
       await dispatcher.dispatch("connection.close", {

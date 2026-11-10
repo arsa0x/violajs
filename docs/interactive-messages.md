@@ -138,7 +138,11 @@ await ctx.send.interactive.carousel({
       footer: "First card footer",
       buttons: [
         { type: "quick_reply", text: "Details", id: ".project one" },
-        { type: "url", text: "Open project", url: "https://example.com/project-one" },
+        {
+          type: "url",
+          text: "Open project",
+          url: "https://example.com/project-one",
+        },
       ],
     },
     {

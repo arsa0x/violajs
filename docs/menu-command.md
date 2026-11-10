@@ -4,26 +4,26 @@ The `menu` command displays the commands registered in violajs in a WhatsApp nat
 
 ## Usage
 
-| Command | Description |
-| --- | --- |
-| `.menu` | Show all menu categories. |
+| Command            | Description                      |
+| ------------------ | -------------------------------- |
+| `.menu`            | Show all menu categories.        |
 | `.menu <category>` | Show commands from one category. |
-| `.help` | Alias for `.menu`. |
-| `.allmenu` | Alias for `.menu`. |
+| `.help`            | Alias for `.menu`.               |
+| `.allmenu`         | Alias for `.menu`.               |
 
 ## Available categories
 
-| Category | Description |
-| --- | --- |
-| `tools` | General utilities and interactive-message features. |
-| `downloader` | Media and file download tools. |
-| `search` | Web search and public media metadata lookup. |
-| `admin` | WhatsApp group administration commands. |
-| `nsfw` | NSFW-related commands. |
-| `ai` | AI-related commands. |
-| `game` | Game commands. |
-| `maker` | Content and media creation commands. |
-| `uncategorized` | Commands without a recognized category. |
+| Category        | Description                                         |
+| --------------- | --------------------------------------------------- |
+| `tools`         | General utilities and interactive-message features. |
+| `downloader`    | Media and file download tools.                      |
+| `search`        | Web search and public media metadata lookup.        |
+| `admin`         | WhatsApp group administration commands.             |
+| `nsfw`          | NSFW-related commands.                              |
+| `ai`            | AI-related commands.                                |
+| `game`          | Game commands.                                      |
+| `maker`         | Content and media creation commands.                |
+| `uncategorized` | Commands without a recognized category.             |
 
 Examples:
 

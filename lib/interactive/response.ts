@@ -38,7 +38,11 @@ export function extractInteractiveResponse(message: WAMessage): string | null {
 
   try {
     const parsed: unknown = JSON.parse(paramsJson);
-    if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+    if (
+      typeof parsed !== "object" ||
+      parsed === null ||
+      Array.isArray(parsed)
+    ) {
       return null;
     }
 
@@ -57,7 +61,11 @@ export function extractInteractiveResponse(message: WAMessage): string | null {
 
     // Some clients wrap the selected value inside a response object.
     const nested = value.response;
-    if (typeof nested === "object" && nested !== null && !Array.isArray(nested)) {
+    if (
+      typeof nested === "object" &&
+      nested !== null &&
+      !Array.isArray(nested)
+    ) {
       return stringField(nested as Record<string, unknown>, [
         "id",
         "row_id",

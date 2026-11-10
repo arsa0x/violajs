@@ -3,7 +3,10 @@ import type { CommandContext } from "../src/core/context";
 import { groupAdminOnly } from "../src/middlewares/group-admin";
 import { botAdminOnly } from "../src/middlewares/bot-admin";
 
-function mockContext(participants: Array<{ id: string; admin?: string | null }>, senderJid = "628111111111@s.whatsapp.net") {
+function mockContext(
+  participants: Array<{ id: string; admin?: string | null }>,
+  senderJid = "628111111111@s.whatsapp.net",
+) {
   const sent: string[] = [];
   const ctx = {
     chat: { jid: "120363000000000000@g.us", isGroup: true },
@@ -12,7 +15,11 @@ function mockContext(participants: Array<{ id: string; admin?: string | null }>,
       user: { id: "628222222222:4@s.whatsapp.net" },
       groupMetadata: async () => ({ participants }),
     },
-    send: { text: async (text: string) => { sent.push(text); } },
+    send: {
+      text: async (text: string) => {
+        sent.push(text);
+      },
+    },
     log: { error: () => {} },
   } as unknown as CommandContext;
 
@@ -26,7 +33,9 @@ describe("group permission middleware", () => {
       { id: "628222222222@s.whatsapp.net", admin: "superadmin" },
     ]);
     let called = false;
-    await groupAdminOnly()(ctx, async () => { called = true; });
+    await groupAdminOnly()(ctx, async () => {
+      called = true;
+    });
     expect(called).toBe(true);
     expect(sent).toHaveLength(0);
   });
@@ -37,7 +46,9 @@ describe("group permission middleware", () => {
       { id: "628222222222@s.whatsapp.net", admin: "superadmin" },
     ]);
     let called = false;
-    await groupAdminOnly()(ctx, async () => { called = true; });
+    await groupAdminOnly()(ctx, async () => {
+      called = true;
+    });
     expect(called).toBe(false);
     expect(sent[0]).toContain("admin grup");
   });
@@ -48,7 +59,9 @@ describe("group permission middleware", () => {
       { id: "628222222222@s.whatsapp.net", admin: null },
     ]);
     let called = false;
-    await botAdminOnly()(ctx, async () => { called = true; });
+    await botAdminOnly()(ctx, async () => {
+      called = true;
+    });
     expect(called).toBe(false);
     expect(sent[0]).toContain("Bot harus menjadi admin");
   });

@@ -13,7 +13,9 @@ export default defineCommand({
       return;
     }
     if (value.length > 250) {
-      await ctx.send.text("Teks terlalu panjang untuk dikirim sebagai QR teks (maksimal 250 karakter).");
+      await ctx.send.text(
+        "Teks terlalu panjang untuk dikirim sebagai QR teks (maksimal 250 karakter).",
+      );
       return;
     }
 
