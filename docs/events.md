@@ -12,7 +12,7 @@ export default defineEvent({
   events: {
     "group.participant.join": async (ctx) => {
       await ctx.sock.sendMessage(ctx.event.id, {
-        text: `Welcome ${event.participants.length} new member(s)!`,
+        text: `Welcome ${ctx.event.participants.length} new member(s)!`,
       });
     },
 
