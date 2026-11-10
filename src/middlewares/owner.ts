@@ -1,4 +1,4 @@
-import type { Middleware } from "../types/middleware";
+import type { Middleware } from "@src/types/middleware";
 
 export const ownerOnly = (): Middleware => async (ctx, next) => {
   if (!ctx.sender.isOwner) {

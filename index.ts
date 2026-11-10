@@ -1,6 +1,6 @@
-import { CommandRegistry } from "@core/registry";
+import { CommandRegistry } from "@core/command/registry";
 import { startApp } from "src/app";
-import { loadStaticCommands } from "@core/staticLoader";
+import { loadStaticCommands } from "@core/command/staticLoader";
 import { EventRegistry } from "@core/events/registry";
 import { loadStaticEvents } from "@core/events/staticLoader";
 

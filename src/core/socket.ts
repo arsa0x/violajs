@@ -1,10 +1,10 @@
 import makeWASocket, { DisconnectReason, type WASocket } from "baileys";
-import { useSQLiteAuthState } from "../storage/auth";
+import { useSQLiteAuthState } from "@src/storage/auth";
 import https from "https";
 import { qrEncode } from "@lib/qr";
-import { MemoryMediaCache } from "../storage/cache";
+import { MemoryMediaCache } from "@src/storage/cache";
 import { logger, type Log } from "@lib/logger";
-import type { BotOptions } from "src/cli";
+import type { BotOptions } from "@src/cli";
 
 export const customFetchAgent = new https.Agent({
   keepAlive: true,

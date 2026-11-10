@@ -1,8 +1,8 @@
-import type { CommandRegistry } from "@core/registry";
-import type { EventRegistry } from "@core/events/registry";
-import { log } from "@lib/logger";
 import { existsSync, readdirSync, rmSync } from "fs";
 import { parseArgs } from "util";
+import type { CommandRegistry } from "@core/command/registry";
+import type { EventRegistry } from "@core/events/registry";
+import { log } from "@lib/logger";
 
 export interface BotOptions {
   pairing?: boolean;

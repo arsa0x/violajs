@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { FlagSpec } from "@lib/args";
-import { generateCommandHelp } from "../src/utils/command-help";
-import type { Command } from "../src/types/command";
+import { generateCommandHelp } from "@utils/command-help";
+import type { Command } from "@src/types/command";
 
 describe("generateCommandHelp", () => {
   test("includes command metadata and declared flags", () => {

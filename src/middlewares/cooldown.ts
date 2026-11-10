@@ -1,4 +1,4 @@
-import type { Middleware } from "../types/middleware";
+import type { Middleware } from "@src/types/middleware";
 
 export const cooldown = (durationMs: number): Middleware => {
   const lastRun = new Map<string, number>();

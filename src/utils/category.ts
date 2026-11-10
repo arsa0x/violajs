@@ -1,4 +1,4 @@
-import type { Category } from "../types/command";
+import type { Category } from "@src/types/command";
 
 export const CATEGORY_TITLES: Record<Category, string> = {
   tools: "Tools",

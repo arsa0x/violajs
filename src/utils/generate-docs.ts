@@ -1,6 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
-import type { Category, Command } from "../types/command";
+import type { Category, Command } from "@src/types/command";
 import { CATEGORY_TITLES } from "./category";
 
 const entryDir = path.resolve("./commands");

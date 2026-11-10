@@ -1,8 +1,8 @@
-import { CommandRegistry } from "@core/registry";
-import { DynamicLoader } from "@core/dynamicLoader";
+import { CommandRegistry } from "@core/command/registry";
+import { DynamicLoader } from "@core/command/dynamicLoader";
 import { EventRegistry } from "@core/events/registry";
 import { EventDynamicLoader } from "@core/events/dynamicLoader";
-import { startApp } from "src/app";
+import { startApp } from "@src/app";
 import { log } from "@lib/logger";
 
 const registry = new CommandRegistry();

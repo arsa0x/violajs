@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { WAMessage } from "baileys";
-import { extractInteractiveResponse } from "../lib/interactive/response";
+import { extractInteractiveResponse } from "@lib/interactive/response";
 
 function message(value: unknown): WAMessage {
   return value as WAMessage;

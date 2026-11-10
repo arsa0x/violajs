@@ -1,7 +1,7 @@
-import { readdir, readFile } from "node:fs/promises";
-import { watch, type FSWatcher } from "node:fs";
+import { readdir, readFile } from "fs/promises";
+import { watch, type FSWatcher } from "fs";
 import { extname, join, relative, resolve } from "node:path";
-import type { EventPlugin } from "../../types/event";
+import type { EventPlugin } from "@src/types/event";
 import { EventRegistry } from "./registry";
 import { log } from "@lib/logger";
 

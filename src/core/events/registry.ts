@@ -1,5 +1,5 @@
 import type { EventContext } from "@core/context";
-import type { EventMap, EventName, EventPlugin } from "../../types/event";
+import type { EventMap, EventName, EventPlugin } from "@src/types/event";
 
 type HandlerRecord = {
   pluginName: string;

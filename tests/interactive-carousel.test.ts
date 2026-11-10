@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import {
   buildCarouselButton,
   buildCarouselButtons,
-} from "../lib/interactive/carousel-button";
+} from "@lib/interactive/carousel-button";
 
 describe("buildCarouselButton", () => {
   test("serializes URL buttons with Rust-compatible defaults", () => {

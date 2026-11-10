@@ -51,8 +51,10 @@ function generateImports(
     importPath = importPath.replaceAll(path.sep, "/");
 
     if (!importPath.startsWith(".")) importPath = `./${importPath}`;
-
-    imports.push(`import ${variable} from "${importPath}";`);
+    const finalPath = importPath.includes("commands/")
+      ? importPath.replace("../../commands/", "@commands/")
+      : importPath.replace("../../events/", "@events/");
+    imports.push(`import ${variable} from "${finalPath}";`);
     entries.push(variable);
   }
 
@@ -79,7 +81,7 @@ await fs.writeFile(
 
 // Import only after writing the registry so newly added commands are included
 // in this same generator run.
-const { commands: cmds } = await import("../generated/commands");
+const { commands: cmds } = await import("@src/generated/commands");
 
 import { config } from "config";
 import { CATEGORY_TITLES } from "./category";

@@ -1,4 +1,4 @@
-import type { Command } from "../types/command";
+import type { Command } from "@src/types/command";
 import type { FlagSpec } from "@lib/args";
 
 const HELP_NAMES = ["-h", "--help"] as const;

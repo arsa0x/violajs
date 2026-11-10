@@ -1,5 +1,4 @@
-import type { WASocket, WAMessage, BaileysEventMap } from "baileys";
-import type { Log } from "@lib/logger";
+import type { WAMessage, BaileysEventMap } from "baileys";
 import type { EventContext } from "@core/context";
 
 export type InternalEventMap = {

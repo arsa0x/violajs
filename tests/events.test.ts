@@ -1,9 +1,9 @@
 import { describe, expect, test } from "bun:test";
 import type { WASocket } from "baileys";
 import type { Log } from "@lib/logger";
-import { defineEvent } from "../src/core/event";
-import { EventDispatcher } from "../src/core/events/dispatcher";
-import { EventRegistry } from "../src/core/events/registry";
+import { defineEvent } from "@core/event";
+import { EventDispatcher } from "@core/events/dispatcher";
+import { EventRegistry } from "@core/events/registry";
 
 describe("EventRegistry", () => {
   test("registers multiple plugins for the same event", () => {

@@ -1,6 +1,6 @@
 import type { WASocket } from "baileys";
 import type { Log } from "@lib/logger";
-import type { EventMap, EventName } from "../../types/event";
+import type { EventMap, EventName } from "@src/types/event";
 import { EventRegistry } from "./registry";
 import { EventContext } from "@core/context";
 

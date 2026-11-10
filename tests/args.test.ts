@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { Args, FlagSpec } from "../lib/args";
+import { Args, FlagSpec } from "@/lib/args";
 
 const specs = [
   FlagSpec.bool(["-v", "--verbose"]),

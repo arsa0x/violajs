@@ -1,15 +1,15 @@
 import { createSessionLogger } from "@lib/logger";
 import { extractInteractiveResponse } from "@lib/interactive";
-import { config } from "../config";
-import { CommandContext } from "./core/context";
-import { CommandDispatcher } from "./core/dispatcher";
-import { parseCommand } from "./core/parser";
-import { CommandRegistry } from "./core/registry";
-import { createWAClient } from "./core/socket";
+import { config } from "@/config";
+import { CommandContext } from "@core/context";
+import { CommandDispatcher } from "@core/command/dispatcher";
+import { parseCommand } from "@core/parser";
+import { CommandRegistry } from "@core/command/registry";
+import { createWAClient } from "@core/socket";
 import { cli, type BotOptions } from "./cli";
-import { EventRegistry } from "./core/events/registry";
-import { EventDispatcher } from "./core/events/dispatcher";
-import { attachBaileysEventAdapter } from "./core/events/adapter";
+import { EventRegistry } from "@core/events/registry";
+import { EventDispatcher } from "@core/events/dispatcher";
+import { attachBaileysEventAdapter } from "@core/events/adapter";
 
 const sessionPath = "./sessions";
 

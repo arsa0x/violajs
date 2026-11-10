@@ -1,5 +1,5 @@
 import { type Log } from "@lib/logger";
-import type { Middleware } from "../types/middleware";
+import type { Middleware } from "@src/types/middleware";
 
 export const logger =
   (log: Log): Middleware =>

@@ -1,4 +1,4 @@
-import type { Middleware } from "../types/middleware";
+import type { Middleware } from "@src/types/middleware";
 import type { CommandContext } from "./context";
 
 export async function runMiddleware(

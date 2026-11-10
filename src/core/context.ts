@@ -1,6 +1,6 @@
 import type { WASocket, WAMessage } from "baileys";
 import type { ParsedCommand } from "./parser";
-import { config } from "../../config";
+import { config } from "@/config";
 import { Send } from "@lib/send";
 import { type Log } from "@lib/logger";
 import type { Args } from "@lib/args";
