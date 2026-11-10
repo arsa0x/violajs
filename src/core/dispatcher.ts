@@ -1,6 +1,6 @@
 import { Args, FlagSpec } from "@lib/args";
 import type { Middleware } from "../types/middleware";
-import type { Context } from "./context";
+import type { CommandContext } from "./context";
 import { runMiddleware } from "./middleware";
 import { CommandRegistry } from "./registry";
 import { generateCommandHelp } from "@utils/command-help";
@@ -15,7 +15,7 @@ export class CommandDispatcher {
     private readonly globalMiddleware: readonly Middleware[] = [],
   ) {}
 
-  async dispatch(ctx: Context): Promise<void> {
+  async dispatch(ctx: CommandContext): Promise<void> {
     const command = this.registry.resolve(ctx.name);
     if (!command) return;
 

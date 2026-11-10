@@ -5,9 +5,34 @@ import { Send } from "@lib/send";
 import { type Log } from "@lib/logger";
 import type { Args } from "@lib/args";
 
-export class Context {
-  log: Log;
+export class BaseContext {
   sock: WASocket;
+  log: Log;
+
+  constructor(sock: WASocket, log: Log) {
+    this.sock = sock;
+    this.log = log;
+  }
+}
+
+export class EventContext<TEvent> extends BaseContext {
+  pluginName: string;
+  event: TEvent;
+
+  constructor(params: {
+    sock: WASocket;
+    log: Log;
+    pluginName: string;
+    event: TEvent;
+  }) {
+    super(params.sock, params.log);
+
+    this.pluginName = params.pluginName;
+    this.event = params.event;
+  }
+}
+
+export class CommandContext extends BaseContext {
   msg: WAMessage;
   name: string;
   text: string;
@@ -22,7 +47,6 @@ export class Context {
     isGroup: boolean;
   };
   send: Send;
-
   constructor(params: {
     sock: WASocket;
     message: WAMessage;
@@ -31,22 +55,25 @@ export class Context {
     jid: string;
     log: Log;
   }) {
-    const senderJid = params.message!.key.participant ?? params.jid;
+    super(params.sock, params.log);
 
-    this.log = params.log;
-    this.sock = params.sock;
+    const senderJid = params.message.key.participant ?? params.jid;
+
     this.msg = params.message;
-    this.text = params.text!;
-    this.name = params.parsed!.name;
-    this.rawArgs = params.parsed!.args;
+    this.text = params.text;
+    this.name = params.parsed.name;
+    this.rawArgs = params.parsed.args;
+
     this.chat = {
       jid: params.jid,
       isGroup: params.jid.endsWith("@g.us"),
     };
+
     this.sender = {
       jid: senderJid,
       isOwner: config.owners.has(senderJid),
     };
+
     this.send = new Send(params.sock, params.message, params.jid);
   }
 }

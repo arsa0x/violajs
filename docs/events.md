@@ -10,14 +10,14 @@ import { defineEvent } from "@core/event";
 export default defineEvent({
   name: "group-welcome",
   events: {
-    "group.participant.join": async ({ sock, event }) => {
-      await sock.sendMessage(event.groupJid, {
+    "group.participant.join": async (ctx) => {
+      await ctx.sock.sendMessage(ctx.event.jid, {
         text: `Welcome ${event.participants.length} new member(s)!`,
       });
     },
 
-    "message.received": async ({ event, log }) => {
-      if (event.text) log.info(`Message received: ${event.text}`);
+    "message.received": async (ctx) => {
+      if (event.text) ctx.log.info(`Message received: ${event.text}`);
     },
   },
 });
@@ -36,13 +36,13 @@ Every handler receives:
 
 Internal events use normalized payloads intended to keep common plugin code independent of Baileys details.
 
-| Event | Payload |
-| --- | --- |
-| `message.received` | `message`, `text`, `chat`, `sender` |
-| `group.participant.join` | `groupJid`, `participants`, `author` |
+| Event                     | Payload                              |
+| ------------------------- | ------------------------------------ |
+| `message.received`        | `message`, `text`, `chat`, `sender`  |
+| `group.participant.join`  | `groupJid`, `participants`, `author` |
 | `group.participant.leave` | `groupJid`, `participants`, `author` |
-| `connection.open` | `userJid` |
-| `connection.close` | `reason` |
+| `connection.open`         | `userJid`                            |
+| `connection.close`        | `reason`                             |
 
 ## Raw Baileys events
 

@@ -1,5 +1,6 @@
 import type { WASocket, WAMessage, BaileysEventMap } from "baileys";
 import type { Log } from "@lib/logger";
+import type { EventContext } from "@core/context";
 
 export type InternalEventMap = {
   "message.received": {
@@ -30,13 +31,6 @@ export type RawBaileysEventMap = {
 
 export type EventMap = InternalEventMap & RawBaileysEventMap;
 export type EventName = keyof EventMap;
-
-export type EventContext<T> = {
-  sock: WASocket;
-  log: Log;
-  pluginName: string;
-  event: T;
-};
 
 export type EventHandler<T> = (ctx: EventContext<T>) => Promise<void>;
 

@@ -1,7 +1,7 @@
 import { jidNormalizedUser } from "baileys";
-import type { Context } from "@core/context";
+import type { CommandContext } from "@core/context";
 
-export function getGroupMentions(ctx: Context): string[] {
+export function getGroupMentions(ctx: CommandContext): string[] {
   const message = ctx.msg.message;
   const contextInfo =
     message?.extendedTextMessage?.contextInfo ??
@@ -12,7 +12,7 @@ export function getGroupMentions(ctx: Context): string[] {
   );
 }
 
-export function getGroupTarget(ctx: Context): string | undefined {
+export function getGroupTarget(ctx: CommandContext): string | undefined {
   const mention = getGroupMentions(ctx)[0];
   if (mention) return mention;
 
@@ -31,7 +31,7 @@ export function getGroupTarget(ctx: Context): string | undefined {
 }
 
 export async function isGroupParticipant(
-  ctx: Context,
+  ctx: CommandContext,
   jid: string,
 ): Promise<boolean> {
   const metadata = await ctx.sock.groupMetadata(ctx.chat.jid);

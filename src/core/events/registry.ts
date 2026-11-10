@@ -1,9 +1,5 @@
-import type {
-  EventContext,
-  EventMap,
-  EventName,
-  EventPlugin,
-} from "../../types/event";
+import type { EventContext } from "@core/context";
+import type { EventMap, EventName, EventPlugin } from "../../types/event";
 
 type HandlerRecord = {
   pluginName: string;
@@ -44,7 +40,9 @@ export class EventRegistry {
     return this.remove(name.trim());
   }
 
-  get<K extends EventName>(name: K): Array<{
+  get<K extends EventName>(
+    name: K,
+  ): Array<{
     pluginName: string;
     handler: (ctx: EventContext<EventMap[K]>) => Promise<void>;
   }> {

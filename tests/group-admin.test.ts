@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { Context } from "../src/core/context";
+import type { CommandContext } from "../src/core/context";
 import { groupAdminOnly } from "../src/middlewares/group-admin";
 import { botAdminOnly } from "../src/middlewares/bot-admin";
 
@@ -14,7 +14,7 @@ function mockContext(participants: Array<{ id: string; admin?: string | null }>,
     },
     send: { text: async (text: string) => { sent.push(text); } },
     log: { error: () => {} },
-  } as unknown as Context;
+  } as unknown as CommandContext;
 
   return { ctx, sent };
 }

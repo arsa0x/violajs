@@ -2,6 +2,7 @@ import type { WASocket } from "baileys";
 import type { Log } from "@lib/logger";
 import type { EventMap, EventName } from "../../types/event";
 import { EventRegistry } from "./registry";
+import { EventContext } from "@core/context";
 
 export class EventDispatcher {
   constructor(
@@ -18,13 +19,15 @@ export class EventDispatcher {
 
     await Promise.all(
       handlers.map(async ({ pluginName, handler }) => {
+        const eventCtx = new EventContext({
+          sock: this.sock,
+          log: this.log,
+          pluginName,
+          event,
+        });
+
         try {
-          await handler({
-            sock: this.sock,
-            log: this.log,
-            pluginName,
-            event,
-          });
+          await handler(eventCtx);
         } catch (error) {
           this.log.error(
             `Event handler failed: ${pluginName} (${String(name)})`,

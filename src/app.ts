@@ -1,7 +1,7 @@
 import { createSessionLogger } from "@lib/logger";
 import { extractInteractiveResponse } from "@lib/interactive";
 import { config } from "../config";
-import { Context } from "./core/context";
+import { CommandContext } from "./core/context";
 import { CommandDispatcher } from "./core/dispatcher";
 import { parseCommand } from "./core/parser";
 import { CommandRegistry } from "./core/registry";
@@ -76,7 +76,7 @@ async function bot(
       const parsed = parseCommand(text, config.prefix);
       if (!parsed) continue;
 
-      const ctx = new Context({
+      const ctx = new CommandContext({
         sock,
         message,
         text,
