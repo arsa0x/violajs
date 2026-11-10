@@ -11,13 +11,13 @@ export default defineEvent({
   name: "group-welcome",
   events: {
     "group.participant.join": async (ctx) => {
-      await ctx.sock.sendMessage(ctx.event.jid, {
+      await ctx.sock.sendMessage(ctx.event.id, {
         text: `Welcome ${event.participants.length} new member(s)!`,
       });
     },
 
     "message.received": async (ctx) => {
-      if (event.text) ctx.log.info(`Message received: ${event.text}`);
+      if (ctx.event.text) ctx.log.info(`Message received: ${ctx.event.text}`);
     },
   },
 });

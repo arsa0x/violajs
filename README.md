@@ -57,6 +57,16 @@ Replace `session_name` with your desired session name.
 
 If no session name is specified when running the bot, the default session is `default`.
 
+### Pairing with a Phone Number
+
+To pair your WhatsApp account using your phone number, run:
+
+```bash
+bun start create --session session_name -p -n <phone_number>
+```
+
+Replace `session_name` with your desired session name and `<phone_number>` with your WhatsApp phone number, including the country code (without the `+` prefix).
+
 ### Start the Bot
 
 Start a specific session:
@@ -166,14 +176,13 @@ import { defineEvent } from "@core/event";
 export default defineEvent({
   name: "group-welcome",
   events: {
-    "group.participant.join": async ({ sock, event }) => {
-      await sock.sendMessage(event.groupJid, {
-        text: `Welcome ${event.participants.length} new member(s)!`,
+    "group.participant.join": async (ctx) => {
+      await ctx.sock.sendMessage(ctx.event.id, {
+        text: `Welcome ${ctx.event.participants.length} new member(s)!`,
       });
     },
-
-    "message.received": async ({ event, log }) => {
-      if (event.text) log.info(`Message received: ${event.text}`);
+    "message.received": async (ctx) => {
+      if (ctx.event.text) ctx.log.info(`Message received: ${ctx.event.text}`);
     },
   },
 });
