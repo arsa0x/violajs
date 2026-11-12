@@ -54,7 +54,7 @@ function addHeadingIds(html: string) {
     if (level > 1) toc.push({ id, title, level });
   });
 
-  return { html: $.root().html() ?? html, toc };
+  return { html: $("body").html() ?? $.root().html() ?? html, toc };
 }
 
 function renderSidebar(files: string[], currentFile: string, titles: Map<string, string>) {
