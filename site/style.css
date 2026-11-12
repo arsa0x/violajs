@@ -1070,3 +1070,79 @@ h1 {
         transition: none !important;
     }
 }
+
+
+/* Theme toggle */
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: #fff;
+    color: var(--muted);
+    font: 600 12px var(--sans);
+    cursor: pointer;
+    transition: background .2s, border-color .2s, color .2s;
+}
+.theme-toggle:hover { border-color: #d2cdea; color: var(--ink); }
+.theme-icon { font-size: 16px; line-height: 1; }
+
+/* Dark theme */
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --ink: #eeeefa;
+    --muted: #aaa8bd;
+    --purple: #aaa3e8;
+    --purple-dark: #b5aff0;
+    --lavender: #302d47;
+    --paper: #191824;
+    --line: #302e40;
+    background: #13121b;
+}
+:root[data-theme="dark"] body { background: #13121b; color: var(--ink); }
+:root[data-theme="dark"] .site-header { background: rgba(19,18,27,.9); border-color: #292738; }
+:root[data-theme="dark"] .nav-links { color: #b0aec0; }
+:root[data-theme="dark"] .nav-github,
+:root[data-theme="dark"] .button-secondary { background: #1c1a28; border-color: #38354b; color: #eeedf7; }
+:root[data-theme="dark"] .brand-mark { background: #eeeefa; color: #242338; }
+:root[data-theme="dark"] .hero-art .art-glow { background: radial-gradient(circle,#302b49 0%,#211e32 55%,transparent 72%); }
+:root[data-theme="dark"] .art-orbit { border-color: #39344f; }
+:root[data-theme="dark"] .floating-note { background: #211f2e; border-color: #39364b; color: #d0cede; box-shadow: 0 10px 35px #0003; }
+:root[data-theme="dark"] .hero-bottomline { border-color: var(--line); color: #777489; }
+:root[data-theme="dark"] .intro-strip,
+:root[data-theme="dark"] .quickstart-section,
+:root[data-theme="dark"] .docs-section { background: #191824; border-color: #292738; }
+:root[data-theme="dark"] .feature-card { background: #191824; border-color: #302e40; }
+:root[data-theme="dark"] .feature-large { background: linear-gradient(145deg,#211e32,#191824 75%); }
+:root[data-theme="dark"] .feature-card:hover { border-color: #625b91; }
+:root[data-theme="dark"] .mini-plugin { background: #211f2e; border-color: #39364b; color: #c0bdcf; }
+:root[data-theme="dark"] .terminal { background: #191824; border-color: #39364b; box-shadow: 0 18px 50px #0003; }
+:root[data-theme="dark"] .terminal-bar { border-color: #302e40; color: #aaa7ba; }
+:root[data-theme="dark"] .window-dots i { background: #514e60; }
+:root[data-theme="dark"] .window-dots i:first-child { background: #986a76; }
+:root[data-theme="dark"] .window-dots i:nth-child(2) { background: #98865d; }
+:root[data-theme="dark"] .window-dots i:nth-child(3) { background: #63856d; }
+:root[data-theme="dark"] .code-line code { color: #d0cede; }
+:root[data-theme="dark"] .code-comment { color: #777489; }
+:root[data-theme="dark"] .copy-btn { background: #302d47; color: #c0baf0; }
+:root[data-theme="dark"] .copy-btn:hover { background: #3b3657; }
+:root[data-theme="dark"] .plugin-card { border-color: #302e40; }
+:root[data-theme="dark"] .plugin-card-icon { background: #302d47; color: #b5aff0; }
+:root[data-theme="dark"] .plugin-card code { background: #242136; color: #b5aff0; }
+:root[data-theme="dark"] .reload-flow { background: #191824; color: #aaa7ba; }
+:root[data-theme="dark"] .docs-list,
+:root[data-theme="dark"] .docs-list a { border-color: #302e40; }
+:root[data-theme="dark"] .doc-description { color: #9693a9; }
+:root[data-theme="dark"] .closing-art:before { background: #29253e; }
+:root[data-theme="dark"] .footer { border-color: #302e40; }
+:root[data-theme="dark"] .toast { background: #eeeefa; color: #242338; }
+:root[data-theme="dark"] .theme-toggle { color: #e4e1f4; border-color: #3c394f; background: #242136; }
+:root[data-theme="dark"] .theme-toggle:hover { background: #302d47; }
+:root[data-theme="dark"] .nav-links.open { background: #191824; border-color: #302e40; }
+:root[data-theme="dark"] .nav-toggle span { background: #eeeefa; }
+@media (max-width: 650px) {
+    .nav-links .theme-toggle { align-self: flex-start; margin: 7px 0; }
+    :root[data-theme="dark"] .nav-links { background: #191824; border-color: #302e40; }
+}
