@@ -84,7 +84,7 @@ await fs.writeFile(
 const { commands: cmds } = await import("@src/generated/commands");
 
 import { config } from "config";
-import { CATEGORY_TITLES } from "./category";
+import { CATEGORY_TITLES } from "@utils/category";
 import { log } from "@lib/logger";
 
 const menuGroups: Record<string, any[]> = Object.keys(CATEGORY_TITLES).reduce(

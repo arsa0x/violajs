@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import type { Category, Command } from "@src/types/command";
-import { CATEGORY_TITLES } from "./category";
+import { CATEGORY_TITLES } from "@utils/category";
 
 const entryDir = path.resolve("./plugins/commands");
 const docsFile = path.resolve("./docs/commands.md");

@@ -21,11 +21,11 @@
   ],
   "private": true,
   "scripts": {
-    "generate": "bun src/utils/generate-config.ts && bun src/utils/generate.ts && bun fmt",
-    "build": "bun run generate && bun src/utils/build.ts",
+    "generate": "bun scripts/generate-config.ts && bun scripts/generate.ts && bun fmt",
+    "build": "bun run generate && bun scripts/build.ts",
     "start": "bun index.ts",
     "dev": "bun run dev.ts",
-    "docs": "bun src/utils/generate-docs.ts"
+    "docs": "bun scripts/generate-docs.ts"
   },
   "devDependencies": {
     "@types/bun": "latest"
