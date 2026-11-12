@@ -1,4 +1,4 @@
-import type { Command } from "@src/types/command";
+import type { CommandPlugin } from "@src/types/command";
 import type { FlagSpec } from "@lib/args";
 
 const HELP_NAMES = ["-h", "--help"] as const;
@@ -23,7 +23,7 @@ function formatFlag(flag: FlagSpec): string {
   ].join("");
 }
 
-export function generateCommandHelp(command: Command): string {
+export function generateCommandHelp(command: CommandPlugin): string {
   const lines = [
     `*Description:* ${command.description ?? "-"}`,
     `*Aliases:* ${

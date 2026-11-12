@@ -1,5 +1,5 @@
-import type { Command } from "@src/types/command";
+import type { CommandPlugin } from "@src/types/command";
 
-export function defineCommand(command: Command): Command {
+export function defineCommand(command: CommandPlugin): CommandPlugin {
   return command;
 }

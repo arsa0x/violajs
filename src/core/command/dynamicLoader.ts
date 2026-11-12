@@ -3,7 +3,7 @@ import { readFile } from "fs/promises";
 import { watch, type FSWatcher } from "fs";
 import { join, extname, resolve, relative } from "path";
 import { CommandRegistry } from "./registry";
-import type { Command } from "@src/types/command";
+import type { CommandPlugin } from "@src/types/command";
 import { log } from "@lib/logger";
 
 const COMMANDS_DIR = resolve("plugins", "commands");
@@ -104,7 +104,7 @@ export class DynamicLoader {
     ).toString("base64")}`;
 
     const module = await import(moduleUrl);
-    const command = module.default as Command | undefined;
+    const command = module.default as CommandPlugin | undefined;
 
     if (
       !command ||

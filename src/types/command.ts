@@ -13,7 +13,7 @@ export type Category =
   | "admin"
   | "uncategorized";
 
-export type Command = {
+export type CommandPlugin = {
   name: string;
   aliases?: string[];
   category?: Category;

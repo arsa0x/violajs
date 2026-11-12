@@ -1,10 +1,10 @@
-import type { Command } from "@src/types/command";
+import type { CommandPlugin } from "@src/types/command";
 
 export class CommandRegistry {
-  private readonly lookup = new Map<string, Command>();
-  private readonly canonical = new Map<string, Command>();
+  private readonly lookup = new Map<string, CommandPlugin>();
+  private readonly canonical = new Map<string, CommandPlugin>();
 
-  register(command: Command): void {
+  register(command: CommandPlugin): void {
     const name = command.name.trim().toLowerCase();
     if (!name) throw new Error("Command name cannot be empty");
 
@@ -32,11 +32,11 @@ export class CommandRegistry {
     }
   }
 
-  resolve(name: string): Command | undefined {
+  resolve(name: string): CommandPlugin | undefined {
     return this.lookup.get(name.trim().toLowerCase());
   }
 
-  list(): Command[] {
+  list(): CommandPlugin[] {
     return [...this.canonical.values()];
   }
 
@@ -56,7 +56,7 @@ export class CommandRegistry {
     return true;
   }
 
-  replace(command: Command, previousName?: string): void {
+  replace(command: CommandPlugin, previousName?: string): void {
     const name = command.name.trim().toLowerCase();
 
     if (!name) {
@@ -108,7 +108,7 @@ export class CommandRegistry {
     }
   }
 
-  private removeCommand(command: Command): void {
+  private removeCommand(command: CommandPlugin): void {
     const name = command.name.trim().toLowerCase();
 
     this.canonical.delete(name);

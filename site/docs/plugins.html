@@ -1,0 +1,2124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f8f7fc" />
+    <meta name="description" content="Read the violajs documentation." />
+    <script>
+      (() => {
+        try {
+          const saved = localStorage.getItem("violajs-theme");
+          const prefersDark = window.matchMedia(
+            "(prefers-color-scheme: dark)",
+          ).matches;
+          if (saved === "dark" || (!saved && prefersDark))
+            document.documentElement.dataset.theme = "dark";
+        } catch {}
+      })();
+    </script>
+    <title>Plugin Development — violajs docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body class="docs-page">
+    <header class="site-header">
+      <nav class="nav container" aria-label="Main navigation">
+        <a class="brand" href="../index.html" aria-label="violajs home">
+          <span class="brand-mark">v<span>.</span></span
+          ><span>viola<span class="brand-light">js</span></span>
+        </a>
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-label="Open navigation"
+          aria-expanded="false"
+        >
+          <span></span><span></span>
+        </button>
+        <div class="nav-links" id="nav-links">
+          <a href="../index.html#features">Features</a>
+          <a href="../index.html#getting-started">Getting started</a>
+          <a href="../index.html#plugins">Plugins</a>
+          <a class="is-current" href="./plugins.html">Documentation</a>
+          <button
+            class="theme-toggle"
+            type="button"
+            aria-label="Switch to dark mode"
+            aria-pressed="false"
+          >
+            <span class="theme-icon" aria-hidden="true">☾</span
+            ><span class="theme-label">Dark mode</span>
+          </button>
+          <a
+            class="nav-github"
+            href="https://github.com/arsa0x/violajs"
+            target="_blank"
+            rel="noreferrer"
+            >GitHub <span aria-hidden="true">↗</span></a
+          >
+        </div>
+      </nav>
+    </header>
+
+    <div class="docs-shell container">
+      <aside class="docs-sidebar">
+        <a class="docs-back-link" href="../index.html">← Back to overview</a>
+        <p class="docs-sidebar-label">DOCUMENTATION</p>
+        <nav class="docs-nav" aria-label="Documentation pages">
+          <a class="docs-nav-link" href="./argument-parser.html"
+            ><span class="docs-nav-index">01</span
+            ><span>Argument Parser</span></a
+          >
+          <a class="docs-nav-link" href="./command-list.html"
+            ><span class="docs-nav-index">02</span><span>Command List</span></a
+          >
+          <a class="docs-nav-link" href="./events.html"
+            ><span class="docs-nav-index">03</span><span>Event Plugins</span></a
+          >
+          <a class="docs-nav-link" href="./interactive-messages.html"
+            ><span class="docs-nav-index">04</span
+            ><span>Interactive messages</span></a
+          >
+          <a
+            class="docs-nav-link is-active"
+            href="./plugins.html"
+            aria-current="page"
+            ><span class="docs-nav-index">05</span
+            ><span>Plugin Development</span></a
+          >
+        </nav>
+        <a
+          class="docs-source-link"
+          href="https://github.com/arsa0x/violajs/tree/main/docs"
+          target="_blank"
+          rel="noreferrer"
+          >Edit documentation on GitHub ↗</a
+        >
+      </aside>
+
+      <main class="docs-main">
+        <div class="docs-breadcrumb">
+          <a href="../index.html">Home</a><span>/</span
+          ><span>Documentation</span><span>/</span
+          ><strong>Plugin Development</strong>
+        </div>
+        <div class="docs-article-layout">
+          <article class="docs-content markdown-body">
+            <h1 id="plugin-development">Plugin Development</h1>
+            <blockquote>
+              <p>
+                <strong>Runtime:</strong> Bun ≥ 1.4.0 ·
+                <strong>Core library:</strong> Baileys ·
+                <strong>Last updated:</strong> 2026-11-12
+              </p>
+            </blockquote>
+            <hr />
+            <h2 id="table-of-contents">Table of Contents</h2>
+            <ol>
+              <li><a href="#1-overview">Overview</a></li>
+              <li>
+                <a href="#2-command-plugins">Command Plugins</a>
+                <ul>
+                  <li><a href="#21-anatomy">Anatomy</a></li>
+                  <li><a href="#22-field-reference">Field Reference</a></li>
+                  <li><a href="#23-minimal-example">Minimal Example</a></li>
+                </ul>
+              </li>
+              <li>
+                <a href="#3-flags--the-args-api">Flags &amp; the Args API</a>
+                <ul>
+                  <li><a href="#31-flagspec-kinds">FlagSpec Kinds</a></li>
+                  <li><a href="#32-args-methods">Args Methods</a></li>
+                  <li><a href="#33-annotated-example">Annotated Example</a></li>
+                </ul>
+              </li>
+              <li>
+                <a href="#4-middleware">Middleware</a>
+                <ul>
+                  <li>
+                    <a href="#41-built-in-middleware">Built-in Middleware</a>
+                  </li>
+                  <li><a href="#42-chaining-order">Chaining Order</a></li>
+                  <li>
+                    <a href="#43-writing-a-custom-middleware"
+                      >Writing a Custom Middleware</a
+                    >
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <a href="#5-commandcontext-reference"
+                  >CommandContext Reference</a
+                >
+              </li>
+              <li>
+                <a href="#6-command-plugin--full-example"
+                  >Command Plugin — Full Example</a
+                >
+              </li>
+              <li>
+                <a href="#7-event-plugins">Event Plugins</a>
+                <ul>
+                  <li><a href="#71-anatomy">Anatomy</a></li>
+                  <li><a href="#72-available-events">Available Events</a></li>
+                  <li><a href="#73-minimal-example">Minimal Example</a></li>
+                </ul>
+              </li>
+              <li>
+                <a href="#8-eventcontext-reference">EventContext Reference</a>
+              </li>
+              <li>
+                <a href="#9-event-plugin--full-example"
+                  >Event Plugin — Full Example</a
+                >
+              </li>
+              <li>
+                <a href="#10-send-api-reference">Send API Reference</a>
+                <ul>
+                  <li><a href="#101-text--media">Text &amp; Media</a></li>
+                  <li>
+                    <a href="#102-interactive-messages">Interactive Messages</a>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <a href="#11-registering--generating-plugins"
+                  >Registering &amp; Generating Plugins</a
+                >
+              </li>
+              <li>
+                <a href="#12-hot-reload-development"
+                  >Hot-Reload (Development)</a
+                >
+              </li>
+              <li>
+                <a href="#13-recipes--common-patterns"
+                  >Recipes &amp; Common Patterns</a
+                >
+              </li>
+              <li><a href="#14-troubleshooting-faq">Troubleshooting FAQ</a></li>
+            </ol>
+            <hr />
+            <h2 id="1-overview">1. Overview</h2>
+            <p>
+              violajs uses two independent plugin systems that sit alongside
+              each other:
+            </p>
+            <table>
+              <thead>
+                <tr>
+                  <th>System</th>
+                  <th>Purpose</th>
+                  <th>Directory</th>
+                  <th>Base type</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Command plugin</strong></td>
+                  <td>
+                    Responds to a prefixed command string (e.g.
+                    <code>.ping</code>)
+                  </td>
+                  <td><code>commands/</code></td>
+                  <td><code>Command</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Event plugin</strong></td>
+                  <td>Reacts to WhatsApp events (messages, joins, etc.)</td>
+                  <td><code>events/</code></td>
+                  <td><code>EventPlugin</code></td>
+                </tr>
+              </tbody>
+            </table>
+            <p>
+              Both plugin types are
+              <strong>plain TypeScript modules</strong> with a default export.
+              They are discovered automatically and registered via a
+              code-generation step (or the hot-reload watcher in development).
+            </p>
+            <h3 id="project-layout">Project layout</h3>
+            <pre><code>violajs/
+├── commands/           ← command plugins, any depth
+│   ├── tools/
+│   │   └── ping.ts
+│   └── nsfw/
+│       └── pornhub.ts
+├── events/             ← event plugins, any depth
+│   └── group.ts
+├── src/
+│   ├── core/           ← framework internals (do not edit)
+│   ├── middlewares/    ← reusable middleware factories
+│   ├── types/          ← shared TypeScript types
+│   └── generated/      ← auto-generated registry (do not edit)
+├── lib/                ← shared utilities (Send, Args, loggers…)
+└── config.ts           ← bot configuration
+</code></pre>
+            <hr />
+            <h2 id="2-command-plugins">2. Command Plugins</h2>
+            <h3 id="2-1-anatomy">2.1 Anatomy</h3>
+            <p>
+              A command plugin is a file that <strong>default-exports</strong> a
+              <code>Command</code> object (created with
+              <code>defineCommand</code>).
+            </p>
+            <pre><code class="language-ts">// commands/&lt;category&gt;/&lt;name&gt;.ts
+import { defineCommand } from "@core/command";
+
+export default defineCommand({
+  name: "...",
+  // ... fields
+  execute: async (ctx) =&gt; {
+    // handler body
+  },
+});
+</code></pre>
+            <h3 id="2-2-field-reference">2.2 Field Reference</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Type</th>
+                  <th>Required</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>name</code></td>
+                  <td><code>string</code></td>
+                  <td>✅</td>
+                  <td>
+                    Primary command name, <strong>lowercase</strong>, no spaces.
+                    Must be unique across all commands and aliases.
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>aliases</code></td>
+                  <td><code>string[]</code></td>
+                  <td>—</td>
+                  <td>Alternative names that trigger this command.</td>
+                </tr>
+                <tr>
+                  <td><code>category</code></td>
+                  <td><code>Category</code></td>
+                  <td>—</td>
+                  <td>Groups the command in the menu. See categories below.</td>
+                </tr>
+                <tr>
+                  <td><code>description</code></td>
+                  <td><code>string</code></td>
+                  <td>—</td>
+                  <td>
+                    One-line description shown in the menu and
+                    <code>--help</code> output.
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>usage</code></td>
+                  <td><code>string[]</code></td>
+                  <td>—</td>
+                  <td>
+                    Usage examples shown in <code>--help</code>, e.g.
+                    <code>[".ping", ".ping --verbose"]</code>.
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>flags</code></td>
+                  <td><code>FlagSpec[]</code></td>
+                  <td>—</td>
+                  <td>
+                    Declared flags parsed from the command arguments. See §3.
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>middleware</code></td>
+                  <td><code>Middleware[]</code></td>
+                  <td>—</td>
+                  <td>
+                    Per-command middleware chain, run after global middleware.
+                    See §4.
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>execute</code></td>
+                  <td>
+                    <code>(ctx: CommandContext) =&gt; Promise&lt;void&gt;</code>
+                  </td>
+                  <td>✅</td>
+                  <td>Async command handler.</td>
+                </tr>
+                <tr>
+                  <td><code>dispose</code></td>
+                  <td><code>() =&gt; void | Promise&lt;void&gt;</code></td>
+                  <td>—</td>
+                  <td>
+                    Called by the hot-reload system when this command is
+                    unregistered. Use it to clear timers or close handles.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <p>
+              <strong>Available categories</strong> (<code>Category</code>
+              type):
+            </p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Value</th>
+                  <th>Display name</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>"tools"</code></td>
+                  <td>Tools</td>
+                </tr>
+                <tr>
+                  <td><code>"downloader"</code></td>
+                  <td>Downloader</td>
+                </tr>
+                <tr>
+                  <td><code>"search"</code></td>
+                  <td>Search</td>
+                </tr>
+                <tr>
+                  <td><code>"admin"</code></td>
+                  <td>Group administration</td>
+                </tr>
+                <tr>
+                  <td><code>"nsfw"</code></td>
+                  <td>NSFW</td>
+                </tr>
+                <tr>
+                  <td><code>"ai"</code></td>
+                  <td>AI</td>
+                </tr>
+                <tr>
+                  <td><code>"game"</code></td>
+                  <td>Game</td>
+                </tr>
+                <tr>
+                  <td><code>"maker"</code></td>
+                  <td>Maker</td>
+                </tr>
+                <tr>
+                  <td><code>"uncategorized"</code></td>
+                  <td>Uncategorized (default)</td>
+                </tr>
+              </tbody>
+            </table>
+            <h3 id="2-3-minimal-example">2.3 Minimal Example</h3>
+            <pre><code class="language-ts">// commands/tools/ping.ts
+import { defineCommand } from "@core/command";
+
+export default defineCommand({
+  name: "ping",
+  aliases: ["p"],
+  category: "tools",
+  description: "Check if the bot is alive.",
+  usage: [".ping"],
+
+  execute: async (ctx) =&gt; {
+    const start = Date.now();
+    await ctx.send.text("Pong! 🏓");
+    // ctx.send.text() resolves after the message is enqueued
+    const ms = Date.now() - start;
+    await ctx.send.text(`Latency: ${ms}ms`, false); // false = don't quote
+  },
+});
+</code></pre>
+            <hr />
+            <h2 id="3-flags-the-args-api">3. Flags &amp; the Args API</h2>
+            <p>
+              Flags are declared with <code>FlagSpec</code> and parsed
+              automatically by the dispatcher before <code>execute</code> is
+              called. The parsed result is available as <code>ctx.args</code>.
+            </p>
+            <h3 id="3-1-flagspec-kinds">3.1 FlagSpec Kinds</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Kind</th>
+                  <th>Factory</th>
+                  <th>Parsed as</th>
+                  <th>Example input</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>bool</code></td>
+                  <td><code>FlagSpec.bool(names)</code></td>
+                  <td><code>boolean</code> — true when present</td>
+                  <td><code>--verbose</code></td>
+                </tr>
+                <tr>
+                  <td><code>value</code></td>
+                  <td><code>FlagSpec.value(names)</code></td>
+                  <td><code>string | undefined</code> — text after the flag</td>
+                  <td><code>--query hello world</code></td>
+                </tr>
+                <tr>
+                  <td><code>list</code></td>
+                  <td><code>FlagSpec.list(names)</code></td>
+                  <td>
+                    <code>string[]</code> — comma-separated or space-separated
+                    values
+                  </td>
+                  <td>
+                    <code>--tags foo,bar</code> or
+                    <code>--tags foo --tags bar</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>json</code></td>
+                  <td><code>FlagSpec.json(names)</code></td>
+                  <td>
+                    <code>unknown</code> — first valid JSON token sequence
+                  </td>
+                  <td><code>--data {"key":"val"}</code></td>
+                </tr>
+              </tbody>
+            </table>
+            <p><strong>Rules:</strong></p>
+            <ul>
+              <li>
+                <code>names</code> can be a single string or an array:
+                <code>FlagSpec.bool("--verbose")</code> or
+                <code>FlagSpec.bool(["--verbose", "-v"])</code>.
+              </li>
+              <li>
+                The first name is the <strong>canonical name</strong> used by
+                all <code>ctx.args</code> lookup calls.
+              </li>
+              <li>
+                Names <code>--help</code> and <code>-h</code> are reserved by
+                the dispatcher and cannot be used by plugins.
+              </li>
+              <li>
+                Calling <code>.description("…")</code> on any
+                <code>FlagSpec</code> adds the text to
+                <code>--help</code> output.
+              </li>
+            </ul>
+            <h3 id="3-2-args-methods">3.2 Args Methods</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Method</th>
+                  <th>Returns</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>ctx.args.flag(name)</code></td>
+                  <td><code>boolean</code></td>
+                  <td>
+                    <code>true</code> if a <code>bool</code> flag was present.
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>ctx.args.has(name)</code></td>
+                  <td><code>boolean</code></td>
+                  <td>
+                    <code>true</code> if the flag appeared at all (even without
+                    a value).
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>ctx.args.value(name)</code></td>
+                  <td><code>string | undefined</code></td>
+                  <td>Raw string value of a <code>value</code> flag.</td>
+                </tr>
+                <tr>
+                  <td><code>ctx.args.valueParsed(name, parser)</code></td>
+                  <td><code>T | undefined</code></td>
+                  <td>
+                    Applies <code>parser</code> to the raw value; returns
+                    <code>undefined</code> on parse error.
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>ctx.args.list(name)</code></td>
+                  <td><code>string[]</code></td>
+                  <td>Copy of the parsed list (empty array if absent).</td>
+                </tr>
+                <tr>
+                  <td><code>ctx.args.listNonEmpty(name)</code></td>
+                  <td><code>string[] | undefined</code></td>
+                  <td>Same but <code>undefined</code> when empty.</td>
+                </tr>
+                <tr>
+                  <td><code>ctx.args.json&lt;T&gt;(name)</code></td>
+                  <td><code>T | undefined</code></td>
+                  <td>
+                    Parsed JSON value, or <code>undefined</code> if missing or
+                    invalid.
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <code>ctx.args.jsonParsed&lt;T&gt;(name, parser)</code>
+                  </td>
+                  <td><code>T | undefined</code></td>
+                  <td>Applies <code>parser</code> to the JSON value.</td>
+                </tr>
+                <tr>
+                  <td><code>ctx.args.jsonError(name)</code></td>
+                  <td><code>JsonParseError | undefined</code></td>
+                  <td>Details of a JSON parse failure, if any.</td>
+                </tr>
+                <tr>
+                  <td><code>ctx.args.positional(index)</code></td>
+                  <td><code>string | undefined</code></td>
+                  <td>Positional argument at the given 0-based index.</td>
+                </tr>
+                <tr>
+                  <td><code>ctx.args.rest()</code></td>
+                  <td><code>string[]</code></td>
+                  <td>All positional arguments.</td>
+                </tr>
+                <tr>
+                  <td><code>ctx.args.restFrom(index)</code></td>
+                  <td><code>string[]</code></td>
+                  <td>
+                    Positional arguments starting from <code>index</code>.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <blockquote>
+              <p>
+                <strong>Alias resolution:</strong> pass any declared name for a
+                flag and the canonical name is resolved automatically.
+                <code>.flag("-v")</code> and
+                <code>.flag("--verbose")</code> refer to the same flag.
+              </p>
+            </blockquote>
+            <h3 id="3-3-annotated-example">3.3 Annotated Example</h3>
+            <pre><code class="language-ts">import { defineCommand } from "@core/command";
+import { FlagSpec } from "@lib/args";
+
+export default defineCommand({
+  name: "search",
+  category: "search",
+  description: "Search the web.",
+  usage: [".search &lt;query&gt;", ".search &lt;query&gt; --page 2 --safe"],
+  flags: [
+    FlagSpec.value(["--page", "-p"]).description("Page number (default: 1)."),
+    FlagSpec.bool(["--safe", "-s"]).description("Enable safe search."),
+    FlagSpec.list(["--tags", "-t"]).description(
+      "Filter by tags (comma-separated).",
+    ),
+  ],
+
+  execute: async (ctx) =&gt; {
+    // Positional arguments are words that don't follow a declared flag.
+    // Input: .search hello world --page 2 --safe
+    // ctx.args.rest()       → ["hello", "world"]
+    // ctx.args.value("--page") → "2"
+    // ctx.args.flag("--safe")  → true
+
+    const query = ctx.args.rest().join(" ");
+    if (!query) {
+      await ctx.send.text("Usage: .search &lt;query&gt;");
+      return;
+    }
+
+    const page = ctx.args.valueParsed("--page", Number) ?? 1;
+    const safe = ctx.args.flag("--safe");
+    const tags = ctx.args.list("--tags"); // [] if not provided
+
+    await ctx.send.text(
+      `Searching: "${query}", page ${page}, safe=${safe}, tags=${tags.join(", ") || "none"}`,
+    );
+  },
+});
+</code></pre>
+            <hr />
+            <h2 id="4-middleware">4. Middleware</h2>
+            <p>
+              Middleware functions wrap the command handler and run in a chain.
+              Each middleware receives the <code>CommandContext</code> and a
+              <code>next</code> function. It <strong>must</strong> call
+              <code>next()</code> to continue the chain, or return early to
+              abort.
+            </p>
+            <pre><code class="language-ts">// Middleware signature
+type Middleware = (
+  ctx: CommandContext,
+  next: () =&gt; Promise&lt;void&gt;,
+) =&gt; Promise&lt;void&gt;;
+</code></pre>
+            <h3 id="4-1-built-in-middleware">4.1 Built-in Middleware</h3>
+            <p>
+              All are factory functions imported from
+              <code>@src/middlewares/</code>.
+            </p>
+            <h4><code>cooldown(durationMs: number)</code></h4>
+            <p>
+              Prevents the same user from running the same command more than
+              once per window.
+            </p>
+            <pre><code class="language-ts">import { cooldown } from "@src/middlewares/cooldown";
+
+middleware: [cooldown(5_000)]; // 5-second cooldown per user
+</code></pre>
+            <h4><code>groupOnly()</code></h4>
+            <p>Rejects the command if it is used in a private (DM) chat.</p>
+            <pre><code class="language-ts">import { groupOnly } from "@src/middlewares/group";
+
+middleware: [groupOnly()];
+</code></pre>
+            <h4><code>groupAdminOnly()</code></h4>
+            <p>
+              Rejects the command if the sender is not a group admin or
+              superadmin.
+            </p>
+            <pre><code class="language-ts">import { groupAdminOnly } from "@src/middlewares/group-admin";
+
+middleware: [groupAdminOnly()];
+</code></pre>
+            <blockquote>
+              <p>
+                Requires the command to be used in a group. Does
+                <strong>not</strong> implicitly call <code>groupOnly()</code> —
+                chain them together if needed.
+              </p>
+            </blockquote>
+            <h4><code>botAdminOnly()</code></h4>
+            <p>Rejects the command if the bot itself is not a group admin.</p>
+            <pre><code class="language-ts">import { botAdminOnly } from "@src/middlewares/bot-admin";
+
+middleware: [botAdminOnly()];
+</code></pre>
+            <h4><code>ownerOnly()</code></h4>
+            <p>
+              Restricts the command to the bot owners defined in
+              <code>config.ts</code>.
+            </p>
+            <pre><code class="language-ts">import { ownerOnly } from "@src/middlewares/owner";
+
+middleware: [ownerOnly()];
+</code></pre>
+            <h4><code>logger(log)</code></h4>
+            <p>
+              Logs command invocations and execution time. Typically used as
+              <strong>global middleware</strong> in <code>src/app.ts</code>, not
+              per-command.
+            </p>
+            <pre><code class="language-ts">import { logger } from "@src/middlewares/logger";
+import { createSessionLogger } from "@lib/logger";
+
+// In app.ts:
+const dispatcher = new CommandDispatcher(registry, [logger(log)]);
+</code></pre>
+            <h3 id="4-2-chaining-order">4.2 Chaining Order</h3>
+            <p>Middleware runs in the following order:</p>
+            <pre><code>Global middleware (defined in CommandDispatcher)
+  → Command-level middleware (defined in command.middleware[])
+    → command.execute(ctx)
+</code></pre>
+            <pre><code class="language-ts">// Example: a group-admin-only command with a cooldown
+import { defineCommand } from "@core/command";
+import { groupOnly } from "@src/middlewares/group";
+import { groupAdminOnly } from "@src/middlewares/group-admin";
+import { cooldown } from "@src/middlewares/cooldown";
+
+export default defineCommand({
+  name: "close",
+  category: "admin",
+  middleware: [
+    groupOnly(), // 1. must be in a group
+    groupAdminOnly(), // 2. sender must be admin
+    cooldown(10_000), // 3. 10-second cooldown
+  ],
+  execute: async (ctx) =&gt; {
+    await ctx.sock.groupSettingUpdate(ctx.chat.jid, "announcement");
+    await ctx.send.text("Group closed. Only admins can send messages.");
+  },
+});
+</code></pre>
+            <h3 id="4-3-writing-a-custom-middleware">
+              4.3 Writing a Custom Middleware
+            </h3>
+            <pre><code class="language-ts">// src/middlewares/nsfw-gate.ts
+import type { Middleware } from "@src/types/middleware";
+
+// A middleware that only allows the command in groups that have NSFW enabled.
+// The enabled set would be backed by a persistent store in a real bot.
+const nsfwGroups = new Set&lt;string&gt;();
+
+export const nsfwGate = (): Middleware =&gt; async (ctx, next) =&gt; {
+  if (!ctx.chat.isGroup) {
+    await ctx.send.text("Command ini hanya tersedia di group.");
+    return;
+  }
+
+  if (!nsfwGroups.has(ctx.chat.jid)) {
+    await ctx.send.text(
+      "NSFW belum diaktifkan di group ini. Gunakan .nsfw on.",
+    );
+    return;
+  }
+
+  // Always await next() — omitting it silently drops the command.
+  await next();
+};
+
+// A paired command to toggle the gate:
+// .nsfw on  → nsfwGroups.add(ctx.chat.jid)
+// .nsfw off → nsfwGroups.delete(ctx.chat.jid)
+</code></pre>
+            <blockquote>
+              <p>
+                <strong>Tip:</strong> Middleware that manipulates shared state
+                (like <code>nsfwGroups</code>) should be declared in its own
+                module so the state persists for the lifetime of the process,
+                not recreated on each command invocation.
+              </p>
+            </blockquote>
+            <hr />
+            <h2 id="5-commandcontext-reference">5. CommandContext Reference</h2>
+            <p>
+              <code>ctx</code> is the single argument passed to
+              <code>execute</code> and to every middleware.
+            </p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Property</th>
+                  <th>Type</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>ctx.sock</code></td>
+                  <td><code>WASocket</code></td>
+                  <td>
+                    The active Baileys socket. Use for Baileys API calls
+                    (<code>groupMetadata</code>,
+                    <code>sendPresenceUpdate</code>, etc.).
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>ctx.msg</code></td>
+                  <td><code>WAMessage</code></td>
+                  <td>The raw WhatsApp message that triggered this command.</td>
+                </tr>
+                <tr>
+                  <td><code>ctx.text</code></td>
+                  <td><code>string</code></td>
+                  <td>
+                    The full message text, including the prefix and command
+                    name.
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>ctx.name</code></td>
+                  <td><code>string</code></td>
+                  <td>
+                    The resolved command name (lowercase, without prefix).
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>ctx.rawArgs</code></td>
+                  <td><code>string[]</code></td>
+                  <td>Arguments as a string array, before flag parsing.</td>
+                </tr>
+                <tr>
+                  <td><code>ctx.args</code></td>
+                  <td><code>Args | undefined</code></td>
+                  <td>
+                    Parsed flags and positionals. Available after the dispatcher
+                    runs; always present in <code>execute</code>.
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>ctx.sender.jid</code></td>
+                  <td><code>string</code></td>
+                  <td>JID of the message sender.</td>
+                </tr>
+                <tr>
+                  <td><code>ctx.sender.isOwner</code></td>
+                  <td><code>boolean</code></td>
+                  <td>Whether the sender is in the owners list.</td>
+                </tr>
+                <tr>
+                  <td><code>ctx.chat.jid</code></td>
+                  <td><code>string</code></td>
+                  <td>JID of the chat (group or DM).</td>
+                </tr>
+                <tr>
+                  <td><code>ctx.chat.isGroup</code></td>
+                  <td><code>boolean</code></td>
+                  <td>Whether the chat is a WhatsApp group.</td>
+                </tr>
+                <tr>
+                  <td><code>ctx.send</code></td>
+                  <td><code>Send</code></td>
+                  <td>Message-sending helpers. See §10.</td>
+                </tr>
+                <tr>
+                  <td><code>ctx.log</code></td>
+                  <td><code>Log</code></td>
+                  <td>Session-scoped logger.</td>
+                </tr>
+              </tbody>
+            </table>
+            <hr />
+            <h2 id="6-command-plugin-full-example">
+              6. Command Plugin — Full Example
+            </h2>
+            <p>
+              A realistic search command that queries an external API, uses
+              flags, middleware, and multiple send methods.
+            </p>
+            <pre><code class="language-ts">// commands/search/youtube.ts
+import { defineCommand } from "@core/command";
+import { FlagSpec } from "@lib/args";
+import { cooldown } from "@src/middlewares/cooldown";
+
+const API_BASE = "https://www.googleapis.com/youtube/v3";
+
+export default defineCommand({
+  name: "youtube",
+  aliases: ["yt"],
+  category: "search",
+  description: "Search YouTube videos.",
+  usage: [
+    ".youtube &lt;query&gt;",
+    ".youtube &lt;query&gt; --max 5",
+    ".youtube &lt;query&gt; --channel",
+  ],
+  flags: [
+    FlagSpec.value(["--max", "-m"]).description(
+      "Maximum results (1–10, default: 3).",
+    ),
+    FlagSpec.bool(["--channel", "-c"]).description(
+      "Search channels instead of videos.",
+    ),
+  ],
+  middleware: [cooldown(8_000)],
+
+  execute: async (ctx) =&gt; {
+    const query = ctx.args!.rest().join(" ").trim();
+
+    if (!query) {
+      await ctx.send.text([
+        "*YouTube Search*\n",
+        "Usage: `.youtube &lt;query&gt;`\n",
+        "Example: `.youtube lofi hip hop`",
+      ]);
+      return;
+    }
+
+    const maxRaw = ctx.args!.valueParsed("--max", Number);
+    const max = Math.min(10, Math.max(1, maxRaw ?? 3));
+    const type = ctx.args!.flag("--channel") ? "channel" : "video";
+
+    // Indicate activity
+    await ctx.sock.sendPresenceUpdate("composing", ctx.chat.jid);
+
+    let data: {
+      items?: Array&lt;{
+        id: unknown;
+        snippet: { title: string; channelTitle: string; description: string };
+      }&gt;;
+    };
+    try {
+      const res = await fetch(
+        `${API_BASE}/search?` +
+          new URLSearchParams({
+            part: "snippet",
+            q: query,
+            maxResults: String(max),
+            type,
+            key: process.env.YOUTUBE_API_KEY ?? "",
+          }),
+        { signal: AbortSignal.timeout(10_000) },
+      );
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      data = await res.json();
+    } catch (err) {
+      ctx.log.error("YouTube API error:", err);
+      await ctx.send.text(
+        "Gagal mengambil data dari YouTube. Coba lagi nanti.",
+      );
+      return;
+    } finally {
+      await ctx.sock.sendPresenceUpdate("paused", ctx.chat.jid);
+    }
+
+    const items = data.items ?? [];
+    if (items.length === 0) {
+      await ctx.send.text(`Tidak ada hasil untuk *${query}*.`);
+      return;
+    }
+
+    const lines = items.map((item, i) =&gt; {
+      const { title, channelTitle, description } = item.snippet;
+      const id =
+        type === "video"
+          ? (item.id as { videoId: string }).videoId
+          : (item.id as { channelId: string }).channelId;
+      const url =
+        type === "video"
+          ? `https://youtu.be/${id}`
+          : `https://youtube.com/channel/${id}`;
+
+      return [
+        `*${i + 1}. ${title}*`,
+        `Channel: ${channelTitle}`,
+        description ? `${description.slice(0, 80)}…` : "",
+        url,
+      ]
+        .filter(Boolean)
+        .join("\n");
+    });
+
+    await ctx.send.text(`🎬 *YouTube — ${query}*\n\n` + lines.join("\n\n"));
+  },
+});
+</code></pre>
+            <hr />
+            <h2 id="7-event-plugins">7. Event Plugins</h2>
+            <h3 id="7-1-anatomy">7.1 Anatomy</h3>
+            <p>
+              An event plugin is a file that <strong>default-exports</strong> an
+              <code>EventPlugin</code> object (created with
+              <code>defineEvent</code>).
+            </p>
+            <pre><code class="language-ts">// events/&lt;name&gt;.ts
+import { defineEvent } from "@core/event";
+
+export default defineEvent({
+  name: "my-plugin",
+  events: {
+    "message.received": async (ctx) =&gt; {
+      /* … */
+    },
+    "group.participant.join": async (ctx) =&gt; {
+      /* … */
+    },
+  },
+});
+</code></pre>
+            <table>
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Type</th>
+                  <th>Required</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>name</code></td>
+                  <td><code>string</code></td>
+                  <td>✅</td>
+                  <td>
+                    Unique plugin identifier. Used in logs and hot-reload
+                    tracking.
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>events</code></td>
+                  <td><code>EventHandlers</code></td>
+                  <td>✅</td>
+                  <td>
+                    Map of event names to async handlers. A plugin can handle
+                    any number of events.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <h3 id="7-2-available-events">7.2 Available Events</h3>
+            <h4>Internal events (emitted by the framework)</h4>
+            <table>
+              <thead>
+                <tr>
+                  <th>Event name</th>
+                  <th>Payload type</th>
+                  <th>Fired when</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>"message.received"</code></td>
+                  <td>
+                    <code
+                      >{ message, text, chat: { jid, isGroup }, sender: { jid }
+                      }</code
+                    >
+                  </td>
+                  <td>Any non-outgoing message is received.</td>
+                </tr>
+                <tr>
+                  <td><code>"group.participant.join"</code></td>
+                  <td>
+                    <code
+                      >{ groupJid, participants: string[], author?: string
+                      }</code
+                    >
+                  </td>
+                  <td>One or more users join a group.</td>
+                </tr>
+                <tr>
+                  <td><code>"group.participant.leave"</code></td>
+                  <td>
+                    <code
+                      >{ groupJid, participants: string[], author?: string
+                      }</code
+                    >
+                  </td>
+                  <td>One or more users leave or are removed from a group.</td>
+                </tr>
+                <tr>
+                  <td><code>"connection.open"</code></td>
+                  <td><code>{ userJid: string }</code></td>
+                  <td>The WhatsApp connection becomes open.</td>
+                </tr>
+                <tr>
+                  <td><code>"connection.close"</code></td>
+                  <td><code>{ reason?: string }</code></td>
+                  <td>
+                    The connection is closed (before a reconnect attempt).
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <h4>Raw Baileys events (pass-through)</h4>
+            <table>
+              <thead>
+                <tr>
+                  <th>Event name</th>
+                  <th>Payload type</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>"baileys.messages.upsert"</code></td>
+                  <td><code>BaileysEventMap["messages.upsert"]</code></td>
+                </tr>
+                <tr>
+                  <td><code>"baileys.connection.update"</code></td>
+                  <td><code>BaileysEventMap["connection.update"]</code></td>
+                </tr>
+                <tr>
+                  <td><code>"baileys.group-participants.update"</code></td>
+                  <td>
+                    <code>BaileysEventMap["group-participants.update"]</code>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <blockquote>
+              <p>
+                Prefer the internal events when possible. They are normalized
+                and easier to work with. Use <code>baileys.*</code> events only
+                when you need fields that the internal events don't expose.
+              </p>
+            </blockquote>
+            <h3 id="7-3-minimal-example">7.3 Minimal Example</h3>
+            <pre><code class="language-ts">// events/logger.ts
+import { defineEvent } from "@core/event";
+
+export default defineEvent({
+  name: "message-logger",
+  events: {
+    "message.received": async (ctx) =&gt; {
+      ctx.log.info(
+        `[${ctx.event.chat.isGroup ? "group" : "dm"}] ${ctx.event.sender.jid}: ${ctx.event.text}`,
+      );
+    },
+  },
+});
+</code></pre>
+            <hr />
+            <h2 id="8-eventcontext-reference">8. EventContext Reference</h2>
+            <p>
+              Each event handler receives an
+              <code>EventContext&lt;TPayload&gt;</code>:
+            </p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Property</th>
+                  <th>Type</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>ctx.event</code></td>
+                  <td><code>TPayload</code></td>
+                  <td>
+                    The event payload. Its shape depends on the event name (see
+                    §7.2).
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>ctx.pluginName</code></td>
+                  <td><code>string</code></td>
+                  <td>
+                    The name of the plugin that owns this handler. Useful for
+                    self-referential logging.
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>ctx.sock</code></td>
+                  <td><code>WASocket</code></td>
+                  <td>The active Baileys socket.</td>
+                </tr>
+                <tr>
+                  <td><code>ctx.log</code></td>
+                  <td><code>Log</code></td>
+                  <td>Session-scoped logger.</td>
+                </tr>
+              </tbody>
+            </table>
+            <blockquote>
+              <p>
+                Event handlers do <strong>not</strong> have a
+                <code>ctx.send</code> helper because they are not bound to a
+                specific message. Use
+                <code>ctx.sock.sendMessage(jid, content)</code> directly, or
+                construct a <code>Send</code> instance:
+                <code>new Send(ctx.sock, msg, jid)</code> (import from
+                <code>@lib/send</code>).
+              </p>
+            </blockquote>
+            <hr />
+            <h2 id="9-event-plugin-full-example">
+              9. Event Plugin — Full Example
+            </h2>
+            <p>
+              A complete welcome/farewell plugin that fetches group metadata and
+              sends a media message.
+            </p>
+            <pre><code class="language-ts">// events/group.ts
+import { defineEvent } from "@core/event";
+import { Send } from "@lib/send";
+
+export default defineEvent({
+  name: "group-lifecycle",
+  events: {
+    // --- Welcome new members ---
+    "group.participant.join": async (ctx) =&gt; {
+      const { groupJid, participants } = ctx.event;
+
+      let groupName = groupJid;
+      try {
+        const meta = await ctx.sock.groupMetadata(groupJid);
+        groupName = meta.subject;
+      } catch {
+        ctx.log.warn(`Could not fetch metadata for ${groupJid}`);
+      }
+
+      for (const participantJid of participants) {
+        // Mention the new member using WhatsApp's @mention format
+        const mention = participantJid.replace("@s.whatsapp.net", "");
+
+        try {
+          await ctx.sock.sendMessage(groupJid, {
+            text: `👋 Selamat datang di *${groupName}*, @${mention}!\n\nSilakan baca peraturan grup.`,
+            mentions: [participantJid],
+          });
+        } catch (err) {
+          ctx.log.error(`Failed to send welcome to ${participantJid}:`, err);
+        }
+      }
+    },
+
+    // --- Farewell leaving members ---
+    "group.participant.leave": async (ctx) =&gt; {
+      const { groupJid, participants } = ctx.event;
+
+      for (const participantJid of participants) {
+        const mention = participantJid.replace("@s.whatsapp.net", "");
+        try {
+          await ctx.sock.sendMessage(groupJid, {
+            text: `👋 Selamat tinggal, @${mention}. Semoga sukses!`,
+            mentions: [participantJid],
+          });
+        } catch (err) {
+          ctx.log.error(`Failed to send farewell to ${participantJid}:`, err);
+        }
+      }
+    },
+
+    // --- Log raw connection events ---
+    "connection.open": async (ctx) =&gt; {
+      ctx.log.info(`Bot connected as ${ctx.event.userJid}`);
+    },
+
+    "connection.close": async (ctx) =&gt; {
+      ctx.log.warn(
+        `Connection closed. Reason: ${ctx.event.reason ?? "unknown"}`,
+      );
+    },
+  },
+});
+</code></pre>
+            <hr />
+            <h2 id="10-send-api-reference">10. Send API Reference</h2>
+            <p>
+              The <code>Send</code> class is available as
+              <code>ctx.send</code> in every command handler. It wraps Baileys'
+              <code>sendMessage</code> with a simpler API and always quotes the
+              triggering message by default.
+            </p>
+            <h3 id="10-1-text-media">10.1 Text &amp; Media</h3>
+            <h4><code>ctx.send.text(body, reply?)</code></h4>
+            <p>Send a plain text message.</p>
+            <pre><code class="language-ts">await ctx.send.text("Hello!");
+await ctx.send.text(["Line 1", " Line 2"]); // arrays are concatenated
+await ctx.send.text("No quote", false); // reply = false → don't quote
+</code></pre>
+            <table>
+              <thead>
+                <tr>
+                  <th>Parameter</th>
+                  <th>Type</th>
+                  <th>Default</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>body</code></td>
+                  <td><code>string | string[]</code></td>
+                  <td>—</td>
+                  <td>Message text. Arrays are joined without separator.</td>
+                </tr>
+                <tr>
+                  <td><code>reply</code></td>
+                  <td><code>boolean</code></td>
+                  <td><code>true</code></td>
+                  <td>Quote the triggering message.</td>
+                </tr>
+              </tbody>
+            </table>
+            <hr />
+            <h4><code>ctx.send.image(media, caption?, reply?)</code></h4>
+            <pre><code class="language-ts">await ctx.send.image({ url: "https://example.com/photo.jpg" }, "Caption here");
+await ctx.send.image(Buffer.from(imageBytes), "From buffer");
+</code></pre>
+            <hr />
+            <h4><code>ctx.send.video(media, caption?, reply?)</code></h4>
+            <pre><code class="language-ts">await ctx.send.video({ url: "https://example.com/clip.mp4" }, "Watch this");
+</code></pre>
+            <hr />
+            <h4><code>ctx.send.audio(media, ptt?, reply?)</code></h4>
+            <pre><code class="language-ts">await ctx.send.audio(audioBuffer); // regular audio
+await ctx.send.audio(voiceBuffer, true); // push-to-talk voice note
+</code></pre>
+            <table>
+              <thead>
+                <tr>
+                  <th>Parameter</th>
+                  <th>Type</th>
+                  <th>Default</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>media</code></td>
+                  <td><code>WAMediaUpload</code></td>
+                  <td>—</td>
+                  <td>Buffer, URL object, or file stream.</td>
+                </tr>
+                <tr>
+                  <td><code>ptt</code></td>
+                  <td><code>boolean</code></td>
+                  <td><code>false</code></td>
+                  <td>Send as a voice message.</td>
+                </tr>
+                <tr>
+                  <td><code>reply</code></td>
+                  <td><code>boolean</code></td>
+                  <td><code>true</code></td>
+                  <td>Quote the triggering message.</td>
+                </tr>
+              </tbody>
+            </table>
+            <hr />
+            <h4><code>ctx.send.sticker(media, reply?)</code></h4>
+            <pre><code class="language-ts">await ctx.send.sticker(stickerBuffer);
+</code></pre>
+            <hr />
+            <h4>
+              <code>ctx.send.document(media, fileName, mimetype?, reply?)</code>
+            </h4>
+            <pre><code class="language-ts">await ctx.send.document(pdfBuffer, "report.pdf", "application/pdf");
+</code></pre>
+            <hr />
+            <h4>
+              <code
+                >ctx.send.location(latitude, longitude, name?, address?,
+                reply?)</code
+              >
+            </h4>
+            <pre><code class="language-ts">await ctx.send.location(-6.2088, 106.8456, "Jakarta", "Indonesia");
+</code></pre>
+            <hr />
+            <h4><code>ctx.send.contact(displayName, vcard, reply?)</code></h4>
+            <pre><code class="language-ts">const vcard = [
+  "BEGIN:VCARD",
+  "VERSION:3.0",
+  "FN:John Doe",
+  "TEL;type=CELL;waid=6281234567890:+62 812-3456-7890",
+  "END:VCARD",
+].join("\n");
+await ctx.send.contact("John Doe", vcard);
+</code></pre>
+            <hr />
+            <h4><code>ctx.send.reaction(emoji, message?)</code></h4>
+            <p>
+              React to a message with an emoji. Pass an empty string to remove a
+              reaction.
+            </p>
+            <pre><code class="language-ts">await ctx.send.reaction("✅"); // react to ctx.msg
+await ctx.send.reaction("❌", otherMsg); // react to a different message
+await ctx.send.reaction(""); // remove reaction from ctx.msg
+</code></pre>
+            <hr />
+            <h4><code>ctx.send.edit(text, message?)</code></h4>
+            <h4><code>ctx.send.delete(message?)</code></h4>
+            <pre><code class="language-ts">const sent = await ctx.sock.sendMessage(ctx.chat.jid, { text: "Processing…" });
+// … do work …
+await ctx.send.edit("Done!", sent); // edit the sent message in place
+await ctx.send.delete(sent); // delete the sent message
+</code></pre>
+            <hr />
+            <h3 id="10-2-interactive-messages">10.2 Interactive Messages</h3>
+            <p>
+              Interactive messages are accessed through
+              <code>ctx.send.interactive</code>. They use WhatsApp's native-flow
+              protocol and require a Baileys-connected socket.
+            </p>
+            <blockquote>
+              <p>
+                ⚠️ Native-flow rendering varies by WhatsApp client version. Test
+                on the target client before shipping.
+              </p>
+            </blockquote>
+            <hr />
+            <h4><code>ctx.send.interactive.quickReply(options)</code></h4>
+            <p>
+              Send up to 3 tappable buttons. Each button's <code>id</code> is
+              returned as a message when tapped, so it can be re-dispatched as a
+              command.
+            </p>
+            <pre><code class="language-ts">await ctx.send.interactive.quickReply({
+  body: "Pilih salah satu:",
+  title: "Menu",
+  footer: "violajs",
+  buttons: [
+    { text: "Ping", id: ".ping" },
+    { text: "Help", id: ".menu" },
+    { text: "Cancel", id: ".cancel" },
+  ],
+});
+</code></pre>
+            <table>
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Type</th>
+                  <th>Required</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>body</code></td>
+                  <td><code>string</code></td>
+                  <td>✅</td>
+                  <td>Main message text.</td>
+                </tr>
+                <tr>
+                  <td><code>title</code></td>
+                  <td><code>string</code></td>
+                  <td>—</td>
+                  <td>Bold header text.</td>
+                </tr>
+                <tr>
+                  <td><code>footer</code></td>
+                  <td><code>string</code></td>
+                  <td>—</td>
+                  <td>Dimmed footer text.</td>
+                </tr>
+                <tr>
+                  <td><code>headerMedia</code></td>
+                  <td><code>InteractiveHeaderMedia</code></td>
+                  <td>—</td>
+                  <td>Image or video header.</td>
+                </tr>
+                <tr>
+                  <td><code>buttons</code></td>
+                  <td><code>InteractiveQuickReplyButton[]</code></td>
+                  <td>✅</td>
+                  <td>
+                    1–3 buttons with <code>text</code> and <code>id</code>.
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>quoted</code></td>
+                  <td><code>boolean</code></td>
+                  <td>—</td>
+                  <td>Default <code>true</code>.</td>
+                </tr>
+              </tbody>
+            </table>
+            <hr />
+            <h4><code>ctx.send.interactive.singleSelect(options)</code></h4>
+            <p>Send a list selector with sections and rows.</p>
+            <pre><code class="language-ts">await ctx.send.interactive.singleSelect({
+  body: "Pilih menu:",
+  selectLabel: "Buka menu",
+  sections: [
+    {
+      title: "Tools",
+      rows: [
+        { id: ".ping", title: "Ping", description: "Cek koneksi bot" },
+        { id: ".menu", title: "Menu", description: "Lihat semua command" },
+      ],
+    },
+    {
+      title: "Downloader",
+      rows: [
+        { id: ".yt", title: "YouTube", description: "Download video YouTube" },
+      ],
+    },
+  ],
+});
+</code></pre>
+            <hr />
+            <h4><code>ctx.send.interactive.urlButton(options)</code></h4>
+            <pre><code class="language-ts">await ctx.send.interactive.urlButton({
+  body: "Kunjungi website kami:",
+  text: "Buka Website",
+  url: "https://example.com",
+});
+</code></pre>
+            <hr />
+            <h4><code>ctx.send.interactive.callButton(options)</code></h4>
+            <pre><code class="language-ts">await ctx.send.interactive.callButton({
+  body: "Hubungi support:",
+  text: "Call Support",
+  phoneNumber: "+6281234567890",
+});
+</code></pre>
+            <hr />
+            <h4><code>ctx.send.interactive.copyCode(options)</code></h4>
+            <pre><code class="language-ts">await ctx.send.interactive.copyCode({
+  body: "Kode promo kamu:",
+  text: "Salin Kode",
+  code: "VIOLA2026",
+});
+</code></pre>
+            <hr />
+            <h4><code>ctx.send.interactive.requestLocation(options)</code></h4>
+            <pre><code class="language-ts">await ctx.send.interactive.requestLocation({
+  body: "Bagikan lokasi kamu:",
+  text: "Kirim Lokasi",
+});
+</code></pre>
+            <hr />
+            <h4><code>ctx.send.interactive.carousel(options)</code></h4>
+            <p>
+              A swipeable carousel of image cards with buttons. Requires at
+              least 2 cards.
+            </p>
+            <pre><code class="language-ts">await ctx.send.interactive.carousel({
+  body: "Produk terbaru:",
+  cards: [
+    {
+      image: "https://example.com/product1.jpg",
+      title: "Produk A",
+      body: "Deskripsi singkat produk A.",
+      footer: "Rp 150.000",
+      buttons: [
+        { type: "url", text: "Lihat Detail", url: "https://example.com/a" },
+        { type: "quick_reply", text: "Pesan", id: ".order product-a" },
+      ],
+    },
+    {
+      image: "https://example.com/product2.jpg",
+      title: "Produk B",
+      body: "Deskripsi singkat produk B.",
+      footer: "Rp 200.000",
+      buttons: [
+        { type: "url", text: "Lihat Detail", url: "https://example.com/b" },
+        { type: "quick_reply", text: "Pesan", id: ".order product-b" },
+      ],
+    },
+  ],
+});
+</code></pre>
+            <p><strong>Carousel button types:</strong></p>
+            <table>
+              <thead>
+                <tr>
+                  <th><code>type</code></th>
+                  <th>Required fields</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>"quick_reply"</code></td>
+                  <td><code>text</code>, <code>id</code></td>
+                  <td>Returns <code>id</code> as a message when tapped.</td>
+                </tr>
+                <tr>
+                  <td><code>"url"</code></td>
+                  <td><code>text</code>, <code>url</code></td>
+                  <td>Opens a URL.</td>
+                </tr>
+                <tr>
+                  <td><code>"call"</code></td>
+                  <td><code>text</code>, <code>phoneNumber</code></td>
+                  <td>Initiates a phone call.</td>
+                </tr>
+                <tr>
+                  <td><code>"copy"</code></td>
+                  <td><code>text</code>, <code>code</code></td>
+                  <td>Copies <code>code</code> to clipboard.</td>
+                </tr>
+                <tr>
+                  <td><code>"single_select"</code></td>
+                  <td><code>title</code>, <code>sections</code></td>
+                  <td>Opens an in-card list selector.</td>
+                </tr>
+              </tbody>
+            </table>
+            <hr />
+            <h4>Extracting interactive responses</h4>
+            <p>
+              When a user taps a quick-reply or list button, the bot receives a
+              response message. Use <code>extractInteractiveResponse</code> to
+              get the <code>id</code> back:
+            </p>
+            <pre><code class="language-ts">import { extractInteractiveResponse } from "@lib/interactive";
+
+// In an event handler or the message loop:
+const responseId = extractInteractiveResponse(message);
+if (responseId) {
+  // responseId is the button's `id` string, e.g. ".ping"
+  // The app.ts message loop already dispatches these as commands automatically.
+}
+</code></pre>
+            <hr />
+            <h2 id="11-registering-generating-plugins">
+              11. Registering &amp; Generating Plugins
+            </h2>
+            <h3 id="static-generation-production">
+              Static generation (production)
+            </h3>
+            <p>
+              After adding or renaming a plugin file, regenerate the static
+              registry:
+            </p>
+            <pre><code class="language-bash">bun run generate
+</code></pre>
+            <p>
+              This writes <code>src/generated/commands.js</code> and
+              <code>src/generated/events.js</code>. These files are
+              <strong>auto-generated — do not edit them manually</strong>.
+            </p>
+            <h3 id="file-naming-conventions">File naming conventions</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Convention</th>
+                  <th>Why</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Use <code>.ts</code> extension</td>
+                  <td>Bun transpiles TypeScript natively.</td>
+                </tr>
+                <tr>
+                  <td>File name ≠ command name</td>
+                  <td>
+                    The name comes from <code>Command.name</code>, not the
+                    filename. Use a descriptive filename that matches.
+                  </td>
+                </tr>
+                <tr>
+                  <td>One default export per file</td>
+                  <td>Each file is exactly one command or one event plugin.</td>
+                </tr>
+                <tr>
+                  <td>Subdirectories are supported</td>
+                  <td>
+                    <code>commands/group/kick.ts</code> is valid; subdirectory
+                    names are ignored.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <h3 id="entry-point">Entry point</h3>
+            <p>
+              The bot starts in <code>index.ts</code>, which calls
+              <code>startApp()</code>. Commands and events are loaded there:
+            </p>
+            <pre><code class="language-ts">// index.ts (typical shape)
+import { startApp } from "@src/app";
+import { CommandRegistry } from "@core/command/registry";
+import { EventRegistry } from "@core/events/registry";
+import { loadStaticCommands } from "@core/command/staticLoader";
+import { loadStaticEvents } from "@core/events/staticLoader";
+
+const registry = new CommandRegistry();
+const eventRegistry = new EventRegistry();
+
+loadStaticCommands(registry);
+loadStaticEvents(eventRegistry);
+
+await startApp(registry, eventRegistry);
+</code></pre>
+            <hr />
+            <h2 id="12-hot-reload-development">12. Hot-Reload (Development)</h2>
+            <p>
+              The <code>DynamicLoader</code> watches <code>commands/</code> and
+              <code>EventDynamicLoader</code> watches <code>events/</code> for
+              file changes and reloads plugins without restarting the bot.
+            </p>
+            <pre><code class="language-ts">// Enabling hot-reload (development only)
+import { DynamicLoader } from "@core/command/dynamicLoader";
+import { EventDynamicLoader } from "@core/events/dynamicLoader";
+
+const loader = new DynamicLoader(registry);
+await loader.load();
+await loader.watch();
+
+const eventLoader = new EventDynamicLoader(eventRegistry);
+await eventLoader.load();
+await eventLoader.watch();
+</code></pre>
+            <h3 id="hot-reload-lifecycle">Hot-reload lifecycle</h3>
+            <ol>
+              <li>
+                File saved → debounced (150 ms) → <code>loadFile()</code> runs.
+              </li>
+              <li>The new module is validated.</li>
+              <li>
+                <code>registry.replace()</code> atomically swaps the old
+                command.
+              </li>
+              <li>
+                The old command's <code>dispose()</code> hook is called (if
+                defined).
+              </li>
+              <li>
+                If validation fails, the
+                <strong>previous command stays registered</strong> and the error
+                is logged.
+              </li>
+            </ol>
+            <h3 id="dispose-cleaning-up-timers-and-handles">
+              <code>dispose()</code> — cleaning up timers and handles
+            </h3>
+            <pre><code class="language-ts">// commands/tools/scheduler.ts
+import { defineCommand } from "@core/command";
+
+let interval: ReturnType&lt;typeof setInterval&gt; | undefined;
+
+export default defineCommand({
+  name: "scheduler",
+  execute: async (ctx) =&gt; {
+    interval ??= setInterval(() =&gt; {
+      ctx.log.info("tick");
+    }, 60_000);
+    await ctx.send.text("Scheduler running.");
+  },
+
+  // Called by hot-reload when this module is replaced.
+  dispose: () =&gt; {
+    clearInterval(interval);
+    interval = undefined;
+  },
+});
+</code></pre>
+            <blockquote>
+              <p>
+                <strong>Production note:</strong> Use the static loader in
+                production. The hot-reload system imports modules via URL
+                cache-busting, so each reload leaves one unreclaimable module
+                record in Bun's module registry. Over hundreds of reloads this
+                adds up. Keep hot-reload for development only.
+              </p>
+            </blockquote>
+            <hr />
+            <h2 id="13-recipes-common-patterns">
+              13. Recipes &amp; Common Patterns
+            </h2>
+            <h3 id="fetching-group-metadata-safely">
+              Fetching group metadata safely
+            </h3>
+            <pre><code class="language-ts">execute: async (ctx) =&gt; {
+  if (!ctx.chat.isGroup) {
+    await ctx.send.text("Command ini hanya untuk group.");
+    return;
+  }
+
+  const meta = await ctx.sock.groupMetadata(ctx.chat.jid);
+  const participantCount = meta.participants.length;
+  await ctx.send.text(`Group *${meta.subject}* memiliki ${participantCount} anggota.`);
+},
+</code></pre>
+            <h3 id="replying-to-a-quoted-message">
+              Replying to a quoted message
+            </h3>
+            <pre><code class="language-ts">execute: async (ctx) =&gt; {
+  const quoted =
+    ctx.msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
+  if (!quoted) {
+    await ctx.send.text("Balas pesan yang ingin diedit.");
+    return;
+  }
+  // process `quoted`...
+},
+</code></pre>
+            <h3 id="downloading-media-from-a-quoted-message">
+              Downloading media from a quoted message
+            </h3>
+            <pre><code class="language-ts">import { downloadMediaMessage } from "baileys";
+
+execute: async (ctx) =&gt; {
+  const quoted = ctx.msg.message?.extendedTextMessage?.contextInfo;
+  if (!quoted?.quotedMessage?.imageMessage) {
+    await ctx.send.text("Balas gambar untuk mengonversinya ke stiker.");
+    return;
+  }
+
+  const buffer = await downloadMediaMessage(
+    {
+      key: { remoteJid: ctx.chat.jid, ...quoted },
+      message: quoted.quotedMessage,
+    },
+    "buffer",
+    {},
+    { logger: ctx.log as never, reuploadRequest: ctx.sock.updateMediaMessage },
+  );
+
+  await ctx.send.sticker(buffer as Buffer);
+},
+</code></pre>
+            <h3 id="sending-a-typing-indicator">Sending a typing indicator</h3>
+            <pre><code class="language-ts">execute: async (ctx) =&gt; {
+  await ctx.sock.sendPresenceUpdate("composing", ctx.chat.jid);
+  // ... do slow work ...
+  await ctx.sock.sendPresenceUpdate("paused", ctx.chat.jid);
+  await ctx.send.text("Done!");
+},
+</code></pre>
+            <h3 id="reading-mentions-from-a-message">
+              Reading mentions from a message
+            </h3>
+            <pre><code class="language-ts">import { getGroupMentions } from "@src/utils/group";
+
+execute: async (ctx) =&gt; {
+  const mentioned = getGroupMentions(ctx);
+  if (mentioned.length === 0) {
+    await ctx.send.text("Mention seseorang untuk melanjutkan.");
+    return;
+  }
+  await ctx.send.text(`Kamu mention: ${mentioned.join(", ")}`);
+},
+</code></pre>
+            <h3 id="paginating-results-with-quick-reply-buttons">
+              Paginating results with quick-reply buttons
+            </h3>
+            <pre><code class="language-ts">execute: async (ctx) =&gt; {
+  const page = ctx.args!.valueParsed("--page", Number) ?? 1;
+  const results = await fetchPage(ctx.args!.rest().join(" "), page);
+
+  await ctx.send.text(formatResults(results));
+
+  if (results.hasMore) {
+    await ctx.send.interactive.quickReply({
+      body: `Halaman ${page} dari ${results.totalPages}`,
+      buttons: [
+        { text: "← Sebelumnya", id: `.mycommand --page ${page - 1}` },
+        { text: "Selanjutnya →", id: `.mycommand --page ${page + 1}` },
+      ].filter((b, i) =&gt; !(i === 0 &amp;&amp; page &lt;= 1)),
+    });
+  }
+},
+</code></pre>
+            <h3 id="sharing-state-between-an-event-plugin-and-a-command">
+              Sharing state between an event plugin and a command
+            </h3>
+            <p>
+              Export a plain <code>Map</code> or <code>Set</code> from a shared
+              module:
+            </p>
+            <pre><code class="language-ts">// src/state/afk.ts
+export const afkUsers = new Map&lt;string, { reason: string; since: number }&gt;();
+</code></pre>
+            <pre><code class="language-ts">// commands/tools/afk.ts
+import { afkUsers } from "@src/state/afk";
+// set afkUsers.set(ctx.sender.jid, { reason, since: Date.now() })
+</code></pre>
+            <pre><code class="language-ts">// events/afk-check.ts
+import { afkUsers } from "@src/state/afk";
+// check afkUsers in "message.received"
+</code></pre>
+            <hr />
+            <h2 id="14-troubleshooting-faq">14. Troubleshooting FAQ</h2>
+            <p>
+              <strong
+                >My command never runs even though the file exists.</strong
+              >
+              → Did you run <code>bun run generate</code>? The static registry
+              must be regenerated after adding a new file. Check
+              <code>src/generated/commands.js</code> to confirm the import was
+              added.
+            </p>
+            <p>
+              <strong
+                ><code>ctx.args</code> is <code>undefined</code> in
+                middleware.</strong
+              >
+              → <code>args</code> is set by the dispatcher, so it is
+              <code>undefined</code> during the global middleware phase and
+              defined by the time per-command middleware and
+              <code>execute</code> run. If you need args in global middleware,
+              parse them manually from <code>ctx.rawArgs</code>.
+            </p>
+            <p>
+              <strong>My aliases bypass the cooldown.</strong> → The default
+              <code>cooldown</code> middleware keys on <code>ctx.name</code>,
+              which is the alias name, not the canonical command name. Use
+              <code>ctx.command?.name</code> (requires passing
+              <code>ctx.command</code> from the dispatcher; see the audit note
+              in §4.1) or key on
+              <code>ctx.args?.descriptions()[0]?.name</code> as a workaround.
+            </p>
+            <p>
+              <strong>Interactive buttons don't appear on WhatsApp Web.</strong>
+              → Native-flow buttons are not consistently rendered by WhatsApp
+              Web and older desktop clients. They work reliably on Android and
+              iOS. Use plain text as a fallback for Web users.
+            </p>
+            <p>
+              <strong>Hot-reload isn't picking up my changes.</strong> → Ensure
+              the watcher is started in development mode and that the file is
+              inside <code>commands/</code> or <code>events/</code>. Check the
+              console for <code>Watcher error:</code> messages. If the file has
+              a syntax error, the watcher will log the error and keep the
+              previous version — fix the error and save again.
+            </p>
+            <p>
+              <strong
+                ><code>sock.groupMetadata()</code> throws
+                <code>rate-overlimit</code>.</strong
+              >
+              → You are calling it on every command without caching. Add a TTL
+              cache (see §13) or use the <code>cachedGroupMetadata</code> option
+              on <code>makeWASocket</code>.
+            </p>
+            <p>
+              <strong
+                >The bot sends messages but then goes silent after a
+                disconnect.</strong
+              >
+              → This is the stale-socket bug described in the audit. The
+              <code>bot()</code> function in <code>src/app.ts</code> only
+              registers listeners once and doesn't rebind them after a
+              reconnect. See the <code>Session</code> class in the audit's
+              refactored code for the fix.
+            </p>
+            <p>
+              <strong
+                ><code>downloadMediaMessage</code> throws
+                <code>"No matching keys"</code> or
+                <code>"decrypt failed"</code>.</strong
+              >
+              → The message was received before the Signal session was
+              established, or the media keys have rotated. Call
+              <code>ctx.sock.updateMediaMessage(message)</code> to re-request
+              the keys from WhatsApp before downloading.
+            </p>
+            <p>
+              <strong
+                >My event plugin handles <code>"message.received"</code> but
+                also dispatches commands. Won't that double-execute?</strong
+              >
+              → No. The main <code>app.ts</code> message loop and your event
+              plugin both receive the same
+              <code>"message.received"</code> event, but
+              <code>parseCommand</code> will only match a message that starts
+              with the prefix. As long as your plugin doesn't also call
+              <code>dispatcher.dispatch()</code>, there is no duplication.
+            </p>
+
+            <nav class="docs-page-footer" aria-label="Documentation source">
+              <span>Found a mistake?</span>
+              <a
+                href="https://github.com/arsa0x/violajs/edit/main/docs/plugins.md"
+                target="_blank"
+                rel="noreferrer"
+                >Suggest an edit ↗</a
+              >
+            </nav>
+          </article>
+          <aside class="docs-toc" aria-label="On this page">
+            <p class="docs-toc-title">ON THIS PAGE</p>
+            <nav>
+              <a class="toc-level-2" href="#table-of-contents"
+                >Table of Contents</a
+              ><a class="toc-level-2" href="#1-overview">1. Overview</a
+              ><a class="toc-level-3" href="#project-layout">Project layout</a
+              ><a class="toc-level-2" href="#2-command-plugins"
+                >2. Command Plugins</a
+              ><a class="toc-level-3" href="#2-1-anatomy">2.1 Anatomy</a
+              ><a class="toc-level-3" href="#2-2-field-reference"
+                >2.2 Field Reference</a
+              ><a class="toc-level-3" href="#2-3-minimal-example"
+                >2.3 Minimal Example</a
+              ><a class="toc-level-2" href="#3-flags-the-args-api"
+                >3. Flags &amp; the Args API</a
+              ><a class="toc-level-3" href="#3-1-flagspec-kinds"
+                >3.1 FlagSpec Kinds</a
+              ><a class="toc-level-3" href="#3-2-args-methods"
+                >3.2 Args Methods</a
+              ><a class="toc-level-3" href="#3-3-annotated-example"
+                >3.3 Annotated Example</a
+              ><a class="toc-level-2" href="#4-middleware">4. Middleware</a
+              ><a class="toc-level-3" href="#4-1-built-in-middleware"
+                >4.1 Built-in Middleware</a
+              ><a class="toc-level-3" href="#4-2-chaining-order"
+                >4.2 Chaining Order</a
+              ><a class="toc-level-3" href="#4-3-writing-a-custom-middleware"
+                >4.3 Writing a Custom Middleware</a
+              ><a class="toc-level-2" href="#5-commandcontext-reference"
+                >5. CommandContext Reference</a
+              ><a class="toc-level-2" href="#6-command-plugin-full-example"
+                >6. Command Plugin — Full Example</a
+              ><a class="toc-level-2" href="#7-event-plugins"
+                >7. Event Plugins</a
+              ><a class="toc-level-3" href="#7-1-anatomy">7.1 Anatomy</a
+              ><a class="toc-level-3" href="#7-2-available-events"
+                >7.2 Available Events</a
+              ><a class="toc-level-3" href="#7-3-minimal-example"
+                >7.3 Minimal Example</a
+              ><a class="toc-level-2" href="#8-eventcontext-reference"
+                >8. EventContext Reference</a
+              ><a class="toc-level-2" href="#9-event-plugin-full-example"
+                >9. Event Plugin — Full Example</a
+              ><a class="toc-level-2" href="#10-send-api-reference"
+                >10. Send API Reference</a
+              ><a class="toc-level-3" href="#10-1-text-media"
+                >10.1 Text &amp; Media</a
+              ><a class="toc-level-3" href="#10-2-interactive-messages"
+                >10.2 Interactive Messages</a
+              ><a class="toc-level-2" href="#11-registering-generating-plugins"
+                >11. Registering &amp; Generating Plugins</a
+              ><a class="toc-level-3" href="#static-generation-production"
+                >Static generation (production)</a
+              ><a class="toc-level-3" href="#file-naming-conventions"
+                >File naming conventions</a
+              ><a class="toc-level-3" href="#entry-point">Entry point</a
+              ><a class="toc-level-2" href="#12-hot-reload-development"
+                >12. Hot-Reload (Development)</a
+              ><a class="toc-level-3" href="#hot-reload-lifecycle"
+                >Hot-reload lifecycle</a
+              ><a
+                class="toc-level-3"
+                href="#dispose-cleaning-up-timers-and-handles"
+                >dispose() — cleaning up timers and handles</a
+              ><a class="toc-level-2" href="#13-recipes-common-patterns"
+                >13. Recipes &amp; Common Patterns</a
+              ><a class="toc-level-3" href="#fetching-group-metadata-safely"
+                >Fetching group metadata safely</a
+              ><a class="toc-level-3" href="#replying-to-a-quoted-message"
+                >Replying to a quoted message</a
+              ><a
+                class="toc-level-3"
+                href="#downloading-media-from-a-quoted-message"
+                >Downloading media from a quoted message</a
+              ><a class="toc-level-3" href="#sending-a-typing-indicator"
+                >Sending a typing indicator</a
+              ><a class="toc-level-3" href="#reading-mentions-from-a-message"
+                >Reading mentions from a message</a
+              ><a
+                class="toc-level-3"
+                href="#paginating-results-with-quick-reply-buttons"
+                >Paginating results with quick-reply buttons</a
+              ><a
+                class="toc-level-3"
+                href="#sharing-state-between-an-event-plugin-and-a-command"
+                >Sharing state between an event plugin and a command</a
+              ><a class="toc-level-2" href="#14-troubleshooting-faq"
+                >14. Troubleshooting FAQ</a
+              >
+            </nav>
+          </aside>
+        </div>
+      </main>
+    </div>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <a class="brand" href="../index.html"
+          ><span class="brand-mark">v<span>.</span></span
+          ><span>viola<span class="brand-light">js</span></span></a
+        >
+        <p>
+          Made with care, powered by
+          <a
+            href="https://github.com/WhiskeySockets/Baileys"
+            target="_blank"
+            rel="noreferrer"
+            >Baileys</a
+          >
+          & <a href="https://bun.sh" target="_blank" rel="noreferrer">Bun</a>.
+        </p>
+        <span class="footer-copy">© <span id="year"></span> violajs</span>
+      </div>
+    </footer>
+    <script src="../script.js"></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-clike.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-javascript.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-typescript.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-bash.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-json.min.js"
+    ></script>
+  </body>
+</html>

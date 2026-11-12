@@ -1,10 +1,10 @@
 import fs from "fs/promises";
 import path from "path";
-import type { Category, Command } from "@src/types/command";
+import type { Category, CommandPlugin } from "@src/types/command";
 import { CATEGORY_TITLES } from "@utils/category";
 
 const entryDir = path.resolve("./plugins/commands");
-const docsFile = path.resolve("./docs/commands.md");
+const docsFile = path.resolve("./docs/command-list.md");
 
 async function collectCommandFiles(dir: string): Promise<string[]> {
   const entries = await fs.readdir(dir, { withFileTypes: true });
@@ -42,7 +42,7 @@ function escapeCell(value: string): string {
     .trim();
 }
 
-function formatFlagDetails(command: Command): string[] {
+function formatFlagDetails(command: CommandPlugin): string[] {
   const flags = command.flags ?? [];
   if (flags.length === 0) return [];
 
@@ -65,11 +65,11 @@ function formatFlagDetails(command: Command): string[] {
 }
 
 const files = (await collectCommandFiles(entryDir)).sort();
-const commands: Command[] = [];
+const commands: CommandPlugin[] = [];
 
 for (const file of files) {
   const imported = await import(file);
-  const command = imported.default as Command | undefined;
+  const command = imported.default as CommandPlugin | undefined;
 
   if (!command?.name) {
     throw new Error(
@@ -80,7 +80,7 @@ for (const file of files) {
   commands.push(command);
 }
 
-const groupedCommands = new Map<Category, Command[]>();
+const groupedCommands = new Map<Category, CommandPlugin[]>();
 
 for (const command of commands) {
   const category =
@@ -97,9 +97,9 @@ const docLines = [
     "\x60bun run docs:generate\x60" +
     ". Do not edit manually. -->",
   "",
-  "# Commands",
+  "# Command List",
   "",
-  "All commands and plugins currently available in violajs.",
+  "All commands currently available in violajs.",
   "",
   "## Categories",
   "",

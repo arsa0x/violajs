@@ -39,5 +39,6 @@ export type EventHandlers = {
 
 export type EventPlugin = {
   name: string;
+  description?: string;
   events: EventHandlers;
 };
