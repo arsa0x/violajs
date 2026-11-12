@@ -1,78 +1,28 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f8f7fc" />
-    <script>
-      (() => {
-        try {
-          const saved = localStorage.getItem("violajs-theme");
-          const prefersDark = window.matchMedia(
-            "(prefers-color-scheme: dark)",
-          ).matches;
-          if (saved === "dark" || (!saved && prefersDark))
-            document.documentElement.dataset.theme = "dark";
-        } catch {}
-      })();
-    </script>
-    <meta
-      name="description"
-      content="violajs is a plugin-based WhatsApp bot built with Baileys and Bun. Simple to extend, flexible to run."
-    />
-    <title>Violajs - Argument Parser</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css"
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="../style.css" />
-  </head>
-  <body>
-    <header class="site-header">
-      <nav class="nav container" aria-label="Main navigation">
-        <a class="brand" href="#" aria-label="violajs home">
-          <span class="brand-mark">v<span>.</span></span>
-          <span>viola<span class="brand-light">js</span></span>
-        </a>
-        <button
-          class="nav-toggle"
-          aria-label="Open navigation"
-          aria-expanded="false"
-        >
-          <span></span><span></span>
-        </button>
-        <div class="nav-links" id="nav-links">
-          <a href="#features">Features</a>
-          <a href="#getting-started">Getting started</a>
-          <a href="#plugins">Plugins</a>
-          <a href="#docs">Documentation</a>
-          <button
-            class="theme-toggle"
-            type="button"
-            aria-label="Switch to dark mode"
-            aria-pressed="false"
-          >
-            <span class="theme-icon" aria-hidden="true">\u263E</span
-            ><span class="theme-label">Dark mode</span>
-          </button>
-          <a
-            class="nav-github"
-            href="https://github.com/arsa0x/violajs"
-            target="_blank"
-            rel="noreferrer"
-            >GitHub <span aria-hidden="true">\u2197</span></a
-          >
-        </div>
-      </nav>
-    </header>
-    <main class="container">
-      <h1>Argument Parser</h1>
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#f8f7fc">
+<meta name="description" content="Parse command arguments, aliases, and flags.">
+<script>(()=>{try{const saved=localStorage.getItem("violajs-theme");const prefersDark=window.matchMedia("(prefers-color-scheme: dark)").matches;if(saved==="dark"||(!saved&&prefersDark))document.documentElement.dataset.theme="dark";}catch{}})();</script>
+<title>Argument Parser — violajs docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body class="docs-page">
+<header class="site-header"><nav class="nav container" aria-label="Main navigation">
+<a class="brand" href="../index.html" aria-label="violajs home"><span class="brand-mark">v<span>.</span></span><span>viola<span class="brand-light">js</span></span></a>
+<button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span></button>
+<div class="nav-links" id="nav-links"><a href="../index.html#features">Features</a><a href="../index.html#getting-started">Getting started</a><a href="../index.html#plugins">Plugins</a><a class="is-current" href="./argument-parser.html">Documentation</a>
+<button class="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false"><span class="theme-icon" aria-hidden="true">☾</span><span class="theme-label">Dark mode</span></button>
+<a class="nav-github" href="https://github.com/arsa0x/violajs" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a></div></nav></header>
+<div class="docs-shell container">
+<aside class="docs-sidebar"><a class="docs-back-link" href="../index.html">← Back to overview</a><p class="docs-sidebar-label">DOCUMENTATION</p><nav class="docs-nav" aria-label="Documentation pages"><a class="docs-nav-link is-active" href="./argument-parser.html" aria-current="page"><span class="docs-nav-index">01</span><span>Argument Parser</span></a>
+<a class="docs-nav-link" href="./commands.html"><span class="docs-nav-index">02</span><span>Commands</span></a>
+<a class="docs-nav-link" href="./events.html"><span class="docs-nav-index">03</span><span>Event Plugins</span></a>
+<a class="docs-nav-link" href="./interactive-messages.html"><span class="docs-nav-index">04</span><span>Interactive messages</span></a></nav><a class="docs-source-link" href="https://github.com/arsa0x/violajs/tree/main/docs" target="_blank" rel="noreferrer">Edit documentation on GitHub ↗</a></aside>
+<main class="docs-main"><div class="docs-breadcrumb"><a href="../index.html">Home</a><span>/</span><span>Documentation</span><span>/</span><strong>Argument Parser</strong></div>
+<div class="docs-article-layout"><article class="docs-content markdown-body"><h1 id="argument-parser">Argument Parser</h1>
       <p>
         The <code>@lib/args</code> module provides a declarative argument parser
         for commands in <code>violajs</code>. It is inspired by Viola&#39;s Rust
@@ -83,7 +33,7 @@
         The parser supports boolean flags, string values, comma-separated lists,
         JSON values, positional arguments, and flag aliases.
       </p>
-      <h2>Table of Contents</h2>
+      <h2 id="table-of-contents">Table of Contents</h2>
       <ul>
         <li><a href="#overview">Overview</a></li>
         <li><a href="#defining-flags">Defining Flags</a></li>
@@ -102,7 +52,7 @@
         </li>
         <li><a href="#api-reference">API Reference</a></li>
       </ul>
-      <h2>Overview</h2>
+      <h2 id="overview">Overview</h2>
       <p>The argument parser consists of two primary classes:</p>
       <ul>
         <li>
@@ -133,7 +83,7 @@
       <p>
         The same specifications can then be passed to <code>Args.parse()</code>.
       </p>
-      <h2>Defining Flags</h2>
+      <h2 id="defining-flags">Defining Flags</h2>
       <p>
         Use <code>FlagSpec</code> to declare which flags a command supports.
       </p>
@@ -162,7 +112,7 @@
         Both the canonical name and its aliases can be used when parsing
         arguments. Parsed values are stored under the canonical name.
       </p>
-      <h3>Adding Descriptions</h3>
+      <h3 id="adding-descriptions">Adding Descriptions</h3>
       <p>
         Use <code>.description()</code> to attach a human-readable description
         to a flag.
@@ -175,7 +125,7 @@
         Descriptions can be retrieved later through the
         <code>Args</code> description API.
       </p>
-      <h3>Flag Name Validation</h3>
+      <h3 id="flag-name-validation">Flag Name Validation</h3>
       <p>
         <code>FlagSpec</code> validates its names when a specification is
         created.
@@ -191,7 +141,7 @@
         specifications.
       </p>
       <p>These checks help prevent ambiguous flag definitions.</p>
-      <h2>Flag Types</h2>
+      <h2 id="flag-types">Flag Types</h2>
       <p>The parser supports four flag types:</p>
       <table>
         <thead>
@@ -224,7 +174,7 @@
           </tr>
         </tbody>
       </table>
-      <h3>Boolean Flags</h3>
+      <h3 id="boolean-flags">Boolean Flags</h3>
       <p>Boolean flags represent the presence or absence of an option.</p>
       <pre><code class="language-ts">const flags = [FlagSpec.bool([&quot;--post&quot;, &quot;-p&quot;])];
 </code></pre>
@@ -248,7 +198,7 @@
         Use <code>flag()</code> to check the boolean state and
         <code>has()</code> to check whether a flag appeared in the input.
       </p>
-      <h3>Value Flags</h3>
+      <h3 id="value-flags">Value Flags</h3>
       <p>
         Value flags collect tokens until the next recognized flag or the end of
         the input.
@@ -287,7 +237,7 @@ args.value(&quot;--search&quot;); // undefined
       <pre><code class="language-text">--search anime --search manga
 </code></pre>
       <p>The resulting value is <code>&quot;manga&quot;</code>.</p>
-      <h3>List Flags</h3>
+      <h3 id="list-flags">List Flags</h3>
       <p>
         List flags collect tokens until the next recognized flag, then split the
         collected text by commas.
@@ -319,7 +269,7 @@ args.value(&quot;--search&quot;); // undefined
         The <code>list()</code> method returns a copy of the stored array,
         preventing callers from modifying the parser&#39;s internal list state.
       </p>
-      <h3>JSON Flags</h3>
+      <h3 id="json-flags">JSON Flags</h3>
       <p>JSON flags collect tokens and attempt to parse them as JSON.</p>
       <pre><code class="language-ts">const flags = [FlagSpec.json(&quot;--data&quot;)];
 </code></pre>
@@ -355,7 +305,7 @@ if (error) {
         If no tokens follow a JSON flag, no JSON parsing error is recorded for
         that flag.
       </p>
-      <h2>Parsing Arguments</h2>
+      <h2 id="parsing-arguments">Parsing Arguments</h2>
       <p>
         Use <code>Args.parse()</code> to parse an array of raw argument tokens
         against a list of flag specifications.
@@ -390,12 +340,12 @@ args.flag(&quot;--post&quot;); // true
         <code>&quot;enjo&quot;</code> and <code>&quot;kouhai&quot;</code> into a
         single value.
       </p>
-      <h2>Accessing Parsed Arguments</h2>
+      <h2 id="accessing-parsed-arguments">Accessing Parsed Arguments</h2>
       <p>
         The <code>Args</code> class exposes several methods for retrieving
         parsed arguments.
       </p>
-      <h3><code>has(name)</code></h3>
+      <h3 id="has-name"><code>has(name)</code></h3>
       <p>Checks whether a flag appeared in the input.</p>
       <pre><code class="language-ts">args.has(&quot;--search&quot;);
 args.has(&quot;-s&quot;);
@@ -409,7 +359,7 @@ args.has(&quot;-s&quot;);
         For example, a value flag supplied without a value still returns
         <code>true</code>.
       </p>
-      <h3><code>flag(name)</code></h3>
+      <h3 id="flag-name"><code>flag(name)</code></h3>
       <p>Returns the boolean state of a boolean flag.</p>
       <pre><code class="language-ts">args.flag(&quot;--post&quot;);
 </code></pre>
@@ -417,12 +367,12 @@ args.has(&quot;-s&quot;);
         Returns <code>true</code> if the boolean flag was supplied, or
         <code>false</code> otherwise.
       </p>
-      <h3><code>value(name)</code></h3>
+      <h3 id="value-name"><code>value(name)</code></h3>
       <p>Returns the string value of a value flag.</p>
       <pre><code class="language-ts">const query = args.value(&quot;--search&quot;);
 </code></pre>
       <p>Returns <code>undefined</code> if no value was stored.</p>
-      <h3><code>valueParsed(name, parser)</code></h3>
+      <h3 id="valueparsed-name-parser"><code>valueParsed(name, parser)</code></h3>
       <p>Converts a string value using a caller-supplied function.</p>
       <pre><code class="language-ts">const page = args.valueParsed(&quot;--page&quot;, (value) =&gt; {
   const number = Number(value);
@@ -442,16 +392,16 @@ args.has(&quot;-s&quot;);
         The method does not automatically report conversion errors to the
         caller.
       </p>
-      <h3><code>list(name)</code></h3>
+      <h3 id="list-name"><code>list(name)</code></h3>
       <p>Returns the values collected by a list flag.</p>
       <pre><code class="language-ts">const tags = args.list(&quot;--tags&quot;);
 </code></pre>
       <p>Returns an empty array if no list values were collected.</p>
-      <h3><code>listStr(name)</code></h3>
+      <h3 id="liststr-name"><code>listStr(name)</code></h3>
       <p>An alias for <code>list()</code>.</p>
       <pre><code class="language-ts">const tags = args.listStr(&quot;--tags&quot;);
 </code></pre>
-      <h3><code>listNonEmpty(name)</code></h3>
+      <h3 id="listnonempty-name"><code>listNonEmpty(name)</code></h3>
       <p>
         Returns the list if it contains at least one item, or
         <code>undefined</code> otherwise.
@@ -462,7 +412,7 @@ if (tags) {
   console.log(tags);
 }
 </code></pre>
-      <h3><code>json(name)</code></h3>
+      <h3 id="json-name"><code>json(name)</code></h3>
       <p>Returns a parsed JSON value.</p>
       <pre><code class="language-ts">const data = args.json&lt;{ name: string }&gt;(&quot;--data&quot;);
 </code></pre>
@@ -474,7 +424,7 @@ if (tags) {
         The generic type parameter is a TypeScript assertion, not runtime
         validation. Validate the returned value before trusting its structure.
       </p>
-      <h3><code>jsonParsed(name, parser)</code></h3>
+      <h3 id="jsonparsed-name-parser"><code>jsonParsed(name, parser)</code></h3>
       <p>
         Passes the parsed JSON value to a caller-supplied conversion or
         validation function.
@@ -496,7 +446,7 @@ if (tags) {
         If the JSON value is missing or the supplied function throws,
         <code>jsonParsed()</code> returns <code>undefined</code>.
       </p>
-      <h3><code>jsonError(name)</code></h3>
+      <h3 id="jsonerror-name"><code>jsonError(name)</code></h3>
       <p>Returns the recorded JSON parsing error for a flag, if one exists.</p>
       <pre><code class="language-ts">const error = args.jsonError(&quot;--data&quot;);
 
@@ -528,7 +478,7 @@ if (error) {
           </tr>
         </tbody>
       </table>
-      <h3>Positional Argument Methods</h3>
+      <h3 id="positional-argument-methods">Positional Argument Methods</h3>
       <p>
         The parser preserves tokens that are not recognized as flags and are not
         consumed as values.
@@ -551,7 +501,7 @@ if (error) {
       <p>
         Both <code>rest()</code> and <code>restFrom()</code> return new arrays.
       </p>
-      <h2>Working with JSON</h2>
+      <h2 id="working-with-json">Working with JSON</h2>
       <p>
         JSON parsing has specific behavior that differs from other flag types.
       </p>
@@ -585,7 +535,7 @@ if (error) {
         <code>jsonError()</code> or use a validation function with
         <code>jsonParsed()</code>.
       </p>
-      <h2>Positional Arguments</h2>
+      <h2 id="positional-arguments">Positional Arguments</h2>
       <p>Not every token must be a declared flag.</p>
       <p>For example, given these specifications:</p>
       <pre><code class="language-ts">const flags = [FlagSpec.value(&quot;--search&quot;)];
@@ -610,7 +560,7 @@ args.rest(); // [&quot;anime&quot;, &quot;extra&quot;]
         The parser does not automatically reject unknown tokens. Their
         interpretation depends on whether a preceding flag consumes them.
       </p>
-      <h2>Flag Descriptions</h2>
+      <h2 id="flag-descriptions">Flag Descriptions</h2>
       <p>
         Use <code>descriptions()</code> to retrieve the metadata for all
         declared flags.
@@ -653,9 +603,9 @@ args.getDescription(&quot;-s&quot;);
         specification map. Both canonical names and declared aliases are
         supported.
       </p>
-      <h2>Parsing Rules</h2>
+      <h2 id="parsing-rules">Parsing Rules</h2>
       <p>The following rules define the parser&#39;s current behavior.</p>
-      <h3>Recognized Flags</h3>
+      <h3 id="recognized-flags">Recognized Flags</h3>
       <p>
         Only names declared in the supplied <code>FlagSpec</code> definitions
         are treated as flag boundaries.
@@ -675,7 +625,7 @@ args.getDescription(&quot;-s&quot;);
         be consumed as part of the <code>--search</code> value.
       </p>
       <p>This behavior preserves compatibility with the original parser.</p>
-      <h3>Canonical Names and Aliases</h3>
+      <h3 id="canonical-names-and-aliases">Canonical Names and Aliases</h3>
       <p>The first name in each <code>FlagSpec</code> is the canonical name.</p>
       <pre><code class="language-ts">FlagSpec.value([&quot;--search&quot;, &quot;-s&quot;]);
 </code></pre>
@@ -683,13 +633,13 @@ args.getDescription(&quot;-s&quot;);
         Both <code>--search</code> and <code>-s</code> refer to the same flag.
         Parsed values are stored under <code>--search</code>.
       </p>
-      <h3>Value Collection</h3>
+      <h3 id="value-collection">Value Collection</h3>
       <p>
         Value and list flags collect tokens until the next recognized flag or
         the end of the input.
       </p>
       <p>Unknown tokens do not terminate value collection.</p>
-      <h3>Repeated Flags</h3>
+      <h3 id="repeated-flags">Repeated Flags</h3>
       <p>The behavior of repeated flags depends on their type:</p>
       <table>
         <thead>
@@ -721,7 +671,7 @@ args.getDescription(&quot;-s&quot;);
           </tr>
         </tbody>
       </table>
-      <h3>Missing Values</h3>
+      <h3 id="missing-values">Missing Values</h3>
       <p>
         The parser does not automatically reject a value flag merely because no
         value follows it.
@@ -733,13 +683,13 @@ args.getDescription(&quot;-s&quot;);
         The flag is considered present, but its value is <code>undefined</code>.
       </p>
       <p>Commands that require a value must validate it themselves.</p>
-      <h3>Tokenization</h3>
+      <h3 id="tokenization">Tokenization</h3>
       <p>
         <code>Args.parse()</code> receives an array of tokens. It does not split
         raw command text or interpret quotation marks and escape characters.
       </p>
       <p>Tokenization must be handled before invoking the parser.</p>
-      <h3>Unknown Flags</h3>
+      <h3 id="unknown-flags">Unknown Flags</h3>
       <p>
         Unknown tokens remain positional unless a preceding value, list, or JSON
         flag consumes them.
@@ -748,7 +698,7 @@ args.getDescription(&quot;-s&quot;);
         The parser does not implement strict unknown-flag rejection in its
         current form.
       </p>
-      <h2>Error Handling</h2>
+      <h2 id="error-handling">Error Handling</h2>
       <p>
         The parser can throw errors when the flag specifications themselves are
         invalid.
@@ -787,7 +737,7 @@ if (page === undefined) {
   // Handle a missing or invalid page value.
 }
 </code></pre>
-      <h2>Integration with Commands</h2>
+      <h2 id="integration-with-commands">Integration with Commands</h2>
       <p>
         In <code>violajs</code>, flags can be declared directly in a command
         definition.
@@ -859,8 +809,8 @@ await runMiddleware(
         parsing errors appropriately before running middleware or executing the
         command.
       </p>
-      <h2>API Reference</h2>
-      <h3><code>FlagSpec</code></h3>
+      <h2 id="api-reference">API Reference</h2>
+      <h3 id="flagspec"><code>FlagSpec</code></h3>
       <table>
         <thead>
           <tr>
@@ -911,7 +861,7 @@ await runMiddleware(
           </tr>
         </tbody>
       </table>
-      <h3><code>Args</code></h3>
+      <h3 id="args"><code>Args</code></h3>
       <table>
         <thead>
           <tr>
@@ -1004,7 +954,7 @@ await runMiddleware(
         </tbody>
       </table>
       <hr />
-      <h2>Notes and Limitations</h2>
+      <h2 id="notes-and-limitations">Notes and Limitations</h2>
       <ul>
         <li>
           The parser does not perform automatic type conversion for ordinary
@@ -1041,28 +991,6 @@ await runMiddleware(
         validation, automatic help generation, or stricter parsing modes can be
         introduced separately without changing the core responsibilities of
         <code>FlagSpec</code> and <code>Args</code>.
-      </p>
-    </main>
-    <footer class="footer">
-      <div class="container footer-inner">
-        <a class="brand" href="#"
-          ><span class="brand-mark">v<span>.</span></span
-          ><span>viola<span class="brand-light">js</span></span></a
-        >
-        <p>
-          Made with care, powered by
-          <a
-            href="https://github.com/WhiskeySockets/Baileys"
-            target="_blank"
-            rel="noreferrer"
-            >Baileys</a
-          >
-          &
-          <a href="https://bun.sh" target="_blank" rel="noreferrer">Bun</a>.
-        </p>
-        <span class="footer-copy">\u00A9 <span id="year"></span> violajs</span>
-      </div>
-    </footer>
-    <script src="../script.js"></script>
-  </body>
-</html>
+      </p><nav class="docs-page-footer" aria-label="Documentation source"><span>Found a mistake?</span><a href="https://github.com/arsa0x/violajs/edit/main/docs/argument-parser.md" target="_blank" rel="noreferrer">Suggest an edit ↗</a></nav></article><aside class="docs-toc" aria-label="On this page"><p class="docs-toc-title">ON THIS PAGE</p><nav><a class="toc-level-2" href="#table-of-contents">Table of Contents</a><a class="toc-level-2" href="#overview">Overview</a><a class="toc-level-2" href="#defining-flags">Defining Flags</a><a class="toc-level-3" href="#adding-descriptions">Adding Descriptions</a><a class="toc-level-3" href="#flag-name-validation">Flag Name Validation</a><a class="toc-level-2" href="#flag-types">Flag Types</a><a class="toc-level-3" href="#boolean-flags">Boolean Flags</a><a class="toc-level-3" href="#value-flags">Value Flags</a><a class="toc-level-3" href="#list-flags">List Flags</a><a class="toc-level-3" href="#json-flags">JSON Flags</a><a class="toc-level-2" href="#parsing-arguments">Parsing Arguments</a><a class="toc-level-2" href="#accessing-parsed-arguments">Accessing Parsed Arguments</a><a class="toc-level-3" href="#has-name">has(name)</a><a class="toc-level-3" href="#flag-name">flag(name)</a><a class="toc-level-3" href="#value-name">value(name)</a><a class="toc-level-3" href="#valueparsed-name-parser">valueParsed(name, parser)</a><a class="toc-level-3" href="#list-name">list(name)</a><a class="toc-level-3" href="#liststr-name">listStr(name)</a><a class="toc-level-3" href="#listnonempty-name">listNonEmpty(name)</a><a class="toc-level-3" href="#json-name">json(name)</a><a class="toc-level-3" href="#jsonparsed-name-parser">jsonParsed(name, parser)</a><a class="toc-level-3" href="#jsonerror-name">jsonError(name)</a><a class="toc-level-3" href="#positional-argument-methods">Positional Argument Methods</a><a class="toc-level-2" href="#working-with-json">Working with JSON</a><a class="toc-level-2" href="#positional-arguments">Positional Arguments</a><a class="toc-level-2" href="#flag-descriptions">Flag Descriptions</a><a class="toc-level-2" href="#parsing-rules">Parsing Rules</a><a class="toc-level-3" href="#recognized-flags">Recognized Flags</a><a class="toc-level-3" href="#canonical-names-and-aliases">Canonical Names and Aliases</a><a class="toc-level-3" href="#value-collection">Value Collection</a><a class="toc-level-3" href="#repeated-flags">Repeated Flags</a><a class="toc-level-3" href="#missing-values">Missing Values</a><a class="toc-level-3" href="#tokenization">Tokenization</a><a class="toc-level-3" href="#unknown-flags">Unknown Flags</a><a class="toc-level-2" href="#error-handling">Error Handling</a><a class="toc-level-2" href="#integration-with-commands">Integration with Commands</a><a class="toc-level-2" href="#api-reference">API Reference</a><a class="toc-level-3" href="#flagspec">FlagSpec</a><a class="toc-level-3" href="#args">Args</a><a class="toc-level-2" href="#notes-and-limitations">Notes and Limitations</a></nav></aside></div></main></div>
+<footer class="footer"><div class="container footer-inner"><a class="brand" href="../index.html"><span class="brand-mark">v<span>.</span></span><span>viola<span class="brand-light">js</span></span></a><p>Made with care, powered by <a href="https://github.com/WhiskeySockets/Baileys" target="_blank" rel="noreferrer">Baileys</a> & <a href="https://bun.sh" target="_blank" rel="noreferrer">Bun</a>.</p><span class="footer-copy">© <span id="year"></span> violajs</span></div></footer>
+<script src="../script.js"></script></body></html>
