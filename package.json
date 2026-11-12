@@ -21,8 +21,8 @@
   ],
   "private": true,
   "scripts": {
-    "generate": "bun scripts/generate-config.ts && bun scripts/generate.ts && bun fmt",
-    "build": "bun run generate && bun scripts/build.ts",
+    "generate": "bun scripts/generate-config.js && bun scripts/generate.ts && bun fmt",
+    "build": "bun run generate && bun scripts/build.js",
     "start": "bun index.ts",
     "dev": "bun run dev.ts",
     "docs": "bun scripts/generate-docs.ts"
