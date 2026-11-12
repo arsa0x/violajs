@@ -1256,3 +1256,94 @@ h1 {
     border-color: #302e40;
   }
 }
+
+
+/* Documentation layout */
+.docs-page { background: #fff; }
+.docs-shell { display: grid; grid-template-columns: 228px minmax(0, 1fr); gap: 54px; padding-top: 46px; padding-bottom: 100px; align-items: start; }
+.docs-sidebar { position: sticky; top: 108px; min-width: 0; }
+.docs-back-link { display: inline-block; color: var(--muted); font-size: 12px; margin-bottom: 34px; }
+.docs-back-link:hover, .docs-source-link:hover { color: var(--purple-dark); }
+.docs-sidebar-label, .docs-toc-title { color: #9996aa; font: 600 9px var(--mono); letter-spacing: 1.4px; margin: 0 0 13px; }
+.docs-nav { display: grid; gap: 4px; }
+.docs-nav-link { display: flex; align-items: center; gap: 12px; padding: 10px 11px; border-radius: 8px; color: #77768c; font-size: 12px; font-weight: 600; transition: .18s ease; }
+.docs-nav-link:hover { color: var(--ink); background: #f7f6fb; }
+.docs-nav-link.is-active { color: #716bb0; background: #f0eef9; }
+.docs-nav-index { color: #aaa7b8; font: 10px var(--mono); }
+.docs-source-link { display: inline-block; margin: 27px 0 0 11px; color: #9996aa; font-size: 10px; }
+.docs-main { min-width: 0; }
+.docs-breadcrumb { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; color: #aaa7b8; font-size: 11px; margin: 1px 0 30px; }
+.docs-breadcrumb a:hover { color: var(--purple-dark); }
+.docs-breadcrumb strong { color: var(--muted); font-weight: 600; }
+.docs-article-layout { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 42px; align-items: start; }
+.docs-content { min-width: 0; max-width: 760px; color: var(--ink); font: 400 14px/1.85 var(--sans); }
+.docs-content > :first-child { margin-top: 0; }
+.docs-content h1, .docs-content h2, .docs-content h3, .docs-content h4 { color: var(--ink); letter-spacing: -1px; scroll-margin-top: 110px; }
+.docs-content h1 { font-size: clamp(34px, 4vw, 46px); line-height: 1.12; margin: 0 0 18px; }
+.docs-content h2 { font-size: 25px; line-height: 1.25; margin: 52px 0 15px; padding-bottom: 11px; border-bottom: 1px solid var(--line); }
+.docs-content h3 { font-size: 19px; margin: 34px 0 12px; }
+.docs-content h4 { font-size: 15px; margin: 25px 0 10px; }
+.docs-content p, .docs-content li { color: var(--muted); }
+.docs-content a { color: #7771b8; text-decoration: none; }
+.docs-content a:hover { text-decoration: underline; }
+.docs-content ul, .docs-content ol { padding-left: 23px; }
+.docs-content li { padding-left: 4px; margin: 5px 0; }
+.docs-content code { font:  .88em var(--mono); background: #f2f0f8; color: #69639f; border-radius: 5px; padding: 3px 6px; }
+.docs-content pre { overflow-x: auto; padding: 20px 22px; border: 1px solid #e8e6f0; border-radius: 11px; background: #f8f7fb; line-height: 1.7; }
+.docs-content pre code { padding: 0; background: transparent; color: #55536a; font-size: 12px; }
+.docs-content blockquote { margin: 22px 0; padding: 4px 0 4px 18px; border-left: 3px solid #b6b0e4; color: var(--muted); }
+.docs-content table { display: block; width: 100%; overflow-x: auto; border-collapse: collapse; margin: 24px 0; font-size: 12px; }
+.docs-content th { color: var(--ink); background: #f6f5fa; font-weight: 700; text-align: left; }
+.docs-content th, .docs-content td { padding: 11px 13px; border: 1px solid var(--line); min-width: 90px; }
+.docs-content td { color: var(--muted); }
+.docs-content hr { border: 0; border-top: 1px solid var(--line); margin: 38px 0; }
+.docs-toc { position: sticky; top: 112px; border-left: 1px solid var(--line); padding-left: 15px; }
+.docs-toc nav { display: grid; gap: 9px; }
+.docs-toc a { color: #9996aa; font-size: 10px; line-height: 1.45; }
+.docs-toc a:hover { color: var(--purple-dark); }
+.docs-toc .toc-level-3 { padding-left: 9px; }
+.docs-page-footer { display: flex; justify-content: space-between; gap: 16px; border-top: 1px solid var(--line); padding-top: 18px; margin-top: 58px; color: #9996aa; font-size: 11px; }
+.docs-page-footer a { font-weight: 700; }
+.docs-page .footer { background: #fff; }
+@media (max-width: 1050px) {
+  .docs-article-layout { grid-template-columns: minmax(0, 1fr); }
+  .docs-toc { position: static; border-left: 0; border-top: 1px solid var(--line); padding: 18px 0 0; }
+  .docs-toc nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .docs-shell { grid-template-columns: 1fr; gap: 28px; padding-top: 28px; padding-bottom: 65px; }
+  .docs-sidebar { position: static; }
+  .docs-back-link { margin-bottom: 20px; }
+  .docs-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .docs-source-link { margin-top: 16px; }
+  .docs-breadcrumb { margin-bottom: 24px; }
+  .docs-content h2 { margin-top: 38px; }
+}
+@media (max-width: 480px) {
+  .docs-nav { grid-template-columns: 1fr; }
+  .docs-toc nav { grid-template-columns: 1fr; }
+  .docs-content { font-size: 13px; }
+  .docs-content pre { padding: 15px; }
+  .docs-page-footer { flex-direction: column; }
+}
+
+/* Documentation dark theme */
+:root[data-theme="dark"] .docs-page { background: #13121b; }
+:root[data-theme="dark"] .docs-nav-link { color: #aaa8bd; }
+:root[data-theme="dark"] .docs-nav-link:hover { color: #eeeefa; background: #211f2e; }
+:root[data-theme="dark"] .docs-nav-link.is-active { color: #c2bcf4; background: #302d47; }
+:root[data-theme="dark"] .docs-content h1,
+:root[data-theme="dark"] .docs-content h2,
+:root[data-theme="dark"] .docs-content h3,
+:root[data-theme="dark"] .docs-content h4 { color: #eeeefa; }
+:root[data-theme="dark"] .docs-content code { background: #242136; color: #c0baf0; }
+:root[data-theme="dark"] .docs-content pre { background: #191824; border-color: #302e40; }
+:root[data-theme="dark"] .docs-content pre code { color: #d0cede; }
+:root[data-theme="dark"] .docs-content th { background: #211f2e; color: #eeeefa; }
+:root[data-theme="dark"] .docs-content th,
+:root[data-theme="dark"] .docs-content td { border-color: #302e40; }
+:root[data-theme="dark"] .docs-content td { color: #aaa8bd; }
+:root[data-theme="dark"] .docs-page .footer { background: #13121b; }
+:root[data-theme="dark"] .docs-content h2 { border-color: #302e40; }
+:root[data-theme="dark"] .docs-toc,
+:root[data-theme="dark"] .docs-page-footer { border-color: #302e40; }
