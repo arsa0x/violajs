@@ -47,10 +47,10 @@ function formatFlagDetails(command: Command): string[] {
       flag.kind === "bool"
         ? ""
         : flag.kind === "json"
-          ? " \\`<json>\\`"
+          ? " `<json>`"
           : flag.kind === "list"
-            ? " \\`<item,...>\\`"
-            : " \\`<value>\\`";
+            ? " `<item,...>`"
+            : " `<value>`";
     const description = flag.getDescription();
 
     return "- " + names + argument + (description ? ": " + description : "");
