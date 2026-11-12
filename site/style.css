@@ -1138,6 +1138,7 @@ h1 {
 :root[data-theme="dark"] .closing-art:before { background: #29253e; }
 :root[data-theme="dark"] .footer { border-color: #302e40; }
 :root[data-theme="dark"] .toast { background: #eeeefa; color: #242338; }
+:root[data-theme="dark"] .button-primary { color:  #302e40; }
 :root[data-theme="dark"] .theme-toggle { color: #e4e1f4; border-color: #3c394f; background: #242136; }
 :root[data-theme="dark"] .theme-toggle:hover { background: #302d47; }
 :root[data-theme="dark"] .nav-links.open { background: #191824; border-color: #302e40; }
