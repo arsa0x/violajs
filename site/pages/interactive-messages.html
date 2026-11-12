@@ -1,78 +1,28 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f8f7fc" />
-    <script>
-      (() => {
-        try {
-          const saved = localStorage.getItem("violajs-theme");
-          const prefersDark = window.matchMedia(
-            "(prefers-color-scheme: dark)",
-          ).matches;
-          if (saved === "dark" || (!saved && prefersDark))
-            document.documentElement.dataset.theme = "dark";
-        } catch {}
-      })();
-    </script>
-    <meta
-      name="description"
-      content="violajs is a plugin-based WhatsApp bot built with Baileys and Bun. Simple to extend, flexible to run."
-    />
-    <title>Violajs - Interactive messages</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css"
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="../style.css" />
-  </head>
-  <body>
-    <header class="site-header">
-      <nav class="nav container" aria-label="Main navigation">
-        <a class="brand" href="#" aria-label="violajs home">
-          <span class="brand-mark">v<span>.</span></span>
-          <span>viola<span class="brand-light">js</span></span>
-        </a>
-        <button
-          class="nav-toggle"
-          aria-label="Open navigation"
-          aria-expanded="false"
-        >
-          <span></span><span></span>
-        </button>
-        <div class="nav-links" id="nav-links">
-          <a href="#features">Features</a>
-          <a href="#getting-started">Getting started</a>
-          <a href="#plugins">Plugins</a>
-          <a href="#docs">Documentation</a>
-          <button
-            class="theme-toggle"
-            type="button"
-            aria-label="Switch to dark mode"
-            aria-pressed="false"
-          >
-            <span class="theme-icon" aria-hidden="true">\u263E</span
-            ><span class="theme-label">Dark mode</span>
-          </button>
-          <a
-            class="nav-github"
-            href="https://github.com/arsa0x/violajs"
-            target="_blank"
-            rel="noreferrer"
-            >GitHub <span aria-hidden="true">\u2197</span></a
-          >
-        </div>
-      </nav>
-    </header>
-    <main class="container">
-      <h1>Interactive messages</h1>
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#f8f7fc">
+<meta name="description" content="Build buttons, lists, and carousel messages.">
+<script>(()=>{try{const saved=localStorage.getItem("violajs-theme");const prefersDark=window.matchMedia("(prefers-color-scheme: dark)").matches;if(saved==="dark"||(!saved&&prefersDark))document.documentElement.dataset.theme="dark";}catch{}})();</script>
+<title>Interactive messages — violajs docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body class="docs-page">
+<header class="site-header"><nav class="nav container" aria-label="Main navigation">
+<a class="brand" href="../index.html" aria-label="violajs home"><span class="brand-mark">v<span>.</span></span><span>viola<span class="brand-light">js</span></span></a>
+<button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span></button>
+<div class="nav-links" id="nav-links"><a href="../index.html#features">Features</a><a href="../index.html#getting-started">Getting started</a><a href="../index.html#plugins">Plugins</a><a class="is-current" href="./interactive-messages.html">Documentation</a>
+<button class="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false"><span class="theme-icon" aria-hidden="true">☾</span><span class="theme-label">Dark mode</span></button>
+<a class="nav-github" href="https://github.com/arsa0x/violajs" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a></div></nav></header>
+<div class="docs-shell container">
+<aside class="docs-sidebar"><a class="docs-back-link" href="../index.html">← Back to overview</a><p class="docs-sidebar-label">DOCUMENTATION</p><nav class="docs-nav" aria-label="Documentation pages"><a class="docs-nav-link" href="./argument-parser.html"><span class="docs-nav-index">01</span><span>Argument Parser</span></a>
+<a class="docs-nav-link" href="./commands.html"><span class="docs-nav-index">02</span><span>Commands</span></a>
+<a class="docs-nav-link" href="./events.html"><span class="docs-nav-index">03</span><span>Event Plugins</span></a>
+<a class="docs-nav-link is-active" href="./interactive-messages.html" aria-current="page"><span class="docs-nav-index">04</span><span>Interactive messages</span></a></nav><a class="docs-source-link" href="https://github.com/arsa0x/violajs/tree/main/docs" target="_blank" rel="noreferrer">Edit documentation on GitHub ↗</a></aside>
+<main class="docs-main"><div class="docs-breadcrumb"><a href="../index.html">Home</a><span>/</span><span>Documentation</span><span>/</span><strong>Interactive messages</strong></div>
+<div class="docs-article-layout"><article class="docs-content markdown-body"><h1 id="interactive-messages">Interactive messages</h1>
       <p>
         All methods are available through ctx.send.interactive and use the
         current chat as the recipient.
@@ -85,7 +35,7 @@
           works on mobile. Test on the client your users actually use.
         </p>
       </blockquote>
-      <h2>Quick replies</h2>
+      <h2 id="quick-replies">Quick replies</h2>
       <pre><code class="language-ts">await ctx.send.interactive.quickReply({
   title: &quot;Choose an action&quot;,
   body: &quot;What would you like to do?&quot;,
@@ -99,7 +49,7 @@
         Button IDs are normalized as interactive responses and can reuse the
         normal command dispatcher.
       </p>
-      <h2>Single select</h2>
+      <h2 id="single-select">Single select</h2>
       <pre><code class="language-ts">await ctx.send.interactive.singleSelect({
   title: &quot;Settings&quot;,
   body: &quot;Choose a section.&quot;,
@@ -115,7 +65,7 @@
   ],
 });
 </code></pre>
-      <h2>URL button</h2>
+      <h2 id="url-button">URL button</h2>
       <pre><code class="language-ts">await ctx.send.interactive.urlButton({
   title: &quot;Project&quot;,
   body: &quot;Open the project website.&quot;,
@@ -124,7 +74,7 @@
 });
 </code></pre>
       <p>Only absolute http:// and https:// URLs are accepted.</p>
-      <h2>Call button</h2>
+      <h2 id="call-button">Call button</h2>
       <pre><code class="language-ts">await ctx.send.interactive.callButton({
   body: &quot;Need help? Contact support.&quot;,
   text: &quot;Call support&quot;,
@@ -135,7 +85,7 @@
         Use an international-style phone number. The recipient&#39;s client
         decides how the call action is handled.
       </p>
-      <h2>Image/video header</h2>
+      <h2 id="image-video-header">Image/video header</h2>
       <p>
         Any quick reply, single-select, URL, call, copy-code, location request,
         or in-app signup message can use an optional uploaded image/video
@@ -151,7 +101,7 @@
         The URL must be publicly reachable over HTTP(S). Baileys downloads and
         uploads the media before sending the interactive message.
       </p>
-      <h2>In-app signup</h2>
+      <h2 id="in-app-signup">In-app signup</h2>
       <pre><code class="language-ts">await ctx.send.interactive.inAppSignup({
   title: &quot;Create an account&quot;,
   body: &quot;Continue with the in-app signup action.&quot;,
@@ -164,7 +114,7 @@
         account-registration backend; actual behavior depends on WhatsApp
         client/account support.
       </p>
-      <h2>Location request</h2>
+      <h2 id="location-request">Location request</h2>
       <p>Ask the recipient to share their current location:</p>
       <pre><code class="language-ts">await ctx.send.interactive.requestLocation({
   body: &quot;Share your current location if you want to.&quot;,
@@ -176,19 +126,19 @@
         Availability and presentation can vary by WhatsApp client and account
         type; test on the clients you intend to support.
       </p>
-      <h2>Copy-code button</h2>
+      <h2 id="copy-code-button">Copy-code button</h2>
       <pre><code class="language-ts">await ctx.send.interactive.copyCode({
   body: &quot;Use this code at checkout.&quot;,
   text: &quot;Copy code&quot;,
   code: &quot;VIOLA10&quot;,
 });
 </code></pre>
-      <h2>Quoting behavior</h2>
+      <h2 id="quoting-behavior">Quoting behavior</h2>
       <p>
         All methods quote the incoming message by default. Set quoted: false to
         send without quoting it.
       </p>
-      <h2>Compatibility note</h2>
+      <h2 id="compatibility-note">Compatibility note</h2>
       <p>
         These methods construct WhatsApp native-flow messages through
         Baileys&#39; relay API. Successful relay does not guarantee that every
@@ -196,7 +146,7 @@
         workflows where desktop support is required, and validate each new
         button type on mobile and Web/Desktop.
       </p>
-      <h2>Carousel</h2>
+      <h2 id="carousel">Carousel</h2>
       <p>
         A native carousel contains at least 2 image cards. The message can have
         a top-level <code>footer</code>, and each card can have its own
@@ -207,7 +157,7 @@
         single-select. Image URLs must be publicly reachable so Baileys can
         download and upload each image to WhatsApp.
       </p>
-      <h3>Quick-reply cards</h3>
+      <h3 id="quick-reply-cards">Quick-reply cards</h3>
       <pre><code class="language-ts">await ctx.send.interactive.carousel({
   body: &quot;Browse these projects.&quot;,
   footer: &quot;Project carousel footer&quot;,
@@ -236,7 +186,7 @@
   ],
 });
 </code></pre>
-      <h3>URL cards</h3>
+      <h3 id="url-cards">URL cards</h3>
       <p>
         Each card can use one or more buttons, and button types do not need to
         match:
@@ -281,28 +231,6 @@
       </p>
       <p>
         The <code>.interactive carousel</code> command provides a test example.
-      </p>
-    </main>
-    <footer class="footer">
-      <div class="container footer-inner">
-        <a class="brand" href="#"
-          ><span class="brand-mark">v<span>.</span></span
-          ><span>viola<span class="brand-light">js</span></span></a
-        >
-        <p>
-          Made with care, powered by
-          <a
-            href="https://github.com/WhiskeySockets/Baileys"
-            target="_blank"
-            rel="noreferrer"
-            >Baileys</a
-          >
-          &
-          <a href="https://bun.sh" target="_blank" rel="noreferrer">Bun</a>.
-        </p>
-        <span class="footer-copy">\u00A9 <span id="year"></span> violajs</span>
-      </div>
-    </footer>
-    <script src="../script.js"></script>
-  </body>
-</html>
+      </p><nav class="docs-page-footer" aria-label="Documentation source"><span>Found a mistake?</span><a href="https://github.com/arsa0x/violajs/edit/main/docs/interactive-messages.md" target="_blank" rel="noreferrer">Suggest an edit ↗</a></nav></article><aside class="docs-toc" aria-label="On this page"><p class="docs-toc-title">ON THIS PAGE</p><nav><a class="toc-level-2" href="#quick-replies">Quick replies</a><a class="toc-level-2" href="#single-select">Single select</a><a class="toc-level-2" href="#url-button">URL button</a><a class="toc-level-2" href="#call-button">Call button</a><a class="toc-level-2" href="#image-video-header">Image/video header</a><a class="toc-level-2" href="#in-app-signup">In-app signup</a><a class="toc-level-2" href="#location-request">Location request</a><a class="toc-level-2" href="#copy-code-button">Copy-code button</a><a class="toc-level-2" href="#quoting-behavior">Quoting behavior</a><a class="toc-level-2" href="#compatibility-note">Compatibility note</a><a class="toc-level-2" href="#carousel">Carousel</a><a class="toc-level-3" href="#quick-reply-cards">Quick-reply cards</a><a class="toc-level-3" href="#url-cards">URL cards</a></nav></aside></div></main></div>
+<footer class="footer"><div class="container footer-inner"><a class="brand" href="../index.html"><span class="brand-mark">v<span>.</span></span><span>viola<span class="brand-light">js</span></span></a><p>Made with care, powered by <a href="https://github.com/WhiskeySockets/Baileys" target="_blank" rel="noreferrer">Baileys</a> & <a href="https://bun.sh" target="_blank" rel="noreferrer">Bun</a>.</p><span class="footer-copy">© <span id="year"></span> violajs</span></div></footer>
+<script src="../script.js"></script></body></html>
