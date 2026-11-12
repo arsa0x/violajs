@@ -4,6 +4,15 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#f8f7fc" />
+        <script>
+            (() => {
+                try {
+                    const saved = localStorage.getItem("violajs-theme");
+                    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+                    if (saved === "dark" || (!saved && prefersDark)) document.documentElement.dataset.theme = "dark";
+                } catch {}
+            })();
+        </script>
         <meta
             name="description"
             content="violajs is a plugin-based WhatsApp bot built with Baileys and Bun. Simple to extend, flexible to run."
@@ -36,6 +45,7 @@
                     <a href="#getting-started">Getting started</a>
                     <a href="#plugins">Plugins</a>
                     <a href="#docs">Documentation</a>
+                    <button class="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false"><span class="theme-icon" aria-hidden="true">☾</span><span class="theme-label">Dark mode</span></button>
                     <a
                         class="nav-github"
                         href="https://github.com/arsa0x/violajs"
