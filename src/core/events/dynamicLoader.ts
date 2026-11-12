@@ -5,7 +5,7 @@ import type { EventPlugin } from "@src/types/event";
 import { EventRegistry } from "./registry";
 import { log } from "@lib/logger";
 
-const EVENTS_DIR = resolve("events");
+const EVENTS_DIR = resolve("plugins", "events");
 const EXTENSIONS = new Set([".ts", ".js"]);
 const DEBOUNCE_MS = 150;
 

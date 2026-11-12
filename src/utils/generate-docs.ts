@@ -3,7 +3,7 @@ import path from "path";
 import type { Category, Command } from "@src/types/command";
 import { CATEGORY_TITLES } from "./category";
 
-const entryDir = path.resolve("./commands");
+const entryDir = path.resolve("./plugins/commands");
 const docsFile = path.resolve("./docs/commands.md");
 
 async function collectCommandFiles(dir: string): Promise<string[]> {

@@ -6,7 +6,7 @@ import { CommandRegistry } from "./registry";
 import type { Command } from "@src/types/command";
 import { log } from "@lib/logger";
 
-const COMMANDS_DIR = resolve("commands");
+const COMMANDS_DIR = resolve("plugins", "commands");
 const EXTENSIONS = new Set([".ts", ".js"]);
 const DEBOUNCE_MS = 150;
 

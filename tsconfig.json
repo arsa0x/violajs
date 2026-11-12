@@ -4,8 +4,7 @@
     "paths": {
       "@/*": ["./*"],
       "@src/*": ["./src/*"],
-      "@commands/*": ["./commands/*"],
-      "@events/*": ["./events/*"],
+      "@plugins/*": ["./plugins/*"],
       "@types/*": ["./src/types/*"],
       "@middlewares/*": ["./src/middlewares/*"],
       "@core/*": ["./src/core/*"],

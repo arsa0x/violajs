@@ -1,8 +1,8 @@
 import fs from "fs/promises";
 import path from "path";
 
-const entryDir = path.resolve("./commands");
-const eventsDir = path.resolve("./events");
+const entryDir = path.resolve("./plugins/commands");
+const eventsDir = path.resolve("./plugins/events");
 const generatedDir = path.resolve("./src/generated");
 const commandFile = path.join(generatedDir, "commands.js");
 const eventFile = path.join(generatedDir, "events.js");
@@ -52,8 +52,8 @@ function generateImports(
 
     if (!importPath.startsWith(".")) importPath = `./${importPath}`;
     const finalPath = importPath.includes("commands/")
-      ? importPath.replace("../../commands/", "@commands/")
-      : importPath.replace("../../events/", "@events/");
+      ? importPath.replace("../../plugins/", "@plugins/")
+      : importPath.replace("../../plugins/", "@plugins/");
     imports.push(`import ${variable} from "${finalPath}";`);
     entries.push(variable);
   }
