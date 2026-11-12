@@ -16,11 +16,20 @@ const DOC_DESCRIPTIONS: Record<string, string> = {
 };
 
 function escapeHtml(value: string): string {
-  return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#39;");
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
 }
 
 function slugify(value: string): string {
-  return value.toLowerCase().trim().replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-|-$/g, "");
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^\p{L}\p{N}]+/gu, "-")
+    .replace(/^-|-$/g, "");
 }
 
 function createRenderer() {
@@ -56,12 +65,18 @@ function addHeadingIds(html: string) {
   return { html: $("body").html() ?? $.root().html() ?? html, toc };
 }
 
-function renderSidebar(files: string[], currentFile: string, titles: Map<string, string>) {
-  return files.map((file, index) => {
-    const active = file === currentFile;
-    const title = titles.get(file) ?? file.replace(/\.md$/, "");
-    return `<a class="docs-nav-link${active ? " is-active" : ""}" href="./${file.replace(/\.md$/, ".html")}"${active ? ' aria-current="page"' : ""}><span class="docs-nav-index">${String(index + 1).padStart(2, "0")}</span><span>${escapeHtml(title)}</span></a>`;
-  }).join("\n");
+function renderSidebar(
+  files: string[],
+  currentFile: string,
+  titles: Map<string, string>,
+) {
+  return files
+    .map((file, index) => {
+      const active = file === currentFile;
+      const title = titles.get(file) ?? file.replace(/\.md$/, "");
+      return `<a class="docs-nav-link${active ? " is-active" : ""}" href="./${file.replace(/\.md$/, ".html")}"${active ? ' aria-current="page"' : ""}><span class="docs-nav-index">${String(index + 1).padStart(2, "0")}</span><span>${escapeHtml(title)}</span></a>`;
+    })
+    .join("\n");
 }
 
 function renderToc(items: Array<{ id: string; title: string; level: number }>) {
@@ -69,8 +84,16 @@ function renderToc(items: Array<{ id: string; title: string; level: number }>) {
   return `<aside class="docs-toc" aria-label="On this page"><p class="docs-toc-title">ON THIS PAGE</p><nav>${items.map((item) => `<a class="toc-level-${item.level}" href="#${encodeURIComponent(item.id)}">${escapeHtml(item.title)}</a>`).join("")}</nav></aside>`;
 }
 
-function template(title: string, file: string, files: string[], titles: Map<string, string>, content: string, toc: Array<{ id: string; title: string; level: number }>) {
-  const description = DOC_DESCRIPTIONS[file] ?? "Read the violajs documentation.";
+function template(
+  title: string,
+  file: string,
+  files: string[],
+  titles: Map<string, string>,
+  content: string,
+  toc: Array<{ id: string; title: string; level: number }>,
+) {
+  const description =
+    DOC_DESCRIPTIONS[file] ?? "Read the violajs documentation.";
   const sidebar = renderSidebar(files, file, titles);
   const tocMarkup = renderToc(toc);
 
@@ -156,17 +179,36 @@ function template(title: string, file: string, files: string[], titles: Map<stri
 }
 
 function renderDocsIndex(files: string[], titles: Map<string, string>) {
-  const cards = files.map((file, index) => {
-    const title = titles.get(file) ?? file.replace(/\.md$/, "");
-    const description = DOC_DESCRIPTIONS[file] ?? "Read the violajs documentation.";
-    const href = file.replace(/\.md$/, ".html");
-    return '<a class="docs-index-card" href="./' + href + '"><span class="docs-index-number">' + String(index + 1).padStart(2, "0") + '</span><span class="docs-index-card-copy"><strong>' + escapeHtml(title) + '</strong><small>' + escapeHtml(description) + '</small></span><span class="docs-index-arrow">↗</span></a>';
-  }).join("\n");
-  return '<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#f8f7fc"><script>(()=>{try{const saved=localStorage.getItem("violajs-theme");const dark=window.matchMedia("(prefers-color-scheme: dark)").matches;if(saved==="dark"||(!saved&&dark))document.documentElement.dataset.theme="dark";}catch{}})();</script><title>Documentation — violajs</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"><link rel="stylesheet" href="../style.css"></head><body class="docs-page docs-index-page"><header class="site-header"><nav class="nav container"><a class="brand" href="../index.html"><span class="brand-mark">v.</span><span>violajs</span></a><div class="nav-links"><a href="../index.html">Home</a><a class="is-current" href="./index.html">Documentation</a><button class="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false"><span class="theme-icon">☾</span><span class="theme-label">Dark mode</span></button><a class="nav-github" href="https://github.com/arsa0x/violajs">GitHub ↗</a></div></nav></header><main class="container docs-index-main"><a class="docs-back-link" href="../index.html">← Back to overview</a><div class="docs-index-heading"><span class="section-kicker">VIOLAJS / DOCUMENTATION</span><h1>Build something <span class="gradient-text">with violajs.</span></h1><p>Guides and references to help you build, extend, and manage your WhatsApp bot.</p></div><div class="docs-index-grid">' + cards + '</div></main><footer class="footer"><div class="container footer-inner"><span>violajs documentation</span><span class="footer-copy">© <span id="year"></span> violajs</span></div></footer><script src="../script.js"></script></body></html>';
+  const cards = files
+    .map((file, index) => {
+      const title = titles.get(file) ?? file.replace(/\.md$/, "");
+      const description =
+        DOC_DESCRIPTIONS[file] ?? "Read the violajs documentation.";
+      const href = file.replace(/\.md$/, ".html");
+      return (
+        '<a class="docs-index-card" href="./' +
+        href +
+        '"><span class="docs-index-number">' +
+        String(index + 1).padStart(2, "0") +
+        '</span><span class="docs-index-card-copy"><strong>' +
+        escapeHtml(title) +
+        "</strong><small>" +
+        escapeHtml(description) +
+        '</small></span><span class="docs-index-arrow">↗</span></a>'
+      );
+    })
+    .join("\n");
+  return (
+    '<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#f8f7fc"><script>(()=>{try{const saved=localStorage.getItem("violajs-theme");const dark=window.matchMedia("(prefers-color-scheme: dark)").matches;if(saved==="dark"||(!saved&&dark))document.documentElement.dataset.theme="dark";}catch{}})();</script><title>Documentation — violajs</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"><link rel="stylesheet" href="../style.css"></head><body class="docs-page docs-index-page"><header class="site-header"><nav class="nav container"><a class="brand" href="../index.html"><span class="brand-mark">v.</span><span>violajs</span></a><div class="nav-links"><a href="../index.html">Home</a><a class="is-current" href="./index.html">Documentation</a><button class="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false"><span class="theme-icon">☾</span><span class="theme-label">Dark mode</span></button><a class="nav-github" href="https://github.com/arsa0x/violajs">GitHub ↗</a></div></nav></header><main class="container docs-index-main"><a class="docs-back-link" href="../index.html">← Back to overview</a><div class="docs-index-heading"><span class="section-kicker">VIOLAJS / DOCUMENTATION</span><h1>Build something <span class="gradient-text">with violajs.</span></h1><p>Guides and references to help you build, extend, and manage your WhatsApp bot.</p></div><div class="docs-index-grid">' +
+    cards +
+    '</div></main><footer class="footer"><div class="container footer-inner"><span>violajs documentation</span><span class="footer-copy">© <span id="year"></span> violajs</span></div></footer><script src="../script.js"></script></body></html>'
+  );
 }
 
 await fs.mkdir(pagesDir, { recursive: true });
-const mdFiles = (await fs.readdir(docsDir)).filter((file) => file.endsWith(".md")).sort();
+const mdFiles = (await fs.readdir(docsDir))
+  .filter((file) => file.endsWith(".md"))
+  .sort();
 const titles = new Map<string, string>();
 
 for (const file of mdFiles) {
@@ -183,7 +225,11 @@ for (const file of mdFiles) {
   const { html, toc } = addHeadingIds(parsed);
   const title = titles.get(file) ?? file.replace(/\.md$/, "");
   const output = template(title, file, mdFiles, titles, html, toc);
-  await fs.writeFile(path.join(pagesDir, file.replace(/\.md$/, ".html")), output, "utf8");
+  await fs.writeFile(
+    path.join(pagesDir, file.replace(/\.md$/, ".html")),
+    output,
+    "utf8",
+  );
   console.info(`Generated site/docs/${file.replace(/\.md$/, ".html")}`);
 }
 

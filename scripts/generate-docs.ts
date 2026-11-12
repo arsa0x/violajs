@@ -34,7 +34,12 @@ function slug(value: string): string {
 }
 
 function escapeCell(value: string): string {
-  return value.replaceAll("|", "\\|").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", " ").trim();
+  return value
+    .replaceAll("|", "\\|")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll("\n", " ")
+    .trim();
 }
 
 function formatFlagDetails(command: Command): string[] {

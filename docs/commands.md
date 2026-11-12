@@ -80,8 +80,8 @@ All commands and plugins currently available in violajs.
 
 - `--search`, `-s` `<value>`: Search hentai by query, e.g. .nekopoi -s enjo kouhai
 - `--page`, `-p` `<value>`: Usage: .nekopoi -g milf -p 2
-- `--id`, `-i` `<value>`: Get hentai by id, e.g. .nekopoi -i `<id>`
-- `--post`: Usage: .nekopoi -i `<id>` --post
+- `--id`, `-i` `<value>`: Get hentai by id, e.g. .nekopoi -i <id>
+- `--post`: Usage: .nekopoi -i <id> --post
 
 #### `pornhub`
 
