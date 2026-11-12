@@ -23,7 +23,7 @@
   "scripts": {
     "generate": "bun src/utils/generate-config.ts && bun src/utils/generate.ts && bun fmt",
     "build": "bun run generate && bun src/utils/build.ts",
-    "start": "bun run generate && bun index.ts",
+    "start": "bun index.ts",
     "dev": "bun run dev.ts",
     "docs": "bun src/utils/generate-docs.ts"
   },
