@@ -89,7 +89,7 @@ violajs supports two types of plugins:
 - **Command Plugins** — Add commands, aliases, flags, and middleware.
 - **Event Plugins** — React to WhatsApp messages, group updates, and other events.
 
-Create your plugins in the `commands/` and `events/` directories.
+Create your plugins in the `plugins/commands/` and `plugins/events/` directories.
 
 Start here:
 
