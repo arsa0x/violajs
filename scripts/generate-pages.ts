@@ -4,7 +4,7 @@ import path from "path";
 import { load } from "cheerio";
 
 const docsDir = path.resolve("docs");
-const pagesDir = path.resolve("site", "pages");
+const pagesDir = path.resolve("site", "docs");
 
 const DOC_DESCRIPTIONS: Record<string, string> = {
   "argument-parser.md": "Parse command arguments, aliases, and flags.",
@@ -145,8 +145,24 @@ function template(title: string, file: string, files: string[], titles: Map<stri
       </div>
     </footer>
     <script src="../script.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/prism.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-clike.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-javascript.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-typescript.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-bash.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-json.min.js"></script>
   </body>
 </html>`;
+}
+
+function renderDocsIndex(files: string[], titles: Map<string, string>) {
+  const cards = files.map((file, index) => {
+    const title = titles.get(file) ?? file.replace(/\.md$/, "");
+    const description = DOC_DESCRIPTIONS[file] ?? "Read the violajs documentation.";
+    const href = file.replace(/\.md$/, ".html");
+    return '<a class="docs-index-card" href="./' + href + '"><span class="docs-index-number">' + String(index + 1).padStart(2, "0") + '</span><span class="docs-index-card-copy"><strong>' + escapeHtml(title) + '</strong><small>' + escapeHtml(description) + '</small></span><span class="docs-index-arrow">↗</span></a>';
+  }).join("\n");
+  return '<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#f8f7fc"><title>Documentation — violajs</title><link rel="stylesheet" href="../style.css"></head><body class="docs-page docs-index-page"><header class="site-header"><nav class="nav container"><a class="brand" href="../index.html"><span class="brand-mark">v.</span><span>violajs</span></a><div class="nav-links"><a href="../index.html">Home</a><a class="is-current" href="./index.html">Documentation</a><button class="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false"><span class="theme-icon">☾</span><span class="theme-label">Dark mode</span></button><a class="nav-github" href="https://github.com/arsa0x/violajs">GitHub ↗</a></div></nav></header><main class="container docs-index-main"><a class="docs-back-link" href="../index.html">← Back to overview</a><div class="docs-index-heading"><span class="section-kicker">VIOLAJS / DOCUMENTATION</span><h1>Build something <span class="gradient-text">with violajs.</span></h1><p>Guides and references to help you build, extend, and manage your WhatsApp bot.</p></div><div class="docs-index-grid">' + cards + '</div></main><footer class="footer"><div class="container footer-inner"><span>violajs documentation</span><span class="footer-copy">© <span id="year"></span> violajs</span></div></footer><script src="../script.js"></script></body></html>';
 }
 
 await fs.mkdir(pagesDir, { recursive: true });
@@ -171,4 +187,4 @@ for (const file of mdFiles) {
   console.info(`Generated site/pages/${file.replace(/\.md$/, ".html")}`);
 }
 
-console.info(`Generated ${mdFiles.length} documentation pages.`);
+const indexHtml = renderDocsIndex(mdFiles, titles);\nawait fs.writeFile(path.join(pagesDir, "index.html"), indexHtml, "utf8");\nconsole.info(`Generated ${mdFiles.length} documentation pages and index.`);
