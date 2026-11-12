@@ -5,7 +5,6 @@ import { load } from "cheerio";
 
 const docsDir = path.resolve("docs");
 const pagesDir = path.resolve("site", "pages");
-const siteDir = path.resolve("site");
 
 const DOC_DESCRIPTIONS: Record<string, string> = {
   "argument-parser.md": "Parse command arguments, aliases, and flags.",
