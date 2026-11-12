@@ -41,7 +41,7 @@ document.querySelectorAll("[data-copy]").forEach((button) => {
   });
 });
 
-document.querySelector("#year").textContent = new Date().getFullYear();
+document.querySelector("#year")?.textContent = new Date().getFullYear();
 
 // Theme preference: follow the operating system until the user makes a choice.
 const themeToggle = document.querySelector(".theme-toggle");
