@@ -25,6 +25,7 @@
     "build": "bun run generate && bun scripts/build.js",
     "start": "bun index.ts",
     "dev": "bun run dev.ts",
+    "dev:site": "bun run scripts/server.ts",
     "docs": "bun scripts/generate-docs.ts"
   },
   "devDependencies": {
