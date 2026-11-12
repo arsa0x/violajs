@@ -108,12 +108,12 @@ The executable will be generated in `dist/`.
 
 ## Documentation
 
-| Documentation                                        | Description                                |
-| ---------------------------------------------------- | ------------------------------------------ |
-| [Commands](docs/commands.md)                         | Available commands, aliases, and flags.    |
-| [Event Plugins](docs/events.md)                      | Event types and plugin handlers.           |
-| [Interactive Messages](docs/interactive-messages.md) | Buttons, lists, and carousels.             |
-| [Argument Parser](docs/argument-parser.md)           | Command flags and argument parsing.        |
+| Documentation                                        | Description                             |
+| ---------------------------------------------------- | --------------------------------------- |
+| [Commands](docs/commands.md)                         | Available commands, aliases, and flags. |
+| [Event Plugins](docs/events.md)                      | Event types and plugin handlers.        |
+| [Interactive Messages](docs/interactive-messages.md) | Buttons, lists, and carousels.          |
+| [Argument Parser](docs/argument-parser.md)           | Command flags and argument parsing.     |
 
 ## Contributing
 

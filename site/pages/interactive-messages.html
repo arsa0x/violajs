@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f8f7fc" />
+    <script>
+      (() => {
+        try {
+          const saved = localStorage.getItem("violajs-theme");
+          const prefersDark = window.matchMedia(
+            "(prefers-color-scheme: dark)",
+          ).matches;
+          if (saved === "dark" || (!saved && prefersDark))
+            document.documentElement.dataset.theme = "dark";
+        } catch {}
+      })();
+    </script>
+    <meta
+      name="description"
+      content="violajs is a plugin-based WhatsApp bot built with Baileys and Bun. Simple to extend, flexible to run."
+    />
+    <title>Violajs - Interactive messages</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav container" aria-label="Main navigation">
+        <a class="brand" href="#" aria-label="violajs home">
+          <span class="brand-mark">v<span>.</span></span>
+          <span>viola<span class="brand-light">js</span></span>
+        </a>
+        <button
+          class="nav-toggle"
+          aria-label="Open navigation"
+          aria-expanded="false"
+        >
+          <span></span><span></span>
+        </button>
+        <div class="nav-links" id="nav-links">
+          <a href="#features">Features</a>
+          <a href="#getting-started">Getting started</a>
+          <a href="#plugins">Plugins</a>
+          <a href="#docs">Documentation</a>
+          <button
+            class="theme-toggle"
+            type="button"
+            aria-label="Switch to dark mode"
+            aria-pressed="false"
+          >
+            <span class="theme-icon" aria-hidden="true">\u263E</span
+            ><span class="theme-label">Dark mode</span>
+          </button>
+          <a
+            class="nav-github"
+            href="https://github.com/arsa0x/violajs"
+            target="_blank"
+            rel="noreferrer"
+            >GitHub <span aria-hidden="true">\u2197</span></a
+          >
+        </div>
+      </nav>
+    </header>
+    <main class="container">
+      <h1>Interactive messages</h1>
+      <p>
+        All methods are available through ctx.send.interactive and use the
+        current chat as the recipient.
+      </p>
+      <blockquote>
+        <p>
+          Native-flow support varies by WhatsApp client and version. In
+          particular, WhatsApp Web/Desktop may show “This message couldn&#39;t
+          load” for some native-flow message types even when the same message
+          works on mobile. Test on the client your users actually use.
+        </p>
+      </blockquote>
+      <h2>Quick replies</h2>
+      <pre><code class="language-ts">await ctx.send.interactive.quickReply({
+  title: &quot;Choose an action&quot;,
+  body: &quot;What would you like to do?&quot;,
+  buttons: [
+    { text: &quot;Ping&quot;, id: &quot;.ping&quot; },
+    { text: &quot;Help&quot;, id: &quot;.help&quot; },
+  ],
+});
+</code></pre>
+      <p>
+        Button IDs are normalized as interactive responses and can reuse the
+        normal command dispatcher.
+      </p>
+      <h2>Single select</h2>
+      <pre><code class="language-ts">await ctx.send.interactive.singleSelect({
+  title: &quot;Settings&quot;,
+  body: &quot;Choose a section.&quot;,
+  selectLabel: &quot;Open settings&quot;,
+  sections: [
+    {
+      title: &quot;General&quot;,
+      rows: [
+        { title: &quot;Profile&quot;, description: &quot;View your profile&quot;, id: &quot;.profile&quot; },
+        { title: &quot;Help&quot;, description: &quot;Show help&quot;, id: &quot;.help&quot; },
+      ],
+    },
+  ],
+});
+</code></pre>
+      <h2>URL button</h2>
+      <pre><code class="language-ts">await ctx.send.interactive.urlButton({
+  title: &quot;Project&quot;,
+  body: &quot;Open the project website.&quot;,
+  text: &quot;Open website&quot;,
+  url: &quot;https://github.com/arsa0x/violajs&quot;,
+});
+</code></pre>
+      <p>Only absolute http:// and https:// URLs are accepted.</p>
+      <h2>Call button</h2>
+      <pre><code class="language-ts">await ctx.send.interactive.callButton({
+  body: &quot;Need help? Contact support.&quot;,
+  text: &quot;Call support&quot;,
+  phoneNumber: &quot;+6281234567890&quot;,
+});
+</code></pre>
+      <p>
+        Use an international-style phone number. The recipient&#39;s client
+        decides how the call action is handled.
+      </p>
+      <h2>Image/video header</h2>
+      <p>
+        Any quick reply, single-select, URL, call, copy-code, location request,
+        or in-app signup message can use an optional uploaded image/video
+        header:
+      </p>
+      <pre><code class="language-ts">await ctx.send.interactive.quickReply({
+  body: &quot;What would you like to do?&quot;,
+  headerMedia: { type: &quot;image&quot;, url: &quot;https://example.com/banner.jpg&quot; }, // or type: &quot;video&quot;
+  buttons: [{ text: &quot;Continue&quot;, id: &quot;.continue&quot; }],
+});
+</code></pre>
+      <p>
+        The URL must be publicly reachable over HTTP(S). Baileys downloads and
+        uploads the media before sending the interactive message.
+      </p>
+      <h2>In-app signup</h2>
+      <pre><code class="language-ts">await ctx.send.interactive.inAppSignup({
+  title: &quot;Create an account&quot;,
+  body: &quot;Continue with the in-app signup action.&quot;,
+  footer: &quot;violajs&quot;,
+});
+</code></pre>
+      <p>
+        This sends the native-flow button name <code>inapp_signup</code> with an
+        empty JSON parameter object. It is a low-level client action, not a full
+        account-registration backend; actual behavior depends on WhatsApp
+        client/account support.
+      </p>
+      <h2>Location request</h2>
+      <p>Ask the recipient to share their current location:</p>
+      <pre><code class="language-ts">await ctx.send.interactive.requestLocation({
+  body: &quot;Share your current location if you want to.&quot;,
+  text: &quot;Share location&quot;,
+});
+</code></pre>
+      <p>
+        This uses the native-flow <code>send_location</code> action.
+        Availability and presentation can vary by WhatsApp client and account
+        type; test on the clients you intend to support.
+      </p>
+      <h2>Copy-code button</h2>
+      <pre><code class="language-ts">await ctx.send.interactive.copyCode({
+  body: &quot;Use this code at checkout.&quot;,
+  text: &quot;Copy code&quot;,
+  code: &quot;VIOLA10&quot;,
+});
+</code></pre>
+      <h2>Quoting behavior</h2>
+      <p>
+        All methods quote the incoming message by default. Set quoted: false to
+        send without quoting it.
+      </p>
+      <h2>Compatibility note</h2>
+      <p>
+        These methods construct WhatsApp native-flow messages through
+        Baileys&#39; relay API. Successful relay does not guarantee that every
+        WhatsApp client can render the message. Keep a plain-text fallback for
+        workflows where desktop support is required, and validate each new
+        button type on mobile and Web/Desktop.
+      </p>
+      <h2>Carousel</h2>
+      <p>
+        A native carousel contains at least 2 image cards. The message can have
+        a top-level <code>footer</code>, and each card can have its own
+        <code>footer</code>. Each card accepts a <code>buttons</code> array with
+        one or more native-flow buttons; button types can be mixed within a
+        card, matching the Rust <code>CarouselCard::buttons(...)</code> builder.
+        Supported variants are quick reply, URL, call, copy-code, and
+        single-select. Image URLs must be publicly reachable so Baileys can
+        download and upload each image to WhatsApp.
+      </p>
+      <h3>Quick-reply cards</h3>
+      <pre><code class="language-ts">await ctx.send.interactive.carousel({
+  body: &quot;Browse these projects.&quot;,
+  footer: &quot;Project carousel footer&quot;,
+  cards: [
+    {
+      image: &quot;https://example.com/project-one.jpg&quot;,
+      title: &quot;Project One&quot;,
+      body: &quot;A short project description.&quot;,
+      footer: &quot;First card footer&quot;,
+      buttons: [
+        { type: &quot;quick_reply&quot;, text: &quot;Details&quot;, id: &quot;.project one&quot; },
+        {
+          type: &quot;url&quot;,
+          text: &quot;Open project&quot;,
+          url: &quot;https://example.com/project-one&quot;,
+        },
+      ],
+    },
+    {
+      image: &quot;https://example.com/project-two.jpg&quot;,
+      title: &quot;Project Two&quot;,
+      body: &quot;Another short description.&quot;,
+      footer: &quot;Second card footer&quot;,
+      buttons: [{ type: &quot;quick_reply&quot;, text: &quot;Details&quot;, id: &quot;.project two&quot; }],
+    },
+  ],
+});
+</code></pre>
+      <h3>URL cards</h3>
+      <p>
+        Each card can use one or more buttons, and button types do not need to
+        match:
+      </p>
+      <pre><code class="language-ts">await ctx.send.interactive.carousel({
+  body: &quot;Explore these links.&quot;,
+  cards: [
+    {
+      image: &quot;https://example.com/one.jpg&quot;,
+      title: &quot;First link&quot;,
+      buttons: [{ type: &quot;url&quot;, text: &quot;Open&quot;, url: &quot;https://example.com/one&quot; }],
+    },
+    {
+      image: &quot;https://example.com/two.jpg&quot;,
+      title: &quot;Second link&quot;,
+      buttons: [{ type: &quot;url&quot;, text: &quot;Open&quot;, url: &quot;https://example.com/two&quot; }],
+    },
+  ],
+});
+</code></pre>
+      <p>
+        URL buttons accept optional <code>merchantUrl</code> and
+        <code>webviewInteraction</code> (default <code>true</code>); copy-code
+        buttons accept an optional <code>id</code> that defaults to the copied
+        code. Single-select buttons use
+        <code>{ type: &quot;single_select&quot;, title, sections }</code>. The
+        previous singular <code>button</code> property remains supported for
+        backward compatibility; new code should use <code>buttons</code>.
+      </p>
+      <p>
+        The carousel is built with Baileys&#39; native
+        <code>carouselMessage</code> structure. Native carousel rendering is
+        client/version-dependent, so verify delivery and card actions on both
+        WhatsApp mobile and Web/Desktop. Try the demo variants with
+        <code>.interactive carousel</code>,
+        <code>.interactive carousel-url</code>,
+        <code>.interactive carousel-call</code>,
+        <code>.interactive carousel-copy</code>, and
+        <code>.interactive carousel-list</code>.
+        <code>.interactive signup</code> tests <code>inapp_signup</code>, while
+        <code>.interactive media</code> tests an image header.
+      </p>
+      <p>
+        The <code>.interactive carousel</code> command provides a test example.
+      </p>
+    </main>
+    <footer class="footer">
+      <div class="container footer-inner">
+        <a class="brand" href="#"
+          ><span class="brand-mark">v<span>.</span></span
+          ><span>viola<span class="brand-light">js</span></span></a
+        >
+        <p>
+          Made with care, powered by
+          <a
+            href="https://github.com/WhiskeySockets/Baileys"
+            target="_blank"
+            rel="noreferrer"
+            >Baileys</a
+          >
+          &
+          <a href="https://bun.sh" target="_blank" rel="noreferrer">Bun</a>.
+        </p>
+        <span class="footer-copy">\u00A9 <span id="year"></span> violajs</span>
+      </div>
+    </footer>
+    <script src="../script.js"></script>
+  </body>
+</html>
