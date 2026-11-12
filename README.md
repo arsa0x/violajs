@@ -114,8 +114,6 @@ The executable will be generated in `dist/`.
 | [Event Plugins](docs/events.md)                      | Event types and plugin handlers.           |
 | [Interactive Messages](docs/interactive-messages.md) | Buttons, lists, and carousels.             |
 | [Argument Parser](docs/argument-parser.md)           | Command flags and argument parsing.        |
-| [Scraper Commands](docs/scraper-commands.md)         | Downloader, search, and metadata commands. |
-| [Menu Command](docs/menu-command.md)                 | Interactive command menu.                  |
 
 ## Contributing
 

@@ -8,8 +8,11 @@
             (() => {
                 try {
                     const saved = localStorage.getItem("violajs-theme");
-                    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-                    if (saved === "dark" || (!saved && prefersDark)) document.documentElement.dataset.theme = "dark";
+                    const prefersDark = window.matchMedia(
+                        "(prefers-color-scheme: dark)",
+                    ).matches;
+                    if (saved === "dark" || (!saved && prefersDark))
+                        document.documentElement.dataset.theme = "dark";
                 } catch {}
             })();
         </script>
@@ -45,7 +48,15 @@
                     <a href="#getting-started">Getting started</a>
                     <a href="#plugins">Plugins</a>
                     <a href="#docs">Documentation</a>
-                    <button class="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false"><span class="theme-icon" aria-hidden="true">☾</span><span class="theme-label">Dark mode</span></button>
+                    <button
+                        class="theme-toggle"
+                        type="button"
+                        aria-label="Switch to dark mode"
+                        aria-pressed="false"
+                    >
+                        <span class="theme-icon" aria-hidden="true">☾</span
+                        ><span class="theme-label">Dark mode</span>
+                    </button>
                     <a
                         class="nav-github"
                         href="https://github.com/arsa0x/violajs"
@@ -413,26 +424,6 @@
                             ><span class="doc-name">Argument parser</span
                             ><span class="doc-description"
                                 >Command flags and argument parsing</span
-                            ><span class="doc-arrow">↗</span></a
-                        >
-                        <a
-                            href="https://github.com/arsa0x/violajs/blob/main/docs/scraper-commands.md"
-                            target="_blank"
-                            rel="noreferrer"
-                            ><span class="doc-index">05</span
-                            ><span class="doc-name">Scraper commands</span
-                            ><span class="doc-description"
-                                >Downloader, search, and metadata commands</span
-                            ><span class="doc-arrow">↗</span></a
-                        >
-                        <a
-                            href="https://github.com/arsa0x/violajs/blob/main/docs/menu-command.md"
-                            target="_blank"
-                            rel="noreferrer"
-                            ><span class="doc-index">06</span
-                            ><span class="doc-name">Menu command</span
-                            ><span class="doc-description"
-                                >Interactive command menu</span
                             ><span class="doc-arrow">↗</span></a
                         >
                     </div>
