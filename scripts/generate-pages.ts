@@ -1,4 +1,4 @@
-import { marked, type Tokens } from "marked";
+import { marked } from "marked";
 import fs from "fs/promises";
 import path from "path";
 import { load } from "cheerio";
@@ -26,7 +26,7 @@ function slugify(value: string): string {
 
 function createRenderer() {
   const renderer = new marked.Renderer();
-  const renderRawHtml = (token: Tokens.HTML | Tokens.HTMLInline) => {
+  const renderRawHtml = (token: { text: string }) => {
     const value = token.text.trim();
     if (/^<br\s*\/?\s*>$/i.test(value)) return "<br>";
     if (/^<!--[\s\S]*-->$/.test(value)) return "";
@@ -34,7 +34,6 @@ function createRenderer() {
   };
 
   renderer.html = renderRawHtml;
-  renderer.htmlInline = renderRawHtml;
   return renderer;
 }
 
