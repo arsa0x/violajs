@@ -21,15 +21,18 @@
   ],
   "private": true,
   "scripts": {
-    "generate": "bun scripts/generate-config.js && bun scripts/generate.ts && bun fmt",
-    "build": "bun run generate && bun scripts/build.js",
     "start": "bun index.ts",
     "dev": "bun run dev.ts",
-    "dev:site": "bun run scripts/server.ts",
-    "docs": "bun scripts/generate-docs.ts"
+    "dev:web": "bun run scripts/server.ts",
+    "build": "bun run generate && bun scripts/build.js",
+    "generate:docs": "bun scripts/generate-docs.ts",
+    "generate:pages": "bun scripts/generate-pages.ts && bun fmt",
+    "generate:plugins": "bun scripts/generate-config.js && bun scripts/generate.ts && bun fmt",
+    "generate:all": "bun run generate:docs && bun run generate:pages && bun run generate:plugins"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "marked": "^18.2.0"
   },
   "peerDependencies": {
     "typescript": "^7"

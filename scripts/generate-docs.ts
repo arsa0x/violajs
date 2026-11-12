@@ -34,7 +34,12 @@ function slug(value: string): string {
 }
 
 function escapeCell(value: string): string {
-  return value.replaceAll("|", "\\|").replaceAll("\n", " ").trim();
+  return value
+    .replaceAll("|", "\\|")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll("\n", " ")
+    .trim();
 }
 
 function formatFlagDetails(command: Command): string[] {
@@ -47,10 +52,10 @@ function formatFlagDetails(command: Command): string[] {
       flag.kind === "bool"
         ? ""
         : flag.kind === "json"
-          ? " <json>"
+          ? " `<json>`"
           : flag.kind === "list"
-            ? " <item,...>"
-            : " <value>";
+            ? " `<item,...>`"
+            : " `<value>`";
     const description = flag.getDescription();
 
     return "- " + names + argument + (description ? ": " + description : "");

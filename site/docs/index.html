@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f8f7fc" />
+    <script>
+      (() => {
+        try {
+          const saved = localStorage.getItem("violajs-theme");
+          const dark = window.matchMedia(
+            "(prefers-color-scheme: dark)",
+          ).matches;
+          if (saved === "dark" || (!saved && dark))
+            document.documentElement.dataset.theme = "dark";
+        } catch {}
+      })();
+    </script>
+    <title>Documentation — violajs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body class="docs-page docs-index-page">
+    <header class="site-header">
+      <nav class="nav container">
+        <a class="brand" href="../index.html"
+          ><span class="brand-mark">v.</span><span>violajs</span></a
+        >
+        <div class="nav-links">
+          <a href="../index.html">Home</a
+          ><a class="is-current" href="./index.html">Documentation</a
+          ><button
+            class="theme-toggle"
+            type="button"
+            aria-label="Switch to dark mode"
+            aria-pressed="false"
+          >
+            <span class="theme-icon">☾</span
+            ><span class="theme-label">Dark mode</span></button
+          ><a class="nav-github" href="https://github.com/arsa0x/violajs"
+            >GitHub ↗</a
+          >
+        </div>
+      </nav>
+    </header>
+    <main class="container docs-index-main">
+      <a class="docs-back-link" href="../index.html">← Back to overview</a>
+      <div class="docs-index-heading">
+        <span class="section-kicker">VIOLAJS / DOCUMENTATION</span>
+        <h1>
+          Build something <span class="gradient-text">with violajs.</span>
+        </h1>
+        <p>
+          Guides and references to help you build, extend, and manage your
+          WhatsApp bot.
+        </p>
+      </div>
+      <div class="docs-index-grid">
+        <a class="docs-index-card" href="./argument-parser.html"
+          ><span class="docs-index-number">01</span
+          ><span class="docs-index-card-copy"
+            ><strong>Argument Parser</strong
+            ><small>Parse command arguments, aliases, and flags.</small></span
+          ><span class="docs-index-arrow">↗</span></a
+        >
+        <a class="docs-index-card" href="./commands.html"
+          ><span class="docs-index-number">02</span
+          ><span class="docs-index-card-copy"
+            ><strong>Commands</strong
+            ><small>Available commands, aliases, usage, and flags.</small></span
+          ><span class="docs-index-arrow">↗</span></a
+        >
+        <a class="docs-index-card" href="./events.html"
+          ><span class="docs-index-number">03</span
+          ><span class="docs-index-card-copy"
+            ><strong>Event Plugins</strong
+            ><small>Listen to internal and raw Baileys events.</small></span
+          ><span class="docs-index-arrow">↗</span></a
+        >
+        <a class="docs-index-card" href="./interactive-messages.html"
+          ><span class="docs-index-number">04</span
+          ><span class="docs-index-card-copy"
+            ><strong>Interactive messages</strong
+            ><small>Build buttons, lists, and carousel messages.</small></span
+          ><span class="docs-index-arrow">↗</span></a
+        >
+      </div>
+    </main>
+    <footer class="footer">
+      <div class="container footer-inner">
+        <span>violajs documentation</span
+        ><span class="footer-copy">© <span id="year"></span> violajs</span>
+      </div>
+    </footer>
+    <script src="../script.js"></script>
+  </body>
+</html>
