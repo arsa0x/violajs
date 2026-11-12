@@ -2,7 +2,7 @@
   "name": "violajs",
   "module": "index.ts",
   "type": "module",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "author": {
     "name": "arsa",
     "email": "0xarsa@proton.me",
@@ -25,7 +25,7 @@
     "build": "bun run generate && bun src/utils/build.ts",
     "start": "bun run generate && bun index.ts",
     "dev": "bun run dev.ts",
-    "docs:generate": "bun src/utils/generate-docs.ts"
+    "docs": "bun src/utils/generate-docs.ts"
   },
   "devDependencies": {
     "@types/bun": "latest"
