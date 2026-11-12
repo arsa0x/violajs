@@ -19,13 +19,16 @@ export const useSQLiteAuthState = async (
   state: AuthenticationState;
   saveCreds: () => void;
   clearAll: () => void;
+  close: () => void;
 }> => {
   if (!fs.existsSync(dbPath)) {
     fs.mkdirSync(dbPath, { recursive: true });
   }
   const db = new Database(`${dbPath}/auth.sqlite`, { create: true });
+
   db.run("PRAGMA journal_mode = WAL;");
   db.run("PRAGMA synchronous = NORMAL;");
+  db.run("PRAGMA busy_timeout = 5000;");
 
   db.run(`
     CREATE TABLE IF NOT EXISTS auth_state (
@@ -116,11 +119,15 @@ export const useSQLiteAuthState = async (
 
   return {
     state,
-    saveCreds: () => {
-      writeData(CREDS_KEY, state.creds);
-    },
+    saveCreds: () => writeData(CREDS_KEY, state.creds),
     clearAll: () => {
       stmtClear.run();
+    },
+    close: () => {
+      try {
+        db.run("PRAGMA wal_checkpoint(TRUNCATE);");
+        db.close();
+      } catch {}
     },
   };
 };

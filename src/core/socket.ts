@@ -2,7 +2,7 @@ import makeWASocket, { DisconnectReason, type WASocket } from "baileys";
 import { useSQLiteAuthState } from "@src/storage/auth";
 import https from "https";
 import { qrEncode } from "@lib/qr";
-import { MemoryMediaCache } from "@src/storage/cache";
+import { TtlCache } from "@src/storage/cache";
 import { logger, type Log } from "@lib/logger";
 import type { BotOptions } from "@src/cli";
 
@@ -14,7 +14,7 @@ export const customFetchAgent = new https.Agent({
   timeout: 60_000,
 });
 
-const mediaCacheStore = new MemoryMediaCache(1000);
+const ttlCache = new TtlCache(1000);
 
 const RECONNECT_DELAY = 5_000;
 
@@ -37,7 +37,7 @@ export const createWAClient: (
       syncFullHistory: false,
       markOnlineOnConnect: false,
       fetchAgent: customFetchAgent,
-      mediaCache: mediaCacheStore,
+      mediaCache: ttlCache,
       logger: logger(log),
     });
 

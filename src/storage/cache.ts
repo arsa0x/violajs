@@ -1,30 +1,35 @@
 import type { CacheStore } from "baileys";
 
-export class MemoryMediaCache implements CacheStore {
-  private cache = new Map<string, any>();
-  private maxSize: number;
-
-  constructor(maxSize = 500) {
-    this.maxSize = maxSize;
-  }
+export class TtlCache implements CacheStore {
+  private map = new Map<string, { v: unknown; exp: number }>();
+  constructor(
+    private max = 500,
+    private ttlMs = 5 * 60_000,
+  ) {}
 
   get<T>(key: string): T | undefined {
-    return this.cache.get(key);
-  }
-
-  set<T>(key: string, value: T): void {
-    if (this.cache.size >= this.maxSize) {
-      const firstKey = this.cache.keys().next().value;
-      if (firstKey) this.cache.delete(firstKey);
+    const e = this.map.get(key);
+    if (!e) return undefined;
+    if (e.exp < Date.now()) {
+      this.map.delete(key);
+      return undefined;
     }
-    this.cache.set(key, value);
+    this.map.delete(key);
+    this.map.set(key, e);
+    return e.v as T;
   }
-
+  set<T>(key: string, value: T): void {
+    this.map.delete(key);
+    if (this.map.size >= this.max) {
+      const oldest = this.map.keys().next().value;
+      if (oldest !== undefined) this.map.delete(oldest);
+    }
+    this.map.set(key, { v: value, exp: Date.now() + this.ttlMs });
+  }
   del(key: string): void {
-    this.cache.delete(key);
+    this.map.delete(key);
   }
-
   flushAll(): void {
-    this.cache.clear();
+    this.map.clear();
   }
 }
