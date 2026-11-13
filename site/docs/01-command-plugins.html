@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f8f7fc" />
+    <meta name="description" content="Read the violajs documentation." />
+    <script>
+      (() => {
+        try {
+          const saved = localStorage.getItem("violajs-theme");
+          const prefersDark = window.matchMedia(
+            "(prefers-color-scheme: dark)",
+          ).matches;
+          if (saved === "dark" || (!saved && prefersDark))
+            document.documentElement.dataset.theme = "dark";
+        } catch {}
+      })();
+    </script>
+    <title>01 — Command Plugins — violajs docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body class="docs-page">
+    <header class="site-header">
+      <nav class="nav container" aria-label="Main navigation">
+        <a class="brand" href="../index.html" aria-label="violajs home"
+          ><span class="brand-mark">v.</span
+          ><span>viola<span class="brand-light">js</span></span></a
+        >
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-label="Open navigation"
+          aria-expanded="false"
+        >
+          <span></span><span></span>
+        </button>
+        <div class="nav-links" id="nav-links">
+          <a href="../index.html#features">Features</a>
+          <a href="../index.html#getting-started">Getting started</a>
+          <a href="../index.html#plugins">Plugins</a>
+          <a class="is-current" href="./01-command-plugins.html"
+            >Documentation</a
+          >
+          <button
+            class="theme-toggle"
+            type="button"
+            aria-label="Switch to dark mode"
+            aria-pressed="false"
+          >
+            <span class="theme-icon" aria-hidden="true">☾</span
+            ><span class="theme-label">Dark mode</span>
+          </button>
+          <a
+            class="nav-github"
+            href="https://github.com/arsa0x/violajs"
+            target="_blank"
+            rel="noreferrer"
+            >GitHub <span aria-hidden="true">↗</span></a
+          >
+        </div>
+      </nav>
+    </header>
+
+    <div class="docs-shell container">
+      <aside class="docs-sidebar">
+        <a class="docs-back-link" href="../index.html">← Back to overview</a>
+        <p class="docs-sidebar-label">DOCUMENTATION</p>
+        <nav class="docs-nav" aria-label="Documentation pages">
+          <a
+            class="docs-nav-link is-active"
+            href="./01-command-plugins.html"
+            aria-current="page"
+            ><span class="docs-nav-index">01</span
+            ><span>01 — Command Plugins</span></a
+          >
+          <a class="docs-nav-link" href="./02-command-context.html"
+            ><span class="docs-nav-index">02</span
+            ><span>02 — CommandContext API</span></a
+          >
+          <a class="docs-nav-link" href="./03-command-list.html"
+            ><span class="docs-nav-index">03</span
+            ><span>03 — Command List</span></a
+          >
+          <a class="docs-nav-link" href="./04-send-api.html"
+            ><span class="docs-nav-index">04</span><span>04 — Send API</span></a
+          >
+          <a class="docs-nav-link" href="./05-interactive-send-api.html"
+            ><span class="docs-nav-index">05</span
+            ><span>05 — Interactive Send API</span></a
+          >
+          <a class="docs-nav-link" href="./06-flags-and-args.html"
+            ><span class="docs-nav-index">06</span
+            ><span>06 — Flags &amp; Args</span></a
+          >
+          <a class="docs-nav-link" href="./07-middleware.html"
+            ><span class="docs-nav-index">07</span
+            ><span>07 — Middleware</span></a
+          >
+          <a class="docs-nav-link" href="./08-event-plugins.html"
+            ><span class="docs-nav-index">08</span
+            ><span>08 — Event Plugins</span></a
+          >
+          <a class="docs-nav-link" href="./09-event-context.html"
+            ><span class="docs-nav-index">09</span
+            ><span>09 — EventContext API</span></a
+          >
+          <a class="docs-nav-link" href="./10-hot-reload-and-dev.html"
+            ><span class="docs-nav-index">10</span
+            ><span>10 — Hot-Reload &amp; Dev Workflow</span></a
+          >
+          <a class="docs-nav-link" href="./11-worked-examples.html"
+            ><span class="docs-nav-index">11</span
+            ><span>11 — Worked Examples</span></a
+          >
+        </nav>
+        <a
+          class="docs-source-link"
+          href="https://github.com/arsa0x/violajs/tree/main/docs"
+          target="_blank"
+          rel="noreferrer"
+          >Edit documentation on GitHub ↗</a
+        >
+      </aside>
+
+      <main class="docs-main">
+        <div class="docs-breadcrumb">
+          <a href="../index.html">Home</a><span>/</span
+          ><span>Documentation</span><span>/</span
+          ><strong>01 — Command Plugins</strong>
+        </div>
+        <div class="docs-article-layout">
+          <article class="docs-content markdown-body">
+            <h1 id="01-command-plugins">01 — Command Plugins</h1>
+            <p>
+              A command plugin is a TypeScript file with a
+              <strong>default export</strong> of a <code>Command</code> object.
+              It lives anywhere inside <code>commands/</code> and is picked up
+              automatically.
+            </p>
+            <hr />
+            <h2 id="minimal-example">Minimal example</h2>
+            <pre><code class="language-ts">// commands/tools/ping.ts
+import { defineCommand } from "@core/command";
+
+export default defineCommand({
+  name: "ping",
+  description: "Replies with pong.",
+  category: "tools",
+  async execute(ctx) {
+    await ctx.send.text("Pong! 🏓");
+  },
+});
+</code></pre>
+            <hr />
+            <h2 id="the-command-type-all-fields">
+              The <code>Command</code> type — all fields
+            </h2>
+            <pre><code class="language-ts">type Command = {
+  // ── Required ────────────────────────────────────────────────────────
+  name: string; // primary trigger word (lowercase, no prefix)
+  execute: (ctx: CommandContext) =&gt; Promise&lt;void&gt;;
+
+  // ── Optional metadata ────────────────────────────────────────────────
+  aliases?: string[]; // alternative trigger words
+  category?: Category; // used by the .menu command
+  description?: string; // shown in --help and the menu
+  usage?: string[]; // example invocations shown in --help
+
+  // ── Behaviour ────────────────────────────────────────────────────────
+  middleware?: Middleware[]; // per-command middleware chain
+  flags?: FlagSpec[]; // typed flag declarations (see 03-flags-and-args.md)
+
+  // ── Lifecycle ────────────────────────────────────────────────────────
+  dispose?: () =&gt; void | Promise&lt;void&gt;; // called by the hot-reload loader on unload
+};
+</code></pre>
+            <hr />
+            <h2 id="definecommand-helper"><code>defineCommand</code> helper</h2>
+            <p>
+              <code>defineCommand</code> is a typed pass-through. It provides
+              IDE autocompletion with zero runtime overhead.
+            </p>
+            <pre><code class="language-ts">import { defineCommand } from "@core/command";
+
+export default defineCommand({
+  name: "example",
+  async execute(ctx) {},
+});
+</code></pre>
+            <hr />
+            <h2 id="categories">Categories</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Value</th>
+                  <th>Menu heading</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>tools</code></td>
+                  <td>Tools</td>
+                </tr>
+                <tr>
+                  <td><code>downloader</code></td>
+                  <td>Downloader</td>
+                </tr>
+                <tr>
+                  <td><code>search</code></td>
+                  <td>Search</td>
+                </tr>
+                <tr>
+                  <td><code>admin</code></td>
+                  <td>Group administration</td>
+                </tr>
+                <tr>
+                  <td><code>nsfw</code></td>
+                  <td>NSFW</td>
+                </tr>
+                <tr>
+                  <td><code>ai</code></td>
+                  <td>AI</td>
+                </tr>
+                <tr>
+                  <td><code>game</code></td>
+                  <td>Game</td>
+                </tr>
+                <tr>
+                  <td><code>maker</code></td>
+                  <td>Maker</td>
+                </tr>
+                <tr>
+                  <td><code>uncategorized</code></td>
+                  <td>Uncategorized <em>(default)</em></td>
+                </tr>
+              </tbody>
+            </table>
+            <hr />
+            <h2 id="aliases">Aliases</h2>
+            <p>
+              A command can have one or more aliases. They are registered
+              alongside the primary name and trigger the exact same
+              <code>execute</code> function.
+            </p>
+            <pre><code class="language-ts">export default defineCommand({
+  name: "sticker",
+  aliases: ["stiker", "s"],
+  async execute(ctx) { … },
+});
+</code></pre>
+            <blockquote>
+              <p>
+                Aliases share one cooldown bucket with the primary name
+                (requires the patched <code>cooldown</code> middleware — see
+                <a href="./04-middleware.md">04-middleware.md</a>).
+              </p>
+            </blockquote>
+            <hr />
+            <h2 id="usage-hints">Usage hints</h2>
+            <p>
+              <code>usage</code> is an array of example invocations shown in the
+              auto-generated <code>--help</code> output.
+            </p>
+            <pre><code class="language-ts">export default defineCommand({
+  name: "weather",
+  usage: [
+    ".weather Jakarta",
+    ".weather London --unit imperial",
+  ],
+  …
+});
+</code></pre>
+            <hr />
+            <h2 id="the-dispose-hook">The <code>dispose</code> hook</h2>
+            <p>
+              <code>dispose</code> is called by the hot-reload loader before
+              replacing a module. Use it to clear timers, close handles, or
+              flush caches that the command module holds.
+            </p>
+            <pre><code class="language-ts">let timer: ReturnType&lt;typeof setTimeout&gt; | undefined;
+
+export default defineCommand({
+  name: "remind",
+  async execute(ctx) {
+    timer = setTimeout(() =&gt; {}, 60_000);
+    await ctx.send.text("Scheduled.");
+  },
+  dispose() {
+    clearTimeout(timer);
+  },
+});
+</code></pre>
+            <hr />
+            <h2 id="file-and-naming-conventions">
+              File and naming conventions
+            </h2>
+            <ul>
+              <li>
+                <strong>One command per file.</strong> Name the file after the
+                command for clarity (<code>kick.ts</code> for
+                <code>.kick</code>).
+              </li>
+              <li>
+                <strong>Group related commands into subdirectories:</strong>
+                <pre><code>commands/
+├── group/
+│   ├── kick.ts
+│   ├── promote.ts
+│   └── demote.ts
+└── downloader/
+    ├── aio.ts
+    └── github.ts
+</code></pre>
+              </li>
+              <li>
+                After adding or removing files, run
+                <code>bun run generate</code> to regenerate
+                <code>src/generated/commands.js</code>. In dev mode this happens
+                automatically via hot-reload.
+              </li>
+              <li>
+                In <strong>production</strong> the static loader is used. In
+                <strong>development</strong> the dynamic loader hot-reloads on
+                every file save.
+              </li>
+              <li>
+                Never import one command file from another. Shared utilities
+                belong in <code>lib/</code> or <code>src/utils/</code>.
+              </li>
+            </ul>
+            <hr />
+            <h2 id="full-example-with-all-optional-fields">
+              Full example with all optional fields
+            </h2>
+            <pre><code class="language-ts">// commands/search/web.ts
+import { defineCommand } from "@core/command";
+import { FlagSpec } from "@lib/args";
+import { cooldown } from "@src/middlewares/cooldown";
+import { ownerOnly } from "@src/middlewares/owner";
+
+const LIMIT = FlagSpec.value(["--limit", "-l"]).description(
+  "Max results (default 5).",
+);
+const SAFE = FlagSpec.bool(["--safe", "-s"]).description("Enable safe search.");
+
+export default defineCommand({
+  name: "websearch",
+  aliases: ["ws", "search"],
+  category: "search",
+  description: "Search the web.",
+  usage: [
+    ".websearch cats",
+    ".websearch cats --limit 10",
+    ".websearch violence --safe",
+  ],
+  flags: [LIMIT, SAFE],
+  middleware: [cooldown(5_000)],
+
+  async execute(ctx) {
+    const query = ctx.args!.rest().join(" ");
+    if (!query) {
+      await ctx.send.text("Usage: .websearch &lt;query&gt;");
+      return;
+    }
+    const limit = ctx.args!.valueParsed("--limit", Number) ?? 5;
+    const safe = ctx.args!.flag("--safe");
+    // … perform search …
+    await ctx.send.text(
+      `Results for "${query}" (limit=${limit}, safe=${safe})`,
+    );
+  },
+
+  dispose() {
+    // clean up any open fetch streams or caches
+  },
+});
+</code></pre>
+
+            <nav class="docs-page-footer" aria-label="Documentation source">
+              <span>Found a mistake?</span>
+              <a
+                href="https://github.com/arsa0x/violajs/edit/main/docs/01-command-plugins.md"
+                target="_blank"
+                rel="noreferrer"
+                >Suggest an edit ↗</a
+              >
+            </nav>
+          </article>
+          <aside class="docs-toc" aria-label="On this page">
+            <p class="docs-toc-title">ON THIS PAGE</p>
+            <nav>
+              <a class="toc-level-2" href="#minimal-example">Minimal example</a
+              ><a class="toc-level-2" href="#the-command-type-all-fields"
+                >The Command type — all fields</a
+              ><a class="toc-level-2" href="#definecommand-helper"
+                >defineCommand helper</a
+              ><a class="toc-level-2" href="#categories">Categories</a
+              ><a class="toc-level-2" href="#aliases">Aliases</a
+              ><a class="toc-level-2" href="#usage-hints">Usage hints</a
+              ><a class="toc-level-2" href="#the-dispose-hook"
+                >The dispose hook</a
+              ><a class="toc-level-2" href="#file-and-naming-conventions"
+                >File and naming conventions</a
+              ><a
+                class="toc-level-2"
+                href="#full-example-with-all-optional-fields"
+                >Full example with all optional fields</a
+              >
+            </nav>
+          </aside>
+        </div>
+      </main>
+    </div>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <a class="brand" href="../index.html"
+          ><span class="brand-mark">v<span>.</span></span
+          ><span>viola<span class="brand-light">js</span></span></a
+        >
+        <p>
+          Made with care, powered by
+          <a
+            href="https://github.com/WhiskeySockets/Baileys"
+            target="_blank"
+            rel="noreferrer"
+            >Baileys</a
+          >
+          & <a href="https://bun.sh" target="_blank" rel="noreferrer">Bun</a>.
+        </p>
+        <span class="footer-copy">© <span id="year"></span> violajs</span>
+      </div>
+    </footer>
+    <script src="../script.js"></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-clike.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-javascript.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-typescript.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-bash.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-json.min.js"
+    ></script>
+  </body>
+</html>

@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f8f7fc" />
+    <meta name="description" content="Read the violajs documentation." />
+    <script>
+      (() => {
+        try {
+          const saved = localStorage.getItem("violajs-theme");
+          const prefersDark = window.matchMedia(
+            "(prefers-color-scheme: dark)",
+          ).matches;
+          if (saved === "dark" || (!saved && prefersDark))
+            document.documentElement.dataset.theme = "dark";
+        } catch {}
+      })();
+    </script>
+    <title>02 — CommandContext API — violajs docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body class="docs-page">
+    <header class="site-header">
+      <nav class="nav container" aria-label="Main navigation">
+        <a class="brand" href="../index.html" aria-label="violajs home"
+          ><span class="brand-mark">v.</span
+          ><span>viola<span class="brand-light">js</span></span></a
+        >
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-label="Open navigation"
+          aria-expanded="false"
+        >
+          <span></span><span></span>
+        </button>
+        <div class="nav-links" id="nav-links">
+          <a href="../index.html#features">Features</a>
+          <a href="../index.html#getting-started">Getting started</a>
+          <a href="../index.html#plugins">Plugins</a>
+          <a class="is-current" href="./02-command-context.html"
+            >Documentation</a
+          >
+          <button
+            class="theme-toggle"
+            type="button"
+            aria-label="Switch to dark mode"
+            aria-pressed="false"
+          >
+            <span class="theme-icon" aria-hidden="true">☾</span
+            ><span class="theme-label">Dark mode</span>
+          </button>
+          <a
+            class="nav-github"
+            href="https://github.com/arsa0x/violajs"
+            target="_blank"
+            rel="noreferrer"
+            >GitHub <span aria-hidden="true">↗</span></a
+          >
+        </div>
+      </nav>
+    </header>
+
+    <div class="docs-shell container">
+      <aside class="docs-sidebar">
+        <a class="docs-back-link" href="../index.html">← Back to overview</a>
+        <p class="docs-sidebar-label">DOCUMENTATION</p>
+        <nav class="docs-nav" aria-label="Documentation pages">
+          <a class="docs-nav-link" href="./01-command-plugins.html"
+            ><span class="docs-nav-index">01</span
+            ><span>01 — Command Plugins</span></a
+          >
+          <a
+            class="docs-nav-link is-active"
+            href="./02-command-context.html"
+            aria-current="page"
+            ><span class="docs-nav-index">02</span
+            ><span>02 — CommandContext API</span></a
+          >
+          <a class="docs-nav-link" href="./03-command-list.html"
+            ><span class="docs-nav-index">03</span
+            ><span>03 — Command List</span></a
+          >
+          <a class="docs-nav-link" href="./04-send-api.html"
+            ><span class="docs-nav-index">04</span><span>04 — Send API</span></a
+          >
+          <a class="docs-nav-link" href="./05-interactive-send-api.html"
+            ><span class="docs-nav-index">05</span
+            ><span>05 — Interactive Send API</span></a
+          >
+          <a class="docs-nav-link" href="./06-flags-and-args.html"
+            ><span class="docs-nav-index">06</span
+            ><span>06 — Flags &amp; Args</span></a
+          >
+          <a class="docs-nav-link" href="./07-middleware.html"
+            ><span class="docs-nav-index">07</span
+            ><span>07 — Middleware</span></a
+          >
+          <a class="docs-nav-link" href="./08-event-plugins.html"
+            ><span class="docs-nav-index">08</span
+            ><span>08 — Event Plugins</span></a
+          >
+          <a class="docs-nav-link" href="./09-event-context.html"
+            ><span class="docs-nav-index">09</span
+            ><span>09 — EventContext API</span></a
+          >
+          <a class="docs-nav-link" href="./10-hot-reload-and-dev.html"
+            ><span class="docs-nav-index">10</span
+            ><span>10 — Hot-Reload &amp; Dev Workflow</span></a
+          >
+          <a class="docs-nav-link" href="./11-worked-examples.html"
+            ><span class="docs-nav-index">11</span
+            ><span>11 — Worked Examples</span></a
+          >
+        </nav>
+        <a
+          class="docs-source-link"
+          href="https://github.com/arsa0x/violajs/tree/main/docs"
+          target="_blank"
+          rel="noreferrer"
+          >Edit documentation on GitHub ↗</a
+        >
+      </aside>
+
+      <main class="docs-main">
+        <div class="docs-breadcrumb">
+          <a href="../index.html">Home</a><span>/</span
+          ><span>Documentation</span><span>/</span
+          ><strong>02 — CommandContext API</strong>
+        </div>
+        <div class="docs-article-layout">
+          <article class="docs-content markdown-body">
+            <h1 id="02-commandcontext-api">02 — CommandContext API</h1>
+            <p>
+              Every <code>execute</code> function receives a single
+              <code>ctx: CommandContext</code>. This file documents every
+              property and helper available on it.
+            </p>
+            <hr />
+            <h2 id="identity-routing">Identity &amp; routing</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Property</th>
+                  <th>Type</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>ctx.name</code></td>
+                  <td><code>string</code></td>
+                  <td>Canonical command name as typed (lowercase)</td>
+                </tr>
+                <tr>
+                  <td><code>ctx.text</code></td>
+                  <td><code>string</code></td>
+                  <td>Full raw message text, including prefix and args</td>
+                </tr>
+                <tr>
+                  <td><code>ctx.rawArgs</code></td>
+                  <td><code>string[]</code></td>
+                  <td>
+                    Whitespace-split tokens after the command name, before flag
+                    parsing
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>ctx.args</code></td>
+                  <td><code>Args | undefined</code></td>
+                  <td>
+                    Parsed flags and positionals — always present inside
+                    <code>execute</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>ctx.msg</code></td>
+                  <td><code>WAMessage</code></td>
+                  <td>The raw Baileys message object</td>
+                </tr>
+                <tr>
+                  <td><code>ctx.sock</code></td>
+                  <td><code>WASocket</code></td>
+                  <td>The active Baileys WebSocket</td>
+                </tr>
+                <tr>
+                  <td><code>ctx.log</code></td>
+                  <td><code>Log</code></td>
+                  <td>Session-scoped logger</td>
+                </tr>
+              </tbody>
+            </table>
+            <hr />
+            <h2 id="sender">Sender</h2>
+            <pre><code class="language-ts">ctx.sender.jid; // string — sender's JID (normalized, e.g. "628xxx@s.whatsapp.net")
+ctx.sender.isOwner; // boolean — true if the JID is in config.owners
+</code></pre>
+            <hr />
+            <h2 id="chat">Chat</h2>
+            <pre><code class="language-ts">ctx.chat.jid; // string — the chat JID (group JID or sender's JID for DMs)
+ctx.chat.isGroup; // boolean — true when the message came from a group
+</code></pre>
+            <hr />
+            <h2 id="send">Send</h2>
+            <p>
+              <code>ctx.send</code> is a <code>Send</code> instance. See
+              <a href="./05-send-api.md">05-send-api.md</a> for all methods.
+            </p>
+            <pre><code class="language-ts">await ctx.send.text("Hello!");
+await ctx.send.image({ url: "https://example.com/photo.jpg" }, "Caption");
+await ctx.send.reaction("👍");
+await ctx.send.interactive.quickReply({ … });
+</code></pre>
+            <hr />
+            <h2 id="logging">Logging</h2>
+            <p>
+              <code>ctx.log</code> is a <code>Log</code> interface scoped to the
+              current session name.
+            </p>
+            <pre><code class="language-ts">ctx.log.info("Starting download");
+ctx.log.warn("Rate limit hit, retrying…");
+ctx.log.error("Fetch failed:", error);
+ctx.log.debug("Raw payload:", payload);
+</code></pre>
+            <p>
+              All logs are prefixed with
+              <code>[SessionName]</code> automatically.
+            </p>
+            <hr />
+            <h2 id="accessing-raw-args-before-parsing">
+              Accessing raw args before parsing
+            </h2>
+            <p>
+              <code>ctx.rawArgs</code> contains the tokens that were split from
+              the message text before flag parsing. It is always available, even
+              without any <code>flags</code> declared.
+            </p>
+            <pre><code class="language-ts">// Message: ".tag hello world"
+ctx.rawArgs; // ["hello", "world"]
+</code></pre>
+            <hr />
+            <h2 id="accessing-parsed-flags-and-positionals">
+              Accessing parsed flags and positionals
+            </h2>
+            <p>
+              <code>ctx.args</code> is populated by the dispatcher after flag
+              parsing. It is always defined inside <code>execute</code>. See
+              <a href="./03-flags-and-args.md">03-flags-and-args.md</a> for the
+              full API.
+            </p>
+            <pre><code class="language-ts">const query = ctx.args!.rest().join(" "); // positional tokens
+const limit = ctx.args!.value("--limit"); // string | undefined
+const verbose = ctx.args!.flag("--verbose"); // boolean
+</code></pre>
+            <hr />
+            <h2 id="accessing-the-quoted-message">
+              Accessing the quoted message
+            </h2>
+            <p>
+              The message the user replied to is in Baileys'
+              <code>contextInfo</code>:
+            </p>
+            <pre><code class="language-ts">const quoted = ctx.msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
+
+if (!quoted) {
+  await ctx.send.text("Please reply to a message to use this command.");
+  return;
+}
+</code></pre>
+            <p>
+              For media in the quoted message you need
+              <code>downloadMediaMessage</code> from Baileys:
+            </p>
+            <pre><code class="language-ts">import { downloadMediaMessage } from "baileys";
+
+const stream = await downloadMediaMessage(
+  {
+    key: ctx.msg.key,
+    message: { imageMessage: quoted.imageMessage! },
+  },
+  "stream",
+  {},
+);
+</code></pre>
+            <hr />
+            <h2 id="accessing-mentioned-jids">Accessing mentioned JIDs</h2>
+            <pre><code class="language-ts">import { getGroupMentions, getGroupTarget } from "@utils/group";
+
+// All mentioned JIDs in the message
+const mentions = getGroupMentions(ctx); // string[]
+
+// First target: mention → quoted sender → phone number from args
+const target = getGroupTarget(ctx); // string | undefined
+</code></pre>
+            <hr />
+            <h2 id="checking-group-membership">Checking group membership</h2>
+            <pre><code class="language-ts">import { isGroupParticipant } from "@utils/group";
+
+const isMember = await isGroupParticipant(ctx, targetJid); // boolean
+</code></pre>
+            <hr />
+            <h2 id="accessing-group-metadata">Accessing group metadata</h2>
+            <pre><code class="language-ts">const meta = await ctx.sock.groupMetadata(ctx.chat.jid);
+// meta.subject    — group name
+// meta.participants — array of { id, admin }
+</code></pre>
+            <blockquote>
+              <p>
+                <strong>Performance note:</strong> <code>groupMetadata</code> is
+                a live network call. For commands that call it frequently, use
+                the cached version from <code>@utils/identity</code> (see
+                <a href="./04-middleware.md">04-middleware.md</a>).
+              </p>
+            </blockquote>
+            <hr />
+            <h2 id="sending-without-quoting">Sending without quoting</h2>
+            <p>
+              All <code>ctx.send.*</code> methods default to
+              <code>reply: true</code> (they quote the original message). Pass
+              <code>false</code> to send without quoting:
+            </p>
+            <pre><code class="language-ts">await ctx.send.text("No quote here.", false);
+await ctx.send.image(buf, "Caption", false);
+</code></pre>
+            <hr />
+            <h2 id="full-property-reference">Full property reference</h2>
+            <pre><code class="language-ts">interface CommandContext {
+  // Core
+  sock: WASocket;
+  log: Log;
+  msg: WAMessage;
+
+  // Routing
+  name: string;
+  text: string;
+  rawArgs: string[];
+  args?: Args;
+
+  // Identity
+  sender: { jid: string; isOwner: boolean };
+  chat: { jid: string; isGroup: boolean };
+
+  // Messaging
+  send: Send;
+}
+</code></pre>
+
+            <nav class="docs-page-footer" aria-label="Documentation source">
+              <span>Found a mistake?</span>
+              <a
+                href="https://github.com/arsa0x/violajs/edit/main/docs/02-command-context.md"
+                target="_blank"
+                rel="noreferrer"
+                >Suggest an edit ↗</a
+              >
+            </nav>
+          </article>
+          <aside class="docs-toc" aria-label="On this page">
+            <p class="docs-toc-title">ON THIS PAGE</p>
+            <nav>
+              <a class="toc-level-2" href="#identity-routing"
+                >Identity &amp; routing</a
+              ><a class="toc-level-2" href="#sender">Sender</a
+              ><a class="toc-level-2" href="#chat">Chat</a
+              ><a class="toc-level-2" href="#send">Send</a
+              ><a class="toc-level-2" href="#logging">Logging</a
+              ><a class="toc-level-2" href="#accessing-raw-args-before-parsing"
+                >Accessing raw args before parsing</a
+              ><a
+                class="toc-level-2"
+                href="#accessing-parsed-flags-and-positionals"
+                >Accessing parsed flags and positionals</a
+              ><a class="toc-level-2" href="#accessing-the-quoted-message"
+                >Accessing the quoted message</a
+              ><a class="toc-level-2" href="#accessing-mentioned-jids"
+                >Accessing mentioned JIDs</a
+              ><a class="toc-level-2" href="#checking-group-membership"
+                >Checking group membership</a
+              ><a class="toc-level-2" href="#accessing-group-metadata"
+                >Accessing group metadata</a
+              ><a class="toc-level-2" href="#sending-without-quoting"
+                >Sending without quoting</a
+              ><a class="toc-level-2" href="#full-property-reference"
+                >Full property reference</a
+              >
+            </nav>
+          </aside>
+        </div>
+      </main>
+    </div>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <a class="brand" href="../index.html"
+          ><span class="brand-mark">v<span>.</span></span
+          ><span>viola<span class="brand-light">js</span></span></a
+        >
+        <p>
+          Made with care, powered by
+          <a
+            href="https://github.com/WhiskeySockets/Baileys"
+            target="_blank"
+            rel="noreferrer"
+            >Baileys</a
+          >
+          & <a href="https://bun.sh" target="_blank" rel="noreferrer">Bun</a>.
+        </p>
+        <span class="footer-copy">© <span id="year"></span> violajs</span>
+      </div>
+    </footer>
+    <script src="../script.js"></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-clike.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-javascript.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-typescript.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-bash.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-json.min.js"
+    ></script>
+  </body>
+</html>

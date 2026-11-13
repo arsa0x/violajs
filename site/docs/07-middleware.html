@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f8f7fc" />
+    <meta name="description" content="Read the violajs documentation." />
+    <script>
+      (() => {
+        try {
+          const saved = localStorage.getItem("violajs-theme");
+          const prefersDark = window.matchMedia(
+            "(prefers-color-scheme: dark)",
+          ).matches;
+          if (saved === "dark" || (!saved && prefersDark))
+            document.documentElement.dataset.theme = "dark";
+        } catch {}
+      })();
+    </script>
+    <title>07 — Middleware — violajs docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body class="docs-page">
+    <header class="site-header">
+      <nav class="nav container" aria-label="Main navigation">
+        <a class="brand" href="../index.html" aria-label="violajs home"
+          ><span class="brand-mark">v.</span
+          ><span>viola<span class="brand-light">js</span></span></a
+        >
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-label="Open navigation"
+          aria-expanded="false"
+        >
+          <span></span><span></span>
+        </button>
+        <div class="nav-links" id="nav-links">
+          <a href="../index.html#features">Features</a>
+          <a href="../index.html#getting-started">Getting started</a>
+          <a href="../index.html#plugins">Plugins</a>
+          <a class="is-current" href="./07-middleware.html">Documentation</a>
+          <button
+            class="theme-toggle"
+            type="button"
+            aria-label="Switch to dark mode"
+            aria-pressed="false"
+          >
+            <span class="theme-icon" aria-hidden="true">☾</span
+            ><span class="theme-label">Dark mode</span>
+          </button>
+          <a
+            class="nav-github"
+            href="https://github.com/arsa0x/violajs"
+            target="_blank"
+            rel="noreferrer"
+            >GitHub <span aria-hidden="true">↗</span></a
+          >
+        </div>
+      </nav>
+    </header>
+
+    <div class="docs-shell container">
+      <aside class="docs-sidebar">
+        <a class="docs-back-link" href="../index.html">← Back to overview</a>
+        <p class="docs-sidebar-label">DOCUMENTATION</p>
+        <nav class="docs-nav" aria-label="Documentation pages">
+          <a class="docs-nav-link" href="./01-command-plugins.html"
+            ><span class="docs-nav-index">01</span
+            ><span>01 — Command Plugins</span></a
+          >
+          <a class="docs-nav-link" href="./02-command-context.html"
+            ><span class="docs-nav-index">02</span
+            ><span>02 — CommandContext API</span></a
+          >
+          <a class="docs-nav-link" href="./03-command-list.html"
+            ><span class="docs-nav-index">03</span
+            ><span>03 — Command List</span></a
+          >
+          <a class="docs-nav-link" href="./04-send-api.html"
+            ><span class="docs-nav-index">04</span><span>04 — Send API</span></a
+          >
+          <a class="docs-nav-link" href="./05-interactive-send-api.html"
+            ><span class="docs-nav-index">05</span
+            ><span>05 — Interactive Send API</span></a
+          >
+          <a class="docs-nav-link" href="./06-flags-and-args.html"
+            ><span class="docs-nav-index">06</span
+            ><span>06 — Flags &amp; Args</span></a
+          >
+          <a
+            class="docs-nav-link is-active"
+            href="./07-middleware.html"
+            aria-current="page"
+            ><span class="docs-nav-index">07</span
+            ><span>07 — Middleware</span></a
+          >
+          <a class="docs-nav-link" href="./08-event-plugins.html"
+            ><span class="docs-nav-index">08</span
+            ><span>08 — Event Plugins</span></a
+          >
+          <a class="docs-nav-link" href="./09-event-context.html"
+            ><span class="docs-nav-index">09</span
+            ><span>09 — EventContext API</span></a
+          >
+          <a class="docs-nav-link" href="./10-hot-reload-and-dev.html"
+            ><span class="docs-nav-index">10</span
+            ><span>10 — Hot-Reload &amp; Dev Workflow</span></a
+          >
+          <a class="docs-nav-link" href="./11-worked-examples.html"
+            ><span class="docs-nav-index">11</span
+            ><span>11 — Worked Examples</span></a
+          >
+        </nav>
+        <a
+          class="docs-source-link"
+          href="https://github.com/arsa0x/violajs/tree/main/docs"
+          target="_blank"
+          rel="noreferrer"
+          >Edit documentation on GitHub ↗</a
+        >
+      </aside>
+
+      <main class="docs-main">
+        <div class="docs-breadcrumb">
+          <a href="../index.html">Home</a><span>/</span
+          ><span>Documentation</span><span>/</span
+          ><strong>07 — Middleware</strong>
+        </div>
+        <div class="docs-article-layout">
+          <article class="docs-content markdown-body">
+            <h1 id="07-middleware">07 — Middleware</h1>
+            <p>
+              Middleware is an async function
+              <code>(ctx, next) =&gt; Promise&lt;void&gt;</code> that wraps
+              command execution. Middleware runs in declaration order. Calling
+              <code>next()</code> passes control to the next layer. Not calling
+              <code>next()</code> stops the chain — the command never executes.
+            </p>
+            <pre><code class="language-ts">type Middleware = (
+  ctx: CommandContext,
+  next: () =&gt; Promise&lt;void&gt;,
+) =&gt; Promise&lt;void&gt;;
+</code></pre>
+            <hr />
+            <h2 id="applying-middleware">Applying middleware</h2>
+            <p>Middleware can be applied at two levels:</p>
+            <ol>
+              <li>
+                <strong>Global</strong> — passed to
+                <code>CommandDispatcher</code>, runs before every command.
+              </li>
+              <li>
+                <strong>Per-command</strong> — listed in
+                <code>command.middleware</code>, runs after global middleware.
+              </li>
+            </ol>
+            <pre><code class="language-ts">// Per-command (most common)
+export default defineCommand({
+  name: "kick",
+  middleware: [groupOnly(), groupAdminOnly(), botAdminOnly()],
+  async execute(ctx) { … },
+});
+</code></pre>
+            <pre><code class="language-ts">// Global (src/app.ts)
+const dispatcher = new CommandDispatcher(registry, [
+  logger(log),
+  cooldown(1_000),
+]);
+</code></pre>
+            <hr />
+            <h2 id="execution-order">Execution order</h2>
+            <p>
+              Given <code>globalMiddleware = [A]</code> and
+              <code>command.middleware = [B, C]</code>:
+            </p>
+            <pre><code>Request:  A → B → C → execute()
+Response: A ← B ← C             (after next() returns in each layer)
+</code></pre>
+            <p>
+              Code <strong>before</strong> <code>await next()</code> runs on the
+              way <strong>in</strong>. Code <strong>after</strong>
+              <code>await next()</code> runs on the way
+              <strong>out</strong> (useful for timing, cleanup).
+            </p>
+            <hr />
+            <h2 id="built-in-middleware">Built-in middleware</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Import</th>
+                  <th>Factory</th>
+                  <th>Effect</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>@src/middlewares/owner</code></td>
+                  <td><code>ownerOnly()</code></td>
+                  <td>Reject if <code>!ctx.sender.isOwner</code></td>
+                </tr>
+                <tr>
+                  <td><code>@src/middlewares/group</code></td>
+                  <td><code>groupOnly()</code></td>
+                  <td>Reject if <code>!ctx.chat.isGroup</code></td>
+                </tr>
+                <tr>
+                  <td><code>@src/middlewares/group-admin</code></td>
+                  <td><code>groupAdminOnly()</code></td>
+                  <td>Reject if sender is not a group admin</td>
+                </tr>
+                <tr>
+                  <td><code>@src/middlewares/bot-admin</code></td>
+                  <td><code>botAdminOnly()</code></td>
+                  <td>Reject if the bot is not a group admin</td>
+                </tr>
+                <tr>
+                  <td><code>@src/middlewares/cooldown</code></td>
+                  <td><code>cooldown(ms)</code></td>
+                  <td>Per-user rate limit (milliseconds)</td>
+                </tr>
+                <tr>
+                  <td><code>@src/middlewares/logger</code></td>
+                  <td><code>logger(log)</code></td>
+                  <td>Log command name, sender, duration</td>
+                </tr>
+              </tbody>
+            </table>
+            <h3 id="usage-examples">Usage examples</h3>
+            <pre><code class="language-ts">import { ownerOnly }      from "@src/middlewares/owner";
+import { groupOnly }      from "@src/middlewares/group";
+import { groupAdminOnly } from "@src/middlewares/group-admin";
+import { botAdminOnly }   from "@src/middlewares/bot-admin";
+import { cooldown }       from "@src/middlewares/cooldown";
+
+export default defineCommand({
+  name: "promote",
+  // Requires: group chat + sender is admin + bot is admin
+  middleware: [groupOnly(), groupAdminOnly(), botAdminOnly()],
+  async execute(ctx) { … },
+});
+
+export default defineCommand({
+  name: "ai",
+  // 30-second per-user cooldown
+  middleware: [cooldown(30_000)],
+  async execute(ctx) { … },
+});
+</code></pre>
+            <hr />
+            <h2 id="writing-custom-middleware">Writing custom middleware</h2>
+            <p>
+              A middleware factory is a function that returns a
+              <code>Middleware</code>.
+            </p>
+            <h3 id="example-dm-only-guard">Example: DM-only guard</h3>
+            <pre><code class="language-ts">// src/middlewares/private-only.ts
+import type { Middleware } from "@src/types/middleware";
+
+/** Rejects messages from group chats (DM-only command). */
+export const privateOnly = (): Middleware =&gt; async (ctx, next) =&gt; {
+  if (ctx.chat.isGroup) {
+    await ctx.send.text("Command ini hanya dapat digunakan di DM.");
+    return;
+  }
+  await next();
+};
+</code></pre>
+            <h3 id="example-allow-list-gate">Example: allow-list gate</h3>
+            <pre><code class="language-ts">// src/middlewares/allowlist.ts
+import type { Middleware } from "@src/types/middleware";
+
+export const allowList =
+  (jids: Set&lt;string&gt;): Middleware =&gt;
+  async (ctx, next) =&gt; {
+    if (!jids.has(ctx.sender.jid)) {
+      await ctx.send.text("You are not permitted to use this command.");
+      return;
+    }
+    await next();
+  };
+</code></pre>
+            <h3 id="example-timing-middleware">Example: timing middleware</h3>
+            <pre><code class="language-ts">// src/middlewares/timing.ts
+import type { Middleware } from "@src/types/middleware";
+
+export const timing = (): Middleware =&gt; async (ctx, next) =&gt; {
+  const start = performance.now();
+  await next();
+  const ms = (performance.now() - start).toFixed(2);
+  ctx.log.info(`${ctx.name} took ${ms}ms`);
+};
+</code></pre>
+            <h3 id="example-require-a-quoted-message">
+              Example: require a quoted message
+            </h3>
+            <pre><code class="language-ts">// src/middlewares/require-quoted.ts
+import type { Middleware } from "@src/types/middleware";
+
+export const requireQuoted = (): Middleware =&gt; async (ctx, next) =&gt; {
+  const hasQuoted =
+    !!ctx.msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
+  if (!hasQuoted) {
+    await ctx.send.text("Reply to a message to use this command.");
+    return;
+  }
+  await next();
+};
+</code></pre>
+            <hr />
+            <h2 id="middleware-error-handling">Middleware error handling</h2>
+            <p>
+              Errors thrown inside <code>execute()</code> are caught by the
+              dispatcher's outer <code>try/catch</code>. If you want middleware
+              to intercept or suppress errors, wrap <code>next()</code>:
+            </p>
+            <pre><code class="language-ts">export const errorBoundary = (): Middleware =&gt; async (ctx, next) =&gt; {
+  try {
+    await next();
+  } catch (error) {
+    ctx.log.error(`Unhandled error in ${ctx.name}:`, error);
+    await ctx.send
+      .text("Terjadi kesalahan. Silakan coba lagi.")
+      .catch(() =&gt; {});
+    // Do NOT re-throw — the error is consumed here
+  }
+};
+</code></pre>
+            <blockquote>
+              <p>
+                <strong>Tip:</strong> Always guard the error-reply
+                <code>ctx.send.text(…)</code> with
+                <code>.catch(() =&gt; {})</code> so a send failure doesn't
+                generate a second unhandled rejection.
+              </p>
+            </blockquote>
+            <hr />
+            <h2 id="combining-middleware">Combining middleware</h2>
+            <pre><code class="language-ts">export default defineCommand({
+  name: "nsfw-search",
+  middleware: [
+    groupOnly(),          // must be in a group
+    cooldown(15_000),     // once per 15 s per user
+    allowList(BETA_JIDS), // beta users only
+  ],
+  async execute(ctx) { … },
+});
+</code></pre>
+            <p>
+              Middleware runs left-to-right. The first one to not call
+              <code>next()</code> short-circuits the rest.
+            </p>
+
+            <nav class="docs-page-footer" aria-label="Documentation source">
+              <span>Found a mistake?</span>
+              <a
+                href="https://github.com/arsa0x/violajs/edit/main/docs/07-middleware.md"
+                target="_blank"
+                rel="noreferrer"
+                >Suggest an edit ↗</a
+              >
+            </nav>
+          </article>
+          <aside class="docs-toc" aria-label="On this page">
+            <p class="docs-toc-title">ON THIS PAGE</p>
+            <nav>
+              <a class="toc-level-2" href="#applying-middleware"
+                >Applying middleware</a
+              ><a class="toc-level-2" href="#execution-order">Execution order</a
+              ><a class="toc-level-2" href="#built-in-middleware"
+                >Built-in middleware</a
+              ><a class="toc-level-3" href="#usage-examples">Usage examples</a
+              ><a class="toc-level-2" href="#writing-custom-middleware"
+                >Writing custom middleware</a
+              ><a class="toc-level-3" href="#example-dm-only-guard"
+                >Example: DM-only guard</a
+              ><a class="toc-level-3" href="#example-allow-list-gate"
+                >Example: allow-list gate</a
+              ><a class="toc-level-3" href="#example-timing-middleware"
+                >Example: timing middleware</a
+              ><a class="toc-level-3" href="#example-require-a-quoted-message"
+                >Example: require a quoted message</a
+              ><a class="toc-level-2" href="#middleware-error-handling"
+                >Middleware error handling</a
+              ><a class="toc-level-2" href="#combining-middleware"
+                >Combining middleware</a
+              >
+            </nav>
+          </aside>
+        </div>
+      </main>
+    </div>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <a class="brand" href="../index.html"
+          ><span class="brand-mark">v<span>.</span></span
+          ><span>viola<span class="brand-light">js</span></span></a
+        >
+        <p>
+          Made with care, powered by
+          <a
+            href="https://github.com/WhiskeySockets/Baileys"
+            target="_blank"
+            rel="noreferrer"
+            >Baileys</a
+          >
+          & <a href="https://bun.sh" target="_blank" rel="noreferrer">Bun</a>.
+        </p>
+        <span class="footer-copy">© <span id="year"></span> violajs</span>
+      </div>
+    </footer>
+    <script src="../script.js"></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-clike.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-javascript.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-typescript.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-bash.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-json.min.js"
+    ></script>
+  </body>
+</html>

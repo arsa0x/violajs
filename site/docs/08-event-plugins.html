@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f8f7fc" />
+    <meta name="description" content="Read the violajs documentation." />
+    <script>
+      (() => {
+        try {
+          const saved = localStorage.getItem("violajs-theme");
+          const prefersDark = window.matchMedia(
+            "(prefers-color-scheme: dark)",
+          ).matches;
+          if (saved === "dark" || (!saved && prefersDark))
+            document.documentElement.dataset.theme = "dark";
+        } catch {}
+      })();
+    </script>
+    <title>08 — Event Plugins — violajs docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body class="docs-page">
+    <header class="site-header">
+      <nav class="nav container" aria-label="Main navigation">
+        <a class="brand" href="../index.html" aria-label="violajs home"
+          ><span class="brand-mark">v.</span
+          ><span>viola<span class="brand-light">js</span></span></a
+        >
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-label="Open navigation"
+          aria-expanded="false"
+        >
+          <span></span><span></span>
+        </button>
+        <div class="nav-links" id="nav-links">
+          <a href="../index.html#features">Features</a>
+          <a href="../index.html#getting-started">Getting started</a>
+          <a href="../index.html#plugins">Plugins</a>
+          <a class="is-current" href="./08-event-plugins.html">Documentation</a>
+          <button
+            class="theme-toggle"
+            type="button"
+            aria-label="Switch to dark mode"
+            aria-pressed="false"
+          >
+            <span class="theme-icon" aria-hidden="true">☾</span
+            ><span class="theme-label">Dark mode</span>
+          </button>
+          <a
+            class="nav-github"
+            href="https://github.com/arsa0x/violajs"
+            target="_blank"
+            rel="noreferrer"
+            >GitHub <span aria-hidden="true">↗</span></a
+          >
+        </div>
+      </nav>
+    </header>
+
+    <div class="docs-shell container">
+      <aside class="docs-sidebar">
+        <a class="docs-back-link" href="../index.html">← Back to overview</a>
+        <p class="docs-sidebar-label">DOCUMENTATION</p>
+        <nav class="docs-nav" aria-label="Documentation pages">
+          <a class="docs-nav-link" href="./01-command-plugins.html"
+            ><span class="docs-nav-index">01</span
+            ><span>01 — Command Plugins</span></a
+          >
+          <a class="docs-nav-link" href="./02-command-context.html"
+            ><span class="docs-nav-index">02</span
+            ><span>02 — CommandContext API</span></a
+          >
+          <a class="docs-nav-link" href="./03-command-list.html"
+            ><span class="docs-nav-index">03</span
+            ><span>03 — Command List</span></a
+          >
+          <a class="docs-nav-link" href="./04-send-api.html"
+            ><span class="docs-nav-index">04</span><span>04 — Send API</span></a
+          >
+          <a class="docs-nav-link" href="./05-interactive-send-api.html"
+            ><span class="docs-nav-index">05</span
+            ><span>05 — Interactive Send API</span></a
+          >
+          <a class="docs-nav-link" href="./06-flags-and-args.html"
+            ><span class="docs-nav-index">06</span
+            ><span>06 — Flags &amp; Args</span></a
+          >
+          <a class="docs-nav-link" href="./07-middleware.html"
+            ><span class="docs-nav-index">07</span
+            ><span>07 — Middleware</span></a
+          >
+          <a
+            class="docs-nav-link is-active"
+            href="./08-event-plugins.html"
+            aria-current="page"
+            ><span class="docs-nav-index">08</span
+            ><span>08 — Event Plugins</span></a
+          >
+          <a class="docs-nav-link" href="./09-event-context.html"
+            ><span class="docs-nav-index">09</span
+            ><span>09 — EventContext API</span></a
+          >
+          <a class="docs-nav-link" href="./10-hot-reload-and-dev.html"
+            ><span class="docs-nav-index">10</span
+            ><span>10 — Hot-Reload &amp; Dev Workflow</span></a
+          >
+          <a class="docs-nav-link" href="./11-worked-examples.html"
+            ><span class="docs-nav-index">11</span
+            ><span>11 — Worked Examples</span></a
+          >
+        </nav>
+        <a
+          class="docs-source-link"
+          href="https://github.com/arsa0x/violajs/tree/main/docs"
+          target="_blank"
+          rel="noreferrer"
+          >Edit documentation on GitHub ↗</a
+        >
+      </aside>
+
+      <main class="docs-main">
+        <div class="docs-breadcrumb">
+          <a href="../index.html">Home</a><span>/</span
+          ><span>Documentation</span><span>/</span
+          ><strong>08 — Event Plugins</strong>
+        </div>
+        <div class="docs-article-layout">
+          <article class="docs-content markdown-body">
+            <h1 id="08-event-plugins">08 — Event Plugins</h1>
+            <p>
+              An event plugin is a TypeScript file that
+              <strong>default-exports</strong> an
+              <code>EventPlugin</code> object. It lives anywhere inside
+              <code>events/</code> and is loaded by the static generator or the
+              hot-reload watcher.
+            </p>
+            <hr />
+            <h2 id="minimal-example">Minimal example</h2>
+            <pre><code class="language-ts">// events/logger.ts
+import { defineEvent } from "@core/event";
+
+export default defineEvent({
+  name: "message-logger",
+  events: {
+    "message.received": async (ctx) =&gt; {
+      ctx.log.info(`[${ctx.event.chat.jid}] ${ctx.event.text}`);
+    },
+  },
+});
+</code></pre>
+            <hr />
+            <h2 id="the-eventplugin-type">The <code>EventPlugin</code> type</h2>
+            <pre><code class="language-ts">type EventPlugin = {
+  name: string; // unique plugin identifier (must not clash)
+  events: EventHandlers; // map of event name → async handler
+};
+
+type EventHandlers = {
+  [K in EventName]?: (ctx: EventContext&lt;EventMap[K]&gt;) =&gt; Promise&lt;void&gt;;
+};
+</code></pre>
+            <hr />
+            <h2 id="defineevent-helper"><code>defineEvent</code> helper</h2>
+            <p>
+              <code>defineEvent</code> is a typed pass-through identical to
+              <code>defineCommand</code> but for events. It provides IDE
+              autocompletion with zero runtime overhead.
+            </p>
+            <pre><code class="language-ts">import { defineEvent } from "@core/event";
+
+export default defineEvent({
+  name: "my-plugin",
+  events: { … },
+});
+</code></pre>
+            <hr />
+            <h2 id="built-in-event-names-and-payloads">
+              Built-in event names and payloads
+            </h2>
+            <h3 id="internal-events-emitted-by-violajs">
+              Internal events (emitted by violajs)
+            </h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Event name</th>
+                  <th>Payload</th>
+                  <th>When it fires</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>message.received</code></td>
+                  <td><code>{ message, text, chat, sender }</code></td>
+                  <td>Every inbound non-bot message</td>
+                </tr>
+                <tr>
+                  <td><code>group.participant.join</code></td>
+                  <td><code>{ groupJid, participants, author? }</code></td>
+                  <td>A member joins a group</td>
+                </tr>
+                <tr>
+                  <td><code>group.participant.leave</code></td>
+                  <td><code>{ groupJid, participants, author? }</code></td>
+                  <td>A member leaves a group</td>
+                </tr>
+                <tr>
+                  <td><code>connection.open</code></td>
+                  <td><code>{ userJid }</code></td>
+                  <td>Socket connected to WhatsApp</td>
+                </tr>
+                <tr>
+                  <td><code>connection.close</code></td>
+                  <td><code>{ reason? }</code></td>
+                  <td>Socket disconnected</td>
+                </tr>
+              </tbody>
+            </table>
+            <h4><code>message.received</code> payload</h4>
+            <pre><code class="language-ts">{
+  message: WAMessage;
+  text: string; // extracted text (empty for media-only messages)
+  chat: {
+    jid: string;
+    isGroup: boolean;
+  }
+  sender: {
+    jid: string;
+  }
+}
+</code></pre>
+            <h4>
+              <code>group.participant.join</code> /
+              <code>group.participant.leave</code> payload
+            </h4>
+            <pre><code class="language-ts">{
+  groupJid:     string;    // the group's JID
+  participants: string[];  // array of member JIDs who joined/left
+  author?:      string;    // JID of the admin who added/removed (undefined for self-join/leave)
+}
+</code></pre>
+            <h4><code>connection.open</code> payload</h4>
+            <pre><code class="language-ts">{
+  userJid: string;
+} // the bot's own JID
+</code></pre>
+            <h4><code>connection.close</code> payload</h4>
+            <pre><code class="language-ts">{ reason?: string }  // the numeric disconnect code as a string, or undefined
+</code></pre>
+            <hr />
+            <h3 id="raw-baileys-events-passed-through-without-transformation">
+              Raw Baileys events (passed through without transformation)
+            </h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Event name</th>
+                  <th>Original Baileys event</th>
+                  <th>When it fires</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>baileys.messages.upsert</code></td>
+                  <td><code>messages.upsert</code></td>
+                  <td>New messages batch from WhatsApp</td>
+                </tr>
+                <tr>
+                  <td><code>baileys.connection.update</code></td>
+                  <td><code>connection.update</code></td>
+                  <td>Low-level connection state changed</td>
+                </tr>
+                <tr>
+                  <td><code>baileys.group-participants.update</code></td>
+                  <td><code>group-participants.update</code></td>
+                  <td>Group membership changed</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>
+              Use raw events only when you need Baileys-specific fields that the
+              internal events do not expose.
+            </p>
+            <hr />
+            <h2 id="subscribing-to-multiple-events">
+              Subscribing to multiple events
+            </h2>
+            <p>A single plugin can handle as many events as needed.</p>
+            <pre><code class="language-ts">// events/group.ts
+import { defineEvent } from "@core/event";
+
+export default defineEvent({
+  name: "group-lifecycle",
+  events: {
+    "group.participant.join": async (ctx) =&gt; {
+      const { groupJid, participants } = ctx.event;
+      for (const jid of participants) {
+        await ctx.sock.sendMessage(groupJid, {
+          text: `👋 Welcome, @${jid.split("@")[0]}!`,
+          mentions: [jid],
+        });
+      }
+    },
+
+    "group.participant.leave": async (ctx) =&gt; {
+      const { groupJid, participants } = ctx.event;
+      await ctx.sock.sendMessage(groupJid, {
+        text: `👋 ${participants.length} member(s) have left.`,
+      });
+    },
+
+    "connection.open": async (ctx) =&gt; {
+      ctx.log.info(`Connected as ${ctx.event.userJid}`);
+    },
+  },
+});
+</code></pre>
+            <hr />
+            <h2 id="error-isolation">Error isolation</h2>
+            <p>
+              If an event handler throws, the
+              <code>EventDispatcher</code> catches the error, logs it under the
+              plugin's name, and <strong>continues dispatching</strong> to other
+              plugins for the same event.
+            </p>
+            <p>
+              A crashing event plugin does <strong>not</strong> affect command
+              handling or other plugins.
+            </p>
+            <hr />
+            <h2 id="file-and-naming-conventions">
+              File and naming conventions
+            </h2>
+            <ul>
+              <li>
+                One <code>EventPlugin</code> per file; name the file after the
+                plugin.
+              </li>
+              <li>
+                Subdirectories are supported:
+                <code>events/group/greeter.ts</code>.
+              </li>
+              <li>
+                After adding or removing files run
+                <code>bun run generate</code> to regenerate
+                <code>src/generated/events.js</code>.
+              </li>
+              <li>
+                <strong>Plugin names must be unique.</strong> A duplicate name
+                throws at registration time.
+              </li>
+            </ul>
+            <hr />
+            <h2 id="registering-vs-discovering">Registering vs. discovering</h2>
+            <p>
+              After running <code>bun run generate</code>, the plugin appears in
+              <code>src/generated/events.js</code>:
+            </p>
+            <pre><code class="language-js">// src/generated/events.js  (auto-generated — do not edit)
+import _0 from "@events/group.ts";
+export const events = [_0];
+</code></pre>
+            <p>
+              The static loader (<code>src/core/events/staticLoader.ts</code>)
+              registers every plugin in that array. In dev mode the dynamic
+              loader hot-reloads the file on every save.
+            </p>
+
+            <nav class="docs-page-footer" aria-label="Documentation source">
+              <span>Found a mistake?</span>
+              <a
+                href="https://github.com/arsa0x/violajs/edit/main/docs/08-event-plugins.md"
+                target="_blank"
+                rel="noreferrer"
+                >Suggest an edit ↗</a
+              >
+            </nav>
+          </article>
+          <aside class="docs-toc" aria-label="On this page">
+            <p class="docs-toc-title">ON THIS PAGE</p>
+            <nav>
+              <a class="toc-level-2" href="#minimal-example">Minimal example</a
+              ><a class="toc-level-2" href="#the-eventplugin-type"
+                >The EventPlugin type</a
+              ><a class="toc-level-2" href="#defineevent-helper"
+                >defineEvent helper</a
+              ><a class="toc-level-2" href="#built-in-event-names-and-payloads"
+                >Built-in event names and payloads</a
+              ><a class="toc-level-3" href="#internal-events-emitted-by-violajs"
+                >Internal events (emitted by violajs)</a
+              ><a
+                class="toc-level-3"
+                href="#raw-baileys-events-passed-through-without-transformation"
+                >Raw Baileys events (passed through without transformation)</a
+              ><a class="toc-level-2" href="#subscribing-to-multiple-events"
+                >Subscribing to multiple events</a
+              ><a class="toc-level-2" href="#error-isolation">Error isolation</a
+              ><a class="toc-level-2" href="#file-and-naming-conventions"
+                >File and naming conventions</a
+              ><a class="toc-level-2" href="#registering-vs-discovering"
+                >Registering vs. discovering</a
+              >
+            </nav>
+          </aside>
+        </div>
+      </main>
+    </div>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <a class="brand" href="../index.html"
+          ><span class="brand-mark">v<span>.</span></span
+          ><span>viola<span class="brand-light">js</span></span></a
+        >
+        <p>
+          Made with care, powered by
+          <a
+            href="https://github.com/WhiskeySockets/Baileys"
+            target="_blank"
+            rel="noreferrer"
+            >Baileys</a
+          >
+          & <a href="https://bun.sh" target="_blank" rel="noreferrer">Bun</a>.
+        </p>
+        <span class="footer-copy">© <span id="year"></span> violajs</span>
+      </div>
+    </footer>
+    <script src="../script.js"></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-clike.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-javascript.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-typescript.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-bash.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-json.min.js"
+    ></script>
+  </body>
+</html>

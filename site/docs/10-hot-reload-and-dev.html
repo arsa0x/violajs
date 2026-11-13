@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f8f7fc" />
+    <meta name="description" content="Read the violajs documentation." />
+    <script>
+      (() => {
+        try {
+          const saved = localStorage.getItem("violajs-theme");
+          const prefersDark = window.matchMedia(
+            "(prefers-color-scheme: dark)",
+          ).matches;
+          if (saved === "dark" || (!saved && prefersDark))
+            document.documentElement.dataset.theme = "dark";
+        } catch {}
+      })();
+    </script>
+    <title>10 — Hot-Reload &amp; Dev Workflow — violajs docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body class="docs-page">
+    <header class="site-header">
+      <nav class="nav container" aria-label="Main navigation">
+        <a class="brand" href="../index.html" aria-label="violajs home"
+          ><span class="brand-mark">v.</span
+          ><span>viola<span class="brand-light">js</span></span></a
+        >
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-label="Open navigation"
+          aria-expanded="false"
+        >
+          <span></span><span></span>
+        </button>
+        <div class="nav-links" id="nav-links">
+          <a href="../index.html#features">Features</a>
+          <a href="../index.html#getting-started">Getting started</a>
+          <a href="../index.html#plugins">Plugins</a>
+          <a class="is-current" href="./10-hot-reload-and-dev.html"
+            >Documentation</a
+          >
+          <button
+            class="theme-toggle"
+            type="button"
+            aria-label="Switch to dark mode"
+            aria-pressed="false"
+          >
+            <span class="theme-icon" aria-hidden="true">☾</span
+            ><span class="theme-label">Dark mode</span>
+          </button>
+          <a
+            class="nav-github"
+            href="https://github.com/arsa0x/violajs"
+            target="_blank"
+            rel="noreferrer"
+            >GitHub <span aria-hidden="true">↗</span></a
+          >
+        </div>
+      </nav>
+    </header>
+
+    <div class="docs-shell container">
+      <aside class="docs-sidebar">
+        <a class="docs-back-link" href="../index.html">← Back to overview</a>
+        <p class="docs-sidebar-label">DOCUMENTATION</p>
+        <nav class="docs-nav" aria-label="Documentation pages">
+          <a class="docs-nav-link" href="./01-command-plugins.html"
+            ><span class="docs-nav-index">01</span
+            ><span>01 — Command Plugins</span></a
+          >
+          <a class="docs-nav-link" href="./02-command-context.html"
+            ><span class="docs-nav-index">02</span
+            ><span>02 — CommandContext API</span></a
+          >
+          <a class="docs-nav-link" href="./03-command-list.html"
+            ><span class="docs-nav-index">03</span
+            ><span>03 — Command List</span></a
+          >
+          <a class="docs-nav-link" href="./04-send-api.html"
+            ><span class="docs-nav-index">04</span><span>04 — Send API</span></a
+          >
+          <a class="docs-nav-link" href="./05-interactive-send-api.html"
+            ><span class="docs-nav-index">05</span
+            ><span>05 — Interactive Send API</span></a
+          >
+          <a class="docs-nav-link" href="./06-flags-and-args.html"
+            ><span class="docs-nav-index">06</span
+            ><span>06 — Flags &amp; Args</span></a
+          >
+          <a class="docs-nav-link" href="./07-middleware.html"
+            ><span class="docs-nav-index">07</span
+            ><span>07 — Middleware</span></a
+          >
+          <a class="docs-nav-link" href="./08-event-plugins.html"
+            ><span class="docs-nav-index">08</span
+            ><span>08 — Event Plugins</span></a
+          >
+          <a class="docs-nav-link" href="./09-event-context.html"
+            ><span class="docs-nav-index">09</span
+            ><span>09 — EventContext API</span></a
+          >
+          <a
+            class="docs-nav-link is-active"
+            href="./10-hot-reload-and-dev.html"
+            aria-current="page"
+            ><span class="docs-nav-index">10</span
+            ><span>10 — Hot-Reload &amp; Dev Workflow</span></a
+          >
+          <a class="docs-nav-link" href="./11-worked-examples.html"
+            ><span class="docs-nav-index">11</span
+            ><span>11 — Worked Examples</span></a
+          >
+        </nav>
+        <a
+          class="docs-source-link"
+          href="https://github.com/arsa0x/violajs/tree/main/docs"
+          target="_blank"
+          rel="noreferrer"
+          >Edit documentation on GitHub ↗</a
+        >
+      </aside>
+
+      <main class="docs-main">
+        <div class="docs-breadcrumb">
+          <a href="../index.html">Home</a><span>/</span
+          ><span>Documentation</span><span>/</span
+          ><strong>10 — Hot-Reload &amp; Dev Workflow</strong>
+        </div>
+        <div class="docs-article-layout">
+          <article class="docs-content markdown-body">
+            <h1 id="10-hot-reload-dev-workflow">
+              10 — Hot-Reload &amp; Dev Workflow
+            </h1>
+            <hr />
+            <h2 id="how-dynamic-loading-works">How dynamic loading works</h2>
+            <p>
+              In development mode (<code>bun run dev</code>),
+              <code>DynamicLoader</code> and
+              <code>EventDynamicLoader</code> watch <code>commands/</code> and
+              <code>events/</code> with <code>fs.watch</code>. When a file is
+              saved:
+            </p>
+            <ol>
+              <li>
+                <strong>Debounce</strong> — the loader waits 150 ms to avoid
+                reacting to partial writes.
+              </li>
+              <li>
+                <strong>Import</strong> — the new module is imported via a
+                versioned URL (<code>?v=&lt;mtime&gt;.&lt;seq&gt;</code>) to
+                bypass Bun's import cache.
+              </li>
+              <li>
+                <strong>Validate</strong> —
+                <code>registry.replace()</code> validates the new command
+                <strong>before</strong> removing the old one. A syntax error or
+                bad export leaves the previous command live.
+              </li>
+              <li>
+                <strong>Dispose</strong> — the old module's
+                <code>dispose()</code> hook is called to release timers,
+                connections, or other resources it holds.
+              </li>
+              <li>
+                <strong>Register</strong> — the new command takes the old one's
+                slot in the registry.
+              </li>
+            </ol>
+            <blockquote>
+              <p>
+                <strong>Production note:</strong> ESM module records are never
+                garbage-collected in Bun. Each hot-reload leaves one tiny module
+                record in memory. For production use the static loader and
+                restart the process to deploy changes.
+              </p>
+            </blockquote>
+            <hr />
+            <h2 id="project-scripts">Project scripts</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Script</th>
+                  <th>What it does</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>bun run generate</code></td>
+                  <td>
+                    Regenerates <code>src/generated/commands.js</code>,
+                    <code>events.js</code>, and <code>menu.js</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>bun run dev</code></td>
+                  <td>Starts the bot with hot-reload (dynamic loader)</td>
+                </tr>
+                <tr>
+                  <td><code>bun run start</code></td>
+                  <td>Starts the bot with the static loader (production)</td>
+                </tr>
+                <tr>
+                  <td><code>bun run build</code></td>
+                  <td>
+                    Compiles the bot to a single binary in
+                    <code>dist/violajs/</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>bun run docs:generate</code></td>
+                  <td>
+                    Regenerates <code>docs/commands.md</code> from command
+                    metadata
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <hr />
+            <h2 id="session-management-cli-flags">
+              Session management (CLI flags)
+            </h2>
+            <pre><code class="language-bash"># Create a new session and start pairing
+bun run start create --session bot1
+
+# Start the default session
+bun run start
+
+# Start a named session
+bun run start --session bot1
+
+# Start all existing sessions in parallel
+bun run start --all
+
+# Pair using a phone number instead of QR (Baileys pairing-code flow)
+bun run start --session bot1 --pairing --phone 628123456789
+
+# Delete a session (removes the SQLite auth DB)
+bun run start delete --session bot1
+
+# Delete all sessions
+bun run start delete --all
+</code></pre>
+            <hr />
+            <h2 id="the-dispose-hook">The <code>dispose</code> hook</h2>
+            <p>
+              Declare <code>dispose</code> on a command to release resources
+              when the module is hot-replaced. The loader calls it before
+              removing the command from the registry.
+            </p>
+            <pre><code class="language-ts">// Without dispose: the interval from the old module version keeps firing
+// even after the new version is loaded.
+
+let interval: ReturnType&lt;typeof setInterval&gt; | undefined;
+
+export default defineCommand({
+  name: "heartbeat",
+
+  async execute(ctx) {
+    if (interval) {
+      await ctx.send.text("Already running.");
+      return;
+    }
+    interval = setInterval(() =&gt; ctx.log.info("❤️"), 60_000);
+    await ctx.send.text("Heartbeat started.");
+  },
+
+  dispose() {
+    clearInterval(interval);
+    interval = undefined;
+    // Also close any open fetch streams, database connections, etc.
+  },
+});
+</code></pre>
+            <p><code>dispose</code> can be <code>async</code>:</p>
+            <pre><code class="language-ts">dispose: async () =&gt; {
+  await db.close();
+},
+</code></pre>
+            <hr />
+            <h2 id="typescript-path-aliases">TypeScript path aliases</h2>
+            <p>
+              Configured in <code>tsconfig.json</code> and
+              <code>bunfig.toml</code>:
+            </p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Alias</th>
+                  <th>Resolves to</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>@/</code></td>
+                  <td>Project root</td>
+                </tr>
+                <tr>
+                  <td><code>@src/</code></td>
+                  <td><code>src/</code></td>
+                </tr>
+                <tr>
+                  <td><code>@core/</code></td>
+                  <td><code>src/core/</code></td>
+                </tr>
+                <tr>
+                  <td><code>@lib/</code></td>
+                  <td><code>lib/</code></td>
+                </tr>
+                <tr>
+                  <td><code>@utils/</code></td>
+                  <td><code>src/utils/</code></td>
+                </tr>
+                <tr>
+                  <td><code>@commands/</code></td>
+                  <td><code>commands/</code></td>
+                </tr>
+                <tr>
+                  <td><code>@events/</code></td>
+                  <td><code>events/</code></td>
+                </tr>
+              </tbody>
+            </table>
+            <hr />
+            <h2 id="static-vs-dynamic-loader">Static vs. dynamic loader</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Static loader</th>
+                  <th>Dynamic loader</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>When to use</strong></td>
+                  <td>Production</td>
+                  <td>Development</td>
+                </tr>
+                <tr>
+                  <td><strong>How commands are registered</strong></td>
+                  <td>Generated <code>commands.js</code> import</td>
+                  <td><code>fs.watch</code> + versioned import</td>
+                </tr>
+                <tr>
+                  <td><strong>New file picked up without restart</strong></td>
+                  <td>❌ (requires <code>generate</code> + restart)</td>
+                  <td>✅ (on save)</td>
+                </tr>
+                <tr>
+                  <td><strong>Memory per reload</strong></td>
+                  <td>—</td>
+                  <td>+1 tiny ESM record</td>
+                </tr>
+                <tr>
+                  <td><strong>TypeScript aliases work</strong></td>
+                  <td>✅</td>
+                  <td>✅</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong><code>dispose</code> called</strong>
+                  </td>
+                  <td>Only on process exit</td>
+                  <td>✅ before each hot-replace</td>
+                </tr>
+              </tbody>
+            </table>
+            <hr />
+            <h2 id="best-practices">Best practices</h2>
+            <h3 id="keep-commands-stateless-when-possible">
+              Keep commands stateless when possible
+            </h3>
+            <pre><code class="language-ts">// ✅ Stateless — no dispose needed
+export default defineCommand({
+  name: "ping",
+  async execute(ctx) {
+    await ctx.send.text("Pong!");
+  },
+});
+
+// ⚠️ Stateful — always provide dispose()
+let cache: Map&lt;string, string&gt; | undefined;
+export default defineCommand({
+  name: "cached",
+  async execute(ctx) {
+    cache ??= new Map();
+    // …
+  },
+  dispose() {
+    cache?.clear();
+    cache = undefined;
+  },
+});
+</code></pre>
+            <h3 id="validate-env-vars-inside-execute-not-at-module-level">
+              Validate env vars inside <code>execute</code>, not at module level
+            </h3>
+            <pre><code class="language-ts">// ❌ Bad: a missing key crashes the whole bot at startup
+const API_KEY = process.env.MY_API_KEY!;
+
+// ✅ Good: fail gracefully per invocation
+async execute(ctx) {
+  const key = process.env.MY_API_KEY;
+  if (!key) {
+    await ctx.send.text("This command is not configured. Contact the bot owner.");
+    return;
+  }
+  // …
+}
+</code></pre>
+            <h3 id="guard-error-replies">Guard error replies</h3>
+            <pre><code class="language-ts">// ✅ Always .catch() the error reply so a send failure
+// doesn't create a second unhandled rejection.
+await ctx.send.text("Something went wrong.").catch(() =&gt; {});
+</code></pre>
+            <h3 id="never-import-one-command-file-from-another">
+              Never import one command file from another
+            </h3>
+            <p>
+              Shared code belongs in <code>lib/</code> or
+              <code>src/utils/</code>. Circular imports between command files
+              break the hot-reload system.
+            </p>
+            <pre><code>lib/
+├── my-shared-util.ts    ← shared between commands
+commands/
+├── tools/
+│   ├── foo.ts           ← imports from @lib/my-shared-util
+│   └── bar.ts           ← imports from @lib/my-shared-util
+</code></pre>
+            <h3 id="test-interactive-buttons-on-a-real-phone">
+              Test interactive buttons on a real phone
+            </h3>
+            <p>
+              Native-flow buttons may not render on WhatsApp Web or Desktop.
+              Always verify on a physical Android or iOS device before shipping.
+            </p>
+            <h3 id="use-bun-run-generate-before-committing">
+              Use <code>bun run generate</code> before committing
+            </h3>
+            <p>
+              The generated files (<code>src/generated/commands.js</code>,
+              <code>events.js</code>, <code>menu.js</code>) must be up to date
+              in the repository so production deploys can use the static loader.
+            </p>
+            <pre><code class="language-bash">bun run generate &amp;&amp; git add src/generated/
+</code></pre>
+
+            <nav class="docs-page-footer" aria-label="Documentation source">
+              <span>Found a mistake?</span>
+              <a
+                href="https://github.com/arsa0x/violajs/edit/main/docs/10-hot-reload-and-dev.md"
+                target="_blank"
+                rel="noreferrer"
+                >Suggest an edit ↗</a
+              >
+            </nav>
+          </article>
+          <aside class="docs-toc" aria-label="On this page">
+            <p class="docs-toc-title">ON THIS PAGE</p>
+            <nav>
+              <a class="toc-level-2" href="#how-dynamic-loading-works"
+                >How dynamic loading works</a
+              ><a class="toc-level-2" href="#project-scripts">Project scripts</a
+              ><a class="toc-level-2" href="#session-management-cli-flags"
+                >Session management (CLI flags)</a
+              ><a class="toc-level-2" href="#the-dispose-hook"
+                >The dispose hook</a
+              ><a class="toc-level-2" href="#typescript-path-aliases"
+                >TypeScript path aliases</a
+              ><a class="toc-level-2" href="#static-vs-dynamic-loader"
+                >Static vs. dynamic loader</a
+              ><a class="toc-level-2" href="#best-practices">Best practices</a
+              ><a
+                class="toc-level-3"
+                href="#keep-commands-stateless-when-possible"
+                >Keep commands stateless when possible</a
+              ><a
+                class="toc-level-3"
+                href="#validate-env-vars-inside-execute-not-at-module-level"
+                >Validate env vars inside execute, not at module level</a
+              ><a class="toc-level-3" href="#guard-error-replies"
+                >Guard error replies</a
+              ><a
+                class="toc-level-3"
+                href="#never-import-one-command-file-from-another"
+                >Never import one command file from another</a
+              ><a
+                class="toc-level-3"
+                href="#test-interactive-buttons-on-a-real-phone"
+                >Test interactive buttons on a real phone</a
+              ><a
+                class="toc-level-3"
+                href="#use-bun-run-generate-before-committing"
+                >Use bun run generate before committing</a
+              >
+            </nav>
+          </aside>
+        </div>
+      </main>
+    </div>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <a class="brand" href="../index.html"
+          ><span class="brand-mark">v<span>.</span></span
+          ><span>viola<span class="brand-light">js</span></span></a
+        >
+        <p>
+          Made with care, powered by
+          <a
+            href="https://github.com/WhiskeySockets/Baileys"
+            target="_blank"
+            rel="noreferrer"
+            >Baileys</a
+          >
+          & <a href="https://bun.sh" target="_blank" rel="noreferrer">Bun</a>.
+        </p>
+        <span class="footer-copy">© <span id="year"></span> violajs</span>
+      </div>
+    </footer>
+    <script src="../script.js"></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-clike.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-javascript.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-typescript.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-bash.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-json.min.js"
+    ></script>
+  </body>
+</html>

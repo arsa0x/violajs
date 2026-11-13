@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f8f7fc" />
+    <meta name="description" content="Read the violajs documentation." />
+    <script>
+      (() => {
+        try {
+          const saved = localStorage.getItem("violajs-theme");
+          const prefersDark = window.matchMedia(
+            "(prefers-color-scheme: dark)",
+          ).matches;
+          if (saved === "dark" || (!saved && prefersDark))
+            document.documentElement.dataset.theme = "dark";
+        } catch {}
+      })();
+    </script>
+    <title>09 — EventContext API — violajs docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body class="docs-page">
+    <header class="site-header">
+      <nav class="nav container" aria-label="Main navigation">
+        <a class="brand" href="../index.html" aria-label="violajs home"
+          ><span class="brand-mark">v.</span
+          ><span>viola<span class="brand-light">js</span></span></a
+        >
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-label="Open navigation"
+          aria-expanded="false"
+        >
+          <span></span><span></span>
+        </button>
+        <div class="nav-links" id="nav-links">
+          <a href="../index.html#features">Features</a>
+          <a href="../index.html#getting-started">Getting started</a>
+          <a href="../index.html#plugins">Plugins</a>
+          <a class="is-current" href="./09-event-context.html">Documentation</a>
+          <button
+            class="theme-toggle"
+            type="button"
+            aria-label="Switch to dark mode"
+            aria-pressed="false"
+          >
+            <span class="theme-icon" aria-hidden="true">☾</span
+            ><span class="theme-label">Dark mode</span>
+          </button>
+          <a
+            class="nav-github"
+            href="https://github.com/arsa0x/violajs"
+            target="_blank"
+            rel="noreferrer"
+            >GitHub <span aria-hidden="true">↗</span></a
+          >
+        </div>
+      </nav>
+    </header>
+
+    <div class="docs-shell container">
+      <aside class="docs-sidebar">
+        <a class="docs-back-link" href="../index.html">← Back to overview</a>
+        <p class="docs-sidebar-label">DOCUMENTATION</p>
+        <nav class="docs-nav" aria-label="Documentation pages">
+          <a class="docs-nav-link" href="./01-command-plugins.html"
+            ><span class="docs-nav-index">01</span
+            ><span>01 — Command Plugins</span></a
+          >
+          <a class="docs-nav-link" href="./02-command-context.html"
+            ><span class="docs-nav-index">02</span
+            ><span>02 — CommandContext API</span></a
+          >
+          <a class="docs-nav-link" href="./03-command-list.html"
+            ><span class="docs-nav-index">03</span
+            ><span>03 — Command List</span></a
+          >
+          <a class="docs-nav-link" href="./04-send-api.html"
+            ><span class="docs-nav-index">04</span><span>04 — Send API</span></a
+          >
+          <a class="docs-nav-link" href="./05-interactive-send-api.html"
+            ><span class="docs-nav-index">05</span
+            ><span>05 — Interactive Send API</span></a
+          >
+          <a class="docs-nav-link" href="./06-flags-and-args.html"
+            ><span class="docs-nav-index">06</span
+            ><span>06 — Flags &amp; Args</span></a
+          >
+          <a class="docs-nav-link" href="./07-middleware.html"
+            ><span class="docs-nav-index">07</span
+            ><span>07 — Middleware</span></a
+          >
+          <a class="docs-nav-link" href="./08-event-plugins.html"
+            ><span class="docs-nav-index">08</span
+            ><span>08 — Event Plugins</span></a
+          >
+          <a
+            class="docs-nav-link is-active"
+            href="./09-event-context.html"
+            aria-current="page"
+            ><span class="docs-nav-index">09</span
+            ><span>09 — EventContext API</span></a
+          >
+          <a class="docs-nav-link" href="./10-hot-reload-and-dev.html"
+            ><span class="docs-nav-index">10</span
+            ><span>10 — Hot-Reload &amp; Dev Workflow</span></a
+          >
+          <a class="docs-nav-link" href="./11-worked-examples.html"
+            ><span class="docs-nav-index">11</span
+            ><span>11 — Worked Examples</span></a
+          >
+        </nav>
+        <a
+          class="docs-source-link"
+          href="https://github.com/arsa0x/violajs/tree/main/docs"
+          target="_blank"
+          rel="noreferrer"
+          >Edit documentation on GitHub ↗</a
+        >
+      </aside>
+
+      <main class="docs-main">
+        <div class="docs-breadcrumb">
+          <a href="../index.html">Home</a><span>/</span
+          ><span>Documentation</span><span>/</span
+          ><strong>09 — EventContext API</strong>
+        </div>
+        <div class="docs-article-layout">
+          <article class="docs-content markdown-body">
+            <h1 id="09-eventcontext-api">09 — EventContext API</h1>
+            <p>
+              Event handlers receive
+              <code>ctx: EventContext&lt;T&gt;</code> where <code>T</code> is
+              the payload type of the event.
+            </p>
+            <hr />
+            <h2 id="properties">Properties</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Property</th>
+                  <th>Type</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>ctx.event</code></td>
+                  <td><code>T</code></td>
+                  <td>The event payload (shape depends on the event name)</td>
+                </tr>
+                <tr>
+                  <td><code>ctx.pluginName</code></td>
+                  <td><code>string</code></td>
+                  <td>The name of the owning plugin</td>
+                </tr>
+                <tr>
+                  <td><code>ctx.sock</code></td>
+                  <td><code>WASocket</code></td>
+                  <td>The active Baileys socket</td>
+                </tr>
+                <tr>
+                  <td><code>ctx.log</code></td>
+                  <td><code>Log</code></td>
+                  <td>Session-scoped logger</td>
+                </tr>
+              </tbody>
+            </table>
+            <hr />
+            <h2 id="accessing-the-event-payload">
+              Accessing the event payload
+            </h2>
+            <p>
+              The shape of <code>ctx.event</code> is fully typed based on the
+              event name you subscribed to.
+            </p>
+            <pre><code class="language-ts">// "message.received"
+ctx.event.message; // WAMessage
+ctx.event.text; // string
+ctx.event.chat; // { jid: string; isGroup: boolean }
+ctx.event.sender; // { jid: string }
+
+// "group.participant.join"
+ctx.event.groupJid; // string
+ctx.event.participants; // string[]
+ctx.event.author; // string | undefined
+
+// "connection.open"
+ctx.event.userJid; // string
+</code></pre>
+            <hr />
+            <h2 id="sending-messages-from-event-handlers">
+              Sending messages from event handlers
+            </h2>
+            <p>
+              <code>EventContext</code> does not have a <code>send</code> helper
+              (that is scoped to a command's reply target). Use
+              <code>ctx.sock</code> directly, or construct a
+              <code>Send</code> instance if you need the richer API.
+            </p>
+            <h3 id="using-the-socket-directly">Using the socket directly</h3>
+            <pre><code class="language-ts">"group.participant.join": async (ctx) =&gt; {
+  const { groupJid, participants } = ctx.event;
+
+  for (const jid of participants) {
+    await ctx.sock.sendMessage(groupJid, {
+      text: `Welcome, @${jid.split("@")[0]}!`,
+      mentions: [jid],
+    });
+  }
+},
+</code></pre>
+            <h3 id="using-the-send-helper">
+              Using the <code>Send</code> helper
+            </h3>
+            <pre><code class="language-ts">import { Send } from "@lib/send";
+
+"message.received": async (ctx) =&gt; {
+  const { message } = ctx.event;
+  const jid = message.key.remoteJid!;
+
+  // Build a Send instance for the inbound message's chat
+  const send = new Send(ctx.sock, message, jid);
+  await send.text("Auto-reply: thanks for your message!");
+},
+</code></pre>
+            <hr />
+            <h2 id="logging">Logging</h2>
+            <pre><code class="language-ts">ctx.log.info("Event fired", ctx.event);
+ctx.log.warn("Something unexpected happened");
+ctx.log.error("Handler failed", error);
+ctx.log.debug("Raw event", ctx.event);
+</code></pre>
+            <hr />
+            <h2 id="error-handling">Error handling</h2>
+            <p>
+              Uncaught errors inside a handler are caught by the
+              <code>EventDispatcher</code> and logged — they do not propagate.
+              If you have cleanup to do on error, use a local try/catch:
+            </p>
+            <pre><code class="language-ts">"connection.open": async (ctx) =&gt; {
+  try {
+    await registerBotInDatabase(ctx.event.userJid);
+    ctx.log.info("Bot registered in database.");
+  } catch (error) {
+    ctx.log.error("Registration failed:", error);
+    // return here; the dispatcher will not re-throw
+  }
+},
+</code></pre>
+            <hr />
+            <h2 id="accessing-group-metadata">Accessing group metadata</h2>
+            <pre><code class="language-ts">"group.participant.join": async (ctx) =&gt; {
+  const { groupJid } = ctx.event;
+
+  let groupName = groupJid;
+  try {
+    const meta = await ctx.sock.groupMetadata(groupJid);
+    groupName = meta.subject;
+  } catch {
+    // groupMetadata can fail when the bot was just added; degrade gracefully
+  }
+
+  await ctx.sock.sendMessage(groupJid, {
+    text: `You joined *${groupName}*. Type .help for commands.`,
+  });
+},
+</code></pre>
+            <hr />
+            <h2 id="accessing-raw-baileys-events">
+              Accessing raw Baileys events
+            </h2>
+            <p>
+              For advanced use cases, subscribe to raw Baileys events to access
+              fields not exposed by the internal event wrappers:
+            </p>
+            <pre><code class="language-ts">"baileys.messages.upsert": async (ctx) =&gt; {
+  const { messages, type } = ctx.event; // BaileysEventMap["messages.upsert"]
+  if (type !== "notify") return;
+  ctx.log.debug(`Received ${messages.length} message(s).`);
+},
+
+"baileys.connection.update": async (ctx) =&gt; {
+  const { connection, qr } = ctx.event;
+  if (qr) ctx.log.info("New QR code available.");
+  if (connection === "open") ctx.log.info("Connected!");
+},
+
+"baileys.group-participants.update": async (ctx) =&gt; {
+  const { id, action, participants } = ctx.event;
+  ctx.log.debug(`Group ${id}: ${action} → ${participants.join(", ")}`);
+},
+</code></pre>
+            <hr />
+            <h2 id="full-type-reference">Full type reference</h2>
+            <pre><code class="language-ts">class EventContext&lt;TEvent&gt; {
+  event: TEvent;
+  pluginName: string;
+  sock: WASocket;
+  log: Log;
+}
+
+interface Log {
+  info: (...args: unknown[]) =&gt; void;
+  warn: (...args: unknown[]) =&gt; void;
+  error: (...args: unknown[]) =&gt; void;
+  debug: (...args: unknown[]) =&gt; void;
+}
+</code></pre>
+
+            <nav class="docs-page-footer" aria-label="Documentation source">
+              <span>Found a mistake?</span>
+              <a
+                href="https://github.com/arsa0x/violajs/edit/main/docs/09-event-context.md"
+                target="_blank"
+                rel="noreferrer"
+                >Suggest an edit ↗</a
+              >
+            </nav>
+          </article>
+          <aside class="docs-toc" aria-label="On this page">
+            <p class="docs-toc-title">ON THIS PAGE</p>
+            <nav>
+              <a class="toc-level-2" href="#properties">Properties</a
+              ><a class="toc-level-2" href="#accessing-the-event-payload"
+                >Accessing the event payload</a
+              ><a
+                class="toc-level-2"
+                href="#sending-messages-from-event-handlers"
+                >Sending messages from event handlers</a
+              ><a class="toc-level-3" href="#using-the-socket-directly"
+                >Using the socket directly</a
+              ><a class="toc-level-3" href="#using-the-send-helper"
+                >Using the Send helper</a
+              ><a class="toc-level-2" href="#logging">Logging</a
+              ><a class="toc-level-2" href="#error-handling">Error handling</a
+              ><a class="toc-level-2" href="#accessing-group-metadata"
+                >Accessing group metadata</a
+              ><a class="toc-level-2" href="#accessing-raw-baileys-events"
+                >Accessing raw Baileys events</a
+              ><a class="toc-level-2" href="#full-type-reference"
+                >Full type reference</a
+              >
+            </nav>
+          </aside>
+        </div>
+      </main>
+    </div>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <a class="brand" href="../index.html"
+          ><span class="brand-mark">v<span>.</span></span
+          ><span>viola<span class="brand-light">js</span></span></a
+        >
+        <p>
+          Made with care, powered by
+          <a
+            href="https://github.com/WhiskeySockets/Baileys"
+            target="_blank"
+            rel="noreferrer"
+            >Baileys</a
+          >
+          & <a href="https://bun.sh" target="_blank" rel="noreferrer">Bun</a>.
+        </p>
+        <span class="footer-copy">© <span id="year"></span> violajs</span>
+      </div>
+    </footer>
+    <script src="../script.js"></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-clike.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-javascript.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-typescript.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-bash.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-json.min.js"
+    ></script>
+  </body>
+</html>

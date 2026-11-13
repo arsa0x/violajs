@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f8f7fc" />
+    <meta name="description" content="Read the violajs documentation." />
+    <script>
+      (() => {
+        try {
+          const saved = localStorage.getItem("violajs-theme");
+          const prefersDark = window.matchMedia(
+            "(prefers-color-scheme: dark)",
+          ).matches;
+          if (saved === "dark" || (!saved && prefersDark))
+            document.documentElement.dataset.theme = "dark";
+        } catch {}
+      })();
+    </script>
+    <title>06 — Flags &amp; Args — violajs docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body class="docs-page">
+    <header class="site-header">
+      <nav class="nav container" aria-label="Main navigation">
+        <a class="brand" href="../index.html" aria-label="violajs home"
+          ><span class="brand-mark">v.</span
+          ><span>viola<span class="brand-light">js</span></span></a
+        >
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-label="Open navigation"
+          aria-expanded="false"
+        >
+          <span></span><span></span>
+        </button>
+        <div class="nav-links" id="nav-links">
+          <a href="../index.html#features">Features</a>
+          <a href="../index.html#getting-started">Getting started</a>
+          <a href="../index.html#plugins">Plugins</a>
+          <a class="is-current" href="./06-flags-and-args.html"
+            >Documentation</a
+          >
+          <button
+            class="theme-toggle"
+            type="button"
+            aria-label="Switch to dark mode"
+            aria-pressed="false"
+          >
+            <span class="theme-icon" aria-hidden="true">☾</span
+            ><span class="theme-label">Dark mode</span>
+          </button>
+          <a
+            class="nav-github"
+            href="https://github.com/arsa0x/violajs"
+            target="_blank"
+            rel="noreferrer"
+            >GitHub <span aria-hidden="true">↗</span></a
+          >
+        </div>
+      </nav>
+    </header>
+
+    <div class="docs-shell container">
+      <aside class="docs-sidebar">
+        <a class="docs-back-link" href="../index.html">← Back to overview</a>
+        <p class="docs-sidebar-label">DOCUMENTATION</p>
+        <nav class="docs-nav" aria-label="Documentation pages">
+          <a class="docs-nav-link" href="./01-command-plugins.html"
+            ><span class="docs-nav-index">01</span
+            ><span>01 — Command Plugins</span></a
+          >
+          <a class="docs-nav-link" href="./02-command-context.html"
+            ><span class="docs-nav-index">02</span
+            ><span>02 — CommandContext API</span></a
+          >
+          <a class="docs-nav-link" href="./03-command-list.html"
+            ><span class="docs-nav-index">03</span
+            ><span>03 — Command List</span></a
+          >
+          <a class="docs-nav-link" href="./04-send-api.html"
+            ><span class="docs-nav-index">04</span><span>04 — Send API</span></a
+          >
+          <a class="docs-nav-link" href="./05-interactive-send-api.html"
+            ><span class="docs-nav-index">05</span
+            ><span>05 — Interactive Send API</span></a
+          >
+          <a
+            class="docs-nav-link is-active"
+            href="./06-flags-and-args.html"
+            aria-current="page"
+            ><span class="docs-nav-index">06</span
+            ><span>06 — Flags &amp; Args</span></a
+          >
+          <a class="docs-nav-link" href="./07-middleware.html"
+            ><span class="docs-nav-index">07</span
+            ><span>07 — Middleware</span></a
+          >
+          <a class="docs-nav-link" href="./08-event-plugins.html"
+            ><span class="docs-nav-index">08</span
+            ><span>08 — Event Plugins</span></a
+          >
+          <a class="docs-nav-link" href="./09-event-context.html"
+            ><span class="docs-nav-index">09</span
+            ><span>09 — EventContext API</span></a
+          >
+          <a class="docs-nav-link" href="./10-hot-reload-and-dev.html"
+            ><span class="docs-nav-index">10</span
+            ><span>10 — Hot-Reload &amp; Dev Workflow</span></a
+          >
+          <a class="docs-nav-link" href="./11-worked-examples.html"
+            ><span class="docs-nav-index">11</span
+            ><span>11 — Worked Examples</span></a
+          >
+        </nav>
+        <a
+          class="docs-source-link"
+          href="https://github.com/arsa0x/violajs/tree/main/docs"
+          target="_blank"
+          rel="noreferrer"
+          >Edit documentation on GitHub ↗</a
+        >
+      </aside>
+
+      <main class="docs-main">
+        <div class="docs-breadcrumb">
+          <a href="../index.html">Home</a><span>/</span
+          ><span>Documentation</span><span>/</span
+          ><strong>06 — Flags &amp; Args</strong>
+        </div>
+        <div class="docs-article-layout">
+          <article class="docs-content markdown-body">
+            <h1 id="06-flags-args">06 — Flags &amp; Args</h1>
+            <p>
+              Flags let commands accept structured options. Declare them with
+              <code>FlagSpec</code>, then read the parsed result from
+              <code>ctx.args</code> inside <code>execute</code>.
+            </p>
+            <hr />
+            <h2 id="flagspec-kinds">FlagSpec kinds</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Kind</th>
+                  <th>Factory</th>
+                  <th>Stores</th>
+                  <th>Example input</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>bool</code></td>
+                  <td><code>FlagSpec.bool(names)</code></td>
+                  <td><code>true</code> when present</td>
+                  <td><code>--verbose</code></td>
+                </tr>
+                <tr>
+                  <td><code>value</code></td>
+                  <td><code>FlagSpec.value(names)</code></td>
+                  <td>A single string</td>
+                  <td><code>--limit 10</code></td>
+                </tr>
+                <tr>
+                  <td><code>list</code></td>
+                  <td><code>FlagSpec.list(names)</code></td>
+                  <td>Comma-separated strings</td>
+                  <td><code>--tags news,sports</code></td>
+                </tr>
+                <tr>
+                  <td><code>json</code></td>
+                  <td><code>FlagSpec.json(names)</code></td>
+                  <td>Any JSON value</td>
+                  <td><code>--data {"k":1}</code></td>
+                </tr>
+              </tbody>
+            </table>
+            <hr />
+            <h2 id="declaring-flags">Declaring flags</h2>
+            <p>
+              Every factory accepts a single string or an array of aliases.
+              Chain <code>.description()</code> to add help text shown by
+              <code>--help</code>.
+            </p>
+            <pre><code class="language-ts">import { FlagSpec } from "@lib/args";
+
+const LIMIT = FlagSpec.value(["--limit", "-l"]).description(
+  "Max results (default 5).",
+);
+const VERBOSE = FlagSpec.bool(["--verbose", "-v"]).description(
+  "Print extra detail.",
+);
+const TAGS = FlagSpec.list(["--tags", "-t"]).description(
+  "Filter by tag (comma-separated).",
+);
+const FILTER = FlagSpec.json(["--filter", "-f"]).description(
+  "JSON filter object.",
+);
+</code></pre>
+            <p>Attach them to the command:</p>
+            <pre><code class="language-ts">export default defineCommand({
+  name: "search",
+  flags: [LIMIT, VERBOSE, TAGS, FILTER],
+  async execute(ctx) { … },
+});
+</code></pre>
+            <blockquote>
+              <p>
+                <strong>Reserved names:</strong> <code>--help</code> and
+                <code>-h</code> are reserved by the dispatcher. Declaring them
+                in <code>flags</code> throws at registration time.
+              </p>
+            </blockquote>
+            <hr />
+            <h2 id="reading-parsed-values-inside-execute">
+              Reading parsed values inside <code>execute</code>
+            </h2>
+            <h3 id="bool-was-the-flag-present">
+              <code>bool</code> — was the flag present?
+            </h3>
+            <pre><code class="language-ts">const verbose = ctx.args!.flag("--verbose"); // boolean
+</code></pre>
+            <h3 id="value-single-string"><code>value</code> — single string</h3>
+            <pre><code class="language-ts">const limit = ctx.args!.value("--limit"); // string | undefined
+const n = ctx.args!.valueParsed("--limit", Number); // number | undefined
+const page = ctx.args!.valueParsed("--page", parseInt); // number | undefined
+</code></pre>
+            <p>
+              <code>valueParsed</code> calls the supplied function and returns
+              <code>undefined</code> if it throws.
+            </p>
+            <h3 id="list-array-of-strings">
+              <code>list</code> — array of strings
+            </h3>
+            <pre><code class="language-ts">const tags = ctx.args!.list("--tags"); // string[]  (empty if not supplied)
+const tagsOrUndef = ctx.args!.listNonEmpty("--tags"); // string[] | undefined
+const tagsRaw = ctx.args!.listStr("--tags"); // alias for list()
+</code></pre>
+            <p>
+              Input <code>--tags news,sports,tech</code> →
+              <code>["news", "sports", "tech"]</code>.
+            </p>
+            <h3 id="json-arbitrary-json"><code>json</code> — arbitrary JSON</h3>
+            <pre><code class="language-ts">const raw = ctx.args!.json("--filter"); // unknown | undefined
+
+// With runtime validation:
+const filter = ctx.args!.jsonParsed("--filter", (v) =&gt; {
+  if (typeof v !== "object" || v === null) throw new Error("Expected object");
+  return v as Record&lt;string, unknown&gt;;
+}); // Record&lt;string, unknown&gt; | undefined
+
+// Check for a parse error:
+const err = ctx.args!.jsonError("--filter"); // JsonParseError | undefined
+if (err) {
+  await ctx.send.text(`Invalid JSON for --filter: ${String(err.error)}`);
+  return;
+}
+</code></pre>
+            <h3 id="positionals-tokens-that-are-not-flags">
+              Positionals — tokens that are not flags
+            </h3>
+            <pre><code class="language-ts">// Message: ".search cats dogs --limit 5"
+const first = ctx.args!.positional(0); // "cats"
+const second = ctx.args!.positional(1); // "dogs"
+const all = ctx.args!.rest(); // ["cats", "dogs"]
+const tail = ctx.args!.restFrom(1); // ["dogs"]
+</code></pre>
+            <h3 id="presence-check">Presence check</h3>
+            <pre><code class="language-ts">// True when the flag appeared at all, even without a value
+const hasLimit = ctx.args!.has("--limit"); // boolean
+</code></pre>
+            <hr />
+            <h2 id="alias-resolution">Alias resolution</h2>
+            <p>
+              All <code>Args</code> methods accept any name from the flag's
+              alias list; they always resolve to the canonical (first) name
+              internally.
+            </p>
+            <pre><code class="language-ts">// LIMIT = FlagSpec.value(["--limit", "-l"])
+ctx.args!.value("--limit") === ctx.args!.value("-l"); // true
+</code></pre>
+            <hr />
+            <h2 id="full-example">Full example</h2>
+            <pre><code class="language-ts">// commands/nsfw/pornhub.ts
+import { defineCommand } from "@core/command";
+import { FlagSpec } from "@lib/args";
+import { cooldown } from "@src/middlewares/cooldown";
+
+const PAGE = FlagSpec.value(["--page", "-p"]).description(
+  "Page number (default 1).",
+);
+const ORDER = FlagSpec.value(["--order", "-o"]).description(
+  "Sort: newest | rating | mostviewed.",
+);
+const TAGS = FlagSpec.list(["--tags", "-t"]).description(
+  "Filter by tag (comma-separated).",
+);
+
+export default defineCommand({
+  name: "phsearch",
+  aliases: ["phs"],
+  category: "nsfw",
+  description: "Search Pornhub.",
+  usage: [
+    ".phsearch milf",
+    ".phsearch milf --page 2",
+    ".phsearch milf --order rating --tags amateur,hd",
+  ],
+  flags: [PAGE, ORDER, TAGS],
+  middleware: [cooldown(10_000)],
+
+  async execute(ctx) {
+    const query = ctx.args!.rest().join(" ");
+    if (!query) {
+      await ctx.send.text(
+        "Usage: .phsearch &lt;query&gt; [--page N] [--order newest|rating]",
+      );
+      return;
+    }
+
+    const page = ctx.args!.valueParsed("--page", Number) ?? 1;
+    const order = ctx.args!.value("--order") ?? "newest";
+    const tags = ctx.args!.list("--tags"); // may be empty
+
+    // … perform search with page, order, tags …
+    await ctx.send.text(
+      `Searching: "${query}" page=${page} order=${order} tags=[${tags.join(",")}]`,
+    );
+  },
+});
+</code></pre>
+            <hr />
+            <h2 id="help-flag-built-in"><code>--help</code> flag (built-in)</h2>
+            <p>
+              Every command automatically supports <code>--help</code> /
+              <code>-h</code>. When the user sends <code>.command --help</code>,
+              the dispatcher renders a help message using
+              <code>generateCommandHelp</code> and
+              <strong>does not</strong> call <code>execute</code>. The help
+              output includes:
+            </p>
+            <ul>
+              <li><code>description</code></li>
+              <li><code>aliases</code></li>
+              <li><code>category</code></li>
+              <li>
+                All declared <code>flags</code> with their names, types, and
+                descriptions
+              </li>
+            </ul>
+            <p>You do not need to handle <code>--help</code> yourself.</p>
+
+            <nav class="docs-page-footer" aria-label="Documentation source">
+              <span>Found a mistake?</span>
+              <a
+                href="https://github.com/arsa0x/violajs/edit/main/docs/06-flags-and-args.md"
+                target="_blank"
+                rel="noreferrer"
+                >Suggest an edit ↗</a
+              >
+            </nav>
+          </article>
+          <aside class="docs-toc" aria-label="On this page">
+            <p class="docs-toc-title">ON THIS PAGE</p>
+            <nav>
+              <a class="toc-level-2" href="#flagspec-kinds">FlagSpec kinds</a
+              ><a class="toc-level-2" href="#declaring-flags">Declaring flags</a
+              ><a
+                class="toc-level-2"
+                href="#reading-parsed-values-inside-execute"
+                >Reading parsed values inside execute</a
+              ><a class="toc-level-3" href="#bool-was-the-flag-present"
+                >bool — was the flag present?</a
+              ><a class="toc-level-3" href="#value-single-string"
+                >value — single string</a
+              ><a class="toc-level-3" href="#list-array-of-strings"
+                >list — array of strings</a
+              ><a class="toc-level-3" href="#json-arbitrary-json"
+                >json — arbitrary JSON</a
+              ><a
+                class="toc-level-3"
+                href="#positionals-tokens-that-are-not-flags"
+                >Positionals — tokens that are not flags</a
+              ><a class="toc-level-3" href="#presence-check">Presence check</a
+              ><a class="toc-level-2" href="#alias-resolution"
+                >Alias resolution</a
+              ><a class="toc-level-2" href="#full-example">Full example</a
+              ><a class="toc-level-2" href="#help-flag-built-in"
+                >--help flag (built-in)</a
+              >
+            </nav>
+          </aside>
+        </div>
+      </main>
+    </div>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <a class="brand" href="../index.html"
+          ><span class="brand-mark">v<span>.</span></span
+          ><span>viola<span class="brand-light">js</span></span></a
+        >
+        <p>
+          Made with care, powered by
+          <a
+            href="https://github.com/WhiskeySockets/Baileys"
+            target="_blank"
+            rel="noreferrer"
+            >Baileys</a
+          >
+          & <a href="https://bun.sh" target="_blank" rel="noreferrer">Bun</a>.
+        </p>
+        <span class="footer-copy">© <span id="year"></span> violajs</span>
+      </div>
+    </footer>
+    <script src="../script.js"></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-clike.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-javascript.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-typescript.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-bash.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-json.min.js"
+    ></script>
+  </body>
+</html>

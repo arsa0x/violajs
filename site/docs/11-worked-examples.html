@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f8f7fc" />
+    <meta name="description" content="Read the violajs documentation." />
+    <script>
+      (() => {
+        try {
+          const saved = localStorage.getItem("violajs-theme");
+          const prefersDark = window.matchMedia(
+            "(prefers-color-scheme: dark)",
+          ).matches;
+          if (saved === "dark" || (!saved && prefersDark))
+            document.documentElement.dataset.theme = "dark";
+        } catch {}
+      })();
+    </script>
+    <title>11 — Worked Examples — violajs docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body class="docs-page">
+    <header class="site-header">
+      <nav class="nav container" aria-label="Main navigation">
+        <a class="brand" href="../index.html" aria-label="violajs home"
+          ><span class="brand-mark">v.</span
+          ><span>viola<span class="brand-light">js</span></span></a
+        >
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-label="Open navigation"
+          aria-expanded="false"
+        >
+          <span></span><span></span>
+        </button>
+        <div class="nav-links" id="nav-links">
+          <a href="../index.html#features">Features</a>
+          <a href="../index.html#getting-started">Getting started</a>
+          <a href="../index.html#plugins">Plugins</a>
+          <a class="is-current" href="./11-worked-examples.html"
+            >Documentation</a
+          >
+          <button
+            class="theme-toggle"
+            type="button"
+            aria-label="Switch to dark mode"
+            aria-pressed="false"
+          >
+            <span class="theme-icon" aria-hidden="true">☾</span
+            ><span class="theme-label">Dark mode</span>
+          </button>
+          <a
+            class="nav-github"
+            href="https://github.com/arsa0x/violajs"
+            target="_blank"
+            rel="noreferrer"
+            >GitHub <span aria-hidden="true">↗</span></a
+          >
+        </div>
+      </nav>
+    </header>
+
+    <div class="docs-shell container">
+      <aside class="docs-sidebar">
+        <a class="docs-back-link" href="../index.html">← Back to overview</a>
+        <p class="docs-sidebar-label">DOCUMENTATION</p>
+        <nav class="docs-nav" aria-label="Documentation pages">
+          <a class="docs-nav-link" href="./01-command-plugins.html"
+            ><span class="docs-nav-index">01</span
+            ><span>01 — Command Plugins</span></a
+          >
+          <a class="docs-nav-link" href="./02-command-context.html"
+            ><span class="docs-nav-index">02</span
+            ><span>02 — CommandContext API</span></a
+          >
+          <a class="docs-nav-link" href="./03-command-list.html"
+            ><span class="docs-nav-index">03</span
+            ><span>03 — Command List</span></a
+          >
+          <a class="docs-nav-link" href="./04-send-api.html"
+            ><span class="docs-nav-index">04</span><span>04 — Send API</span></a
+          >
+          <a class="docs-nav-link" href="./05-interactive-send-api.html"
+            ><span class="docs-nav-index">05</span
+            ><span>05 — Interactive Send API</span></a
+          >
+          <a class="docs-nav-link" href="./06-flags-and-args.html"
+            ><span class="docs-nav-index">06</span
+            ><span>06 — Flags &amp; Args</span></a
+          >
+          <a class="docs-nav-link" href="./07-middleware.html"
+            ><span class="docs-nav-index">07</span
+            ><span>07 — Middleware</span></a
+          >
+          <a class="docs-nav-link" href="./08-event-plugins.html"
+            ><span class="docs-nav-index">08</span
+            ><span>08 — Event Plugins</span></a
+          >
+          <a class="docs-nav-link" href="./09-event-context.html"
+            ><span class="docs-nav-index">09</span
+            ><span>09 — EventContext API</span></a
+          >
+          <a class="docs-nav-link" href="./10-hot-reload-and-dev.html"
+            ><span class="docs-nav-index">10</span
+            ><span>10 — Hot-Reload &amp; Dev Workflow</span></a
+          >
+          <a
+            class="docs-nav-link is-active"
+            href="./11-worked-examples.html"
+            aria-current="page"
+            ><span class="docs-nav-index">11</span
+            ><span>11 — Worked Examples</span></a
+          >
+        </nav>
+        <a
+          class="docs-source-link"
+          href="https://github.com/arsa0x/violajs/tree/main/docs"
+          target="_blank"
+          rel="noreferrer"
+          >Edit documentation on GitHub ↗</a
+        >
+      </aside>
+
+      <main class="docs-main">
+        <div class="docs-breadcrumb">
+          <a href="../index.html">Home</a><span>/</span
+          ><span>Documentation</span><span>/</span
+          ><strong>11 — Worked Examples</strong>
+        </div>
+        <div class="docs-article-layout">
+          <article class="docs-content markdown-body">
+            <h1 id="11-worked-examples">11 — Worked Examples</h1>
+            <p>Three complete, production-ready plugins from scratch.</p>
+            <hr />
+            <h2 id="example-1-weather-command">
+              Example 1 — <code>weather</code> command
+            </h2>
+            <p>
+              Fetches live weather data, uses a <code>--unit</code> flag, has a
+              cooldown, and sends an interactive URL button. Shows the full
+              flow: guard → reaction → fetch → error handling → reply.
+            </p>
+            <pre><code class="language-ts">// commands/tools/weather.ts
+import { defineCommand } from "@core/command";
+import { FlagSpec } from "@lib/args";
+import { cooldown } from "@src/middlewares/cooldown";
+
+const UNIT = FlagSpec.value(["--unit", "-u"]).description(
+  "Unit: metric (default) | imperial.",
+);
+
+type WeatherResponse = {
+  name: string;
+  main: { temp: number; humidity: number };
+  weather: Array&lt;{ description: string }&gt;;
+};
+
+async function fetchWeather(
+  city: string,
+  unit: string,
+): Promise&lt;WeatherResponse&gt; {
+  const url = new URL("https://api.openweathermap.org/data/2.5/weather");
+  url.searchParams.set("q", city);
+  url.searchParams.set("units", unit);
+  url.searchParams.set("appid", process.env.OWM_API_KEY ?? "");
+
+  const res = await fetch(url, { signal: AbortSignal.timeout(8_000) });
+  if (!res.ok) throw new Error(`API error: HTTP ${res.status}`);
+  return res.json() as Promise&lt;WeatherResponse&gt;;
+}
+
+export default defineCommand({
+  name: "weather",
+  aliases: ["cuaca", "wx"],
+  category: "tools",
+  description: "Get current weather for a city.",
+  usage: [".weather Jakarta", ".weather London --unit imperial"],
+  flags: [UNIT],
+  middleware: [cooldown(10_000)],
+
+  async execute(ctx) {
+    const city = ctx.args!.rest().join(" ");
+    if (!city) {
+      await ctx.send.text("Usage: .weather &lt;city&gt;  e.g. .weather Jakarta");
+      return;
+    }
+
+    const unit = ctx.args!.value("--unit") ?? "metric";
+    const degree = unit === "imperial" ? "°F" : "°C";
+
+    await ctx.send.reaction("⏳");
+
+    let data: WeatherResponse;
+    try {
+      data = await fetchWeather(city, unit);
+    } catch (error) {
+      ctx.log.error("Weather fetch failed:", error);
+      await ctx.send.reaction("❌");
+      await ctx.send.text(
+        `Could not fetch weather for "${city}". Try again later.`,
+      );
+      return;
+    }
+
+    await ctx.send.reaction("✅");
+
+    const desc = data.weather[0]?.description ?? "unknown";
+    const body = [
+      `🌤 *${data.name}*`,
+      `Temp:     ${data.main.temp}${degree}`,
+      `Humidity: ${data.main.humidity}%`,
+      `Condition: ${desc}`,
+    ].join("\n");
+
+    await ctx.send.interactive.urlButton({
+      body,
+      text: "Full Forecast",
+      url: `https://openweathermap.org/find?q=${encodeURIComponent(city)}`,
+      footer: "violajs weather",
+    });
+  },
+});
+</code></pre>
+            <hr />
+            <h2 id="example-2-group-lifecycle-event-plugin">
+              Example 2 — <code>group-lifecycle</code> event plugin
+            </h2>
+            <p>
+              Welcomes new members with a mention, announces departures, logs
+              every inbound message, and notifies on reconnect.
+            </p>
+            <pre><code class="language-ts">// events/group.ts
+import { defineEvent } from "@core/event";
+
+export default defineEvent({
+  name: "group-lifecycle",
+
+  events: {
+    // ── Welcome new members ─────────────────────────────────────────────
+    "group.participant.join": async (ctx) =&gt; {
+      const { groupJid, participants } = ctx.event;
+
+      let groupName = groupJid;
+      try {
+        const meta = await ctx.sock.groupMetadata(groupJid);
+        groupName = meta.subject;
+      } catch {
+        // groupMetadata can fail right after the bot itself is added; degrade gracefully
+      }
+
+      for (const jid of participants) {
+        const phone = jid.split("@")[0];
+        await ctx.sock.sendMessage(groupJid, {
+          text: [
+            `👋 Welcome to *${groupName}*, @${phone}!`,
+            "Type *.help* to see the available commands.",
+          ].join("\n"),
+          mentions: [jid],
+        });
+      }
+    },
+
+    // ── Farewell departing members ──────────────────────────────────────
+    "group.participant.leave": async (ctx) =&gt; {
+      const { groupJid, participants } = ctx.event;
+      const count = participants.length;
+      await ctx.sock.sendMessage(groupJid, {
+        text: `👋 ${count} member${count === 1 ? "" : "s"} left the group.`,
+      });
+    },
+
+    // ── Log every inbound message (debug) ──────────────────────────────
+    "message.received": async (ctx) =&gt; {
+      const { chat, sender, text } = ctx.event;
+      if (!text) return;
+      ctx.log.debug(
+        `[${chat.isGroup ? "group" : "dm"}] ${sender.jid}: ${text.slice(0, 80)}`,
+      );
+    },
+
+    // ── Log reconnects ─────────────────────────────────────────────────
+    "connection.open": async (ctx) =&gt; {
+      ctx.log.info(`Bot connected as ${ctx.event.userJid}`);
+    },
+  },
+});
+</code></pre>
+            <hr />
+            <h2 id="example-3-remind-command-stateful-with-dispose">
+              Example 3 — <code>remind</code> command (stateful with
+              <code>dispose</code>)
+            </h2>
+            <p>
+              Shows how to manage long-lived timers across hot-reloads
+              correctly.
+            </p>
+            <pre><code class="language-ts">// commands/tools/remind.ts
+import { defineCommand } from "@core/command";
+import { FlagSpec } from "@lib/args";
+
+const IN = FlagSpec.value(["--in", "-i"]).description(
+  "Delay in seconds (default 60).",
+);
+
+// Module-level state: persists for the lifetime of this module version.
+// Always cleared in dispose() so hot-reload is clean.
+const timers = new Set&lt;ReturnType&lt;typeof setTimeout&gt;&gt;();
+
+export default defineCommand({
+  name: "remind",
+  aliases: ["reminder"],
+  category: "tools",
+  description: "Set a personal reminder.",
+  usage: [".remind Buy groceries --in 300", ".remind Stand up! --in 3600"],
+  flags: [IN],
+
+  async execute(ctx) {
+    const message = ctx.args!.rest().join(" ");
+    if (!message) {
+      await ctx.send.text("Usage: .remind &lt;message&gt; --in &lt;seconds&gt;");
+      return;
+    }
+
+    const seconds = ctx.args!.valueParsed("--in", Number) ?? 60;
+    if (!Number.isFinite(seconds) || seconds &lt;= 0) {
+      await ctx.send.text("Invalid delay. Use a positive number of seconds.");
+      return;
+    }
+
+    // Capture the socket and JID now — ctx may be GC'd before the timer fires.
+    const { jid } = ctx.chat;
+    const sock = ctx.sock;
+
+    const t = setTimeout(async () =&gt; {
+      timers.delete(t);
+      await sock.sendMessage(jid, { text: `⏰ Reminder: ${message}` });
+    }, seconds * 1_000);
+
+    timers.add(t);
+    await ctx.send.text(
+      `⏰ Got it! I'll remind you in ${seconds}s:\n"${message}"`,
+    );
+  },
+
+  // Called by the hot-reload loader before this module is replaced.
+  // Without this, timers from the old module version keep firing.
+  dispose() {
+    for (const t of timers) clearTimeout(t);
+    timers.clear();
+  },
+});
+</code></pre>
+            <hr />
+            <h2
+              id="example-4-poll-command-interactive-buttons-response-handling"
+            >
+              Example 4 — <code>poll</code> command (interactive buttons +
+              response handling)
+            </h2>
+            <p>
+              Sends a quick-reply poll and handles the reply in the same event
+              plugin.
+            </p>
+            <pre><code class="language-ts">// commands/tools/poll.ts
+import { defineCommand } from "@core/command";
+
+export default defineCommand({
+  name: "poll",
+  category: "tools",
+  description: "Create a quick 2-option poll.",
+  usage: ['.poll "Option A" "Option B"'],
+
+  async execute(ctx) {
+    const [optA, optB] = ctx.args!.rest();
+    if (!optA || !optB) {
+      await ctx.send.text('Usage: .poll "Option A" "Option B"');
+      return;
+    }
+
+    await ctx.send.interactive.quickReply({
+      body: `📊 *Poll*\nVote by tapping a button:`,
+      footer: `Posted by ${ctx.sender.jid.split("@")[0]}`,
+      buttons: [
+        { text: optA, id: `poll:a:${optA}` },
+        { text: optB, id: `poll:b:${optB}` },
+      ],
+      quoted: false,
+    });
+  },
+});
+</code></pre>
+            <pre><code class="language-ts">// events/poll-response.ts
+import { defineEvent } from "@core/event";
+import { extractInteractiveResponse } from "@lib/interactive";
+
+export default defineEvent({
+  name: "poll-response",
+  events: {
+    "message.received": async (ctx) =&gt; {
+      const { message } = ctx.event;
+      const id = extractInteractiveResponse(message);
+      if (!id?.startsWith("poll:")) return;
+
+      const [, choice, option] = id.split(":");
+      const voter = ctx.event.sender.jid.split("@")[0];
+
+      await ctx.sock.sendMessage(ctx.event.chat.jid, {
+        text: `✅ @${voter} voted for *${option}*!`,
+        mentions: [ctx.event.sender.jid],
+      });
+    },
+  },
+});
+</code></pre>
+
+            <nav class="docs-page-footer" aria-label="Documentation source">
+              <span>Found a mistake?</span>
+              <a
+                href="https://github.com/arsa0x/violajs/edit/main/docs/11-worked-examples.md"
+                target="_blank"
+                rel="noreferrer"
+                >Suggest an edit ↗</a
+              >
+            </nav>
+          </article>
+          <aside class="docs-toc" aria-label="On this page">
+            <p class="docs-toc-title">ON THIS PAGE</p>
+            <nav>
+              <a class="toc-level-2" href="#example-1-weather-command"
+                >Example 1 — weather command</a
+              ><a
+                class="toc-level-2"
+                href="#example-2-group-lifecycle-event-plugin"
+                >Example 2 — group-lifecycle event plugin</a
+              ><a
+                class="toc-level-2"
+                href="#example-3-remind-command-stateful-with-dispose"
+                >Example 3 — remind command (stateful with dispose)</a
+              ><a
+                class="toc-level-2"
+                href="#example-4-poll-command-interactive-buttons-response-handling"
+                >Example 4 — poll command (interactive buttons + response
+                handling)</a
+              >
+            </nav>
+          </aside>
+        </div>
+      </main>
+    </div>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <a class="brand" href="../index.html"
+          ><span class="brand-mark">v<span>.</span></span
+          ><span>viola<span class="brand-light">js</span></span></a
+        >
+        <p>
+          Made with care, powered by
+          <a
+            href="https://github.com/WhiskeySockets/Baileys"
+            target="_blank"
+            rel="noreferrer"
+            >Baileys</a
+          >
+          & <a href="https://bun.sh" target="_blank" rel="noreferrer">Bun</a>.
+        </p>
+        <span class="footer-copy">© <span id="year"></span> violajs</span>
+      </div>
+    </footer>
+    <script src="../script.js"></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-clike.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-javascript.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-typescript.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-bash.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-json.min.js"
+    ></script>
+  </body>
+</html>

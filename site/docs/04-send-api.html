@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f8f7fc" />
+    <meta name="description" content="Read the violajs documentation." />
+    <script>
+      (() => {
+        try {
+          const saved = localStorage.getItem("violajs-theme");
+          const prefersDark = window.matchMedia(
+            "(prefers-color-scheme: dark)",
+          ).matches;
+          if (saved === "dark" || (!saved && prefersDark))
+            document.documentElement.dataset.theme = "dark";
+        } catch {}
+      })();
+    </script>
+    <title>04 — Send API — violajs docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body class="docs-page">
+    <header class="site-header">
+      <nav class="nav container" aria-label="Main navigation">
+        <a class="brand" href="../index.html" aria-label="violajs home"
+          ><span class="brand-mark">v.</span
+          ><span>viola<span class="brand-light">js</span></span></a
+        >
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-label="Open navigation"
+          aria-expanded="false"
+        >
+          <span></span><span></span>
+        </button>
+        <div class="nav-links" id="nav-links">
+          <a href="../index.html#features">Features</a>
+          <a href="../index.html#getting-started">Getting started</a>
+          <a href="../index.html#plugins">Plugins</a>
+          <a class="is-current" href="./04-send-api.html">Documentation</a>
+          <button
+            class="theme-toggle"
+            type="button"
+            aria-label="Switch to dark mode"
+            aria-pressed="false"
+          >
+            <span class="theme-icon" aria-hidden="true">☾</span
+            ><span class="theme-label">Dark mode</span>
+          </button>
+          <a
+            class="nav-github"
+            href="https://github.com/arsa0x/violajs"
+            target="_blank"
+            rel="noreferrer"
+            >GitHub <span aria-hidden="true">↗</span></a
+          >
+        </div>
+      </nav>
+    </header>
+
+    <div class="docs-shell container">
+      <aside class="docs-sidebar">
+        <a class="docs-back-link" href="../index.html">← Back to overview</a>
+        <p class="docs-sidebar-label">DOCUMENTATION</p>
+        <nav class="docs-nav" aria-label="Documentation pages">
+          <a class="docs-nav-link" href="./01-command-plugins.html"
+            ><span class="docs-nav-index">01</span
+            ><span>01 — Command Plugins</span></a
+          >
+          <a class="docs-nav-link" href="./02-command-context.html"
+            ><span class="docs-nav-index">02</span
+            ><span>02 — CommandContext API</span></a
+          >
+          <a class="docs-nav-link" href="./03-command-list.html"
+            ><span class="docs-nav-index">03</span
+            ><span>03 — Command List</span></a
+          >
+          <a
+            class="docs-nav-link is-active"
+            href="./04-send-api.html"
+            aria-current="page"
+            ><span class="docs-nav-index">04</span><span>04 — Send API</span></a
+          >
+          <a class="docs-nav-link" href="./05-interactive-send-api.html"
+            ><span class="docs-nav-index">05</span
+            ><span>05 — Interactive Send API</span></a
+          >
+          <a class="docs-nav-link" href="./06-flags-and-args.html"
+            ><span class="docs-nav-index">06</span
+            ><span>06 — Flags &amp; Args</span></a
+          >
+          <a class="docs-nav-link" href="./07-middleware.html"
+            ><span class="docs-nav-index">07</span
+            ><span>07 — Middleware</span></a
+          >
+          <a class="docs-nav-link" href="./08-event-plugins.html"
+            ><span class="docs-nav-index">08</span
+            ><span>08 — Event Plugins</span></a
+          >
+          <a class="docs-nav-link" href="./09-event-context.html"
+            ><span class="docs-nav-index">09</span
+            ><span>09 — EventContext API</span></a
+          >
+          <a class="docs-nav-link" href="./10-hot-reload-and-dev.html"
+            ><span class="docs-nav-index">10</span
+            ><span>10 — Hot-Reload &amp; Dev Workflow</span></a
+          >
+          <a class="docs-nav-link" href="./11-worked-examples.html"
+            ><span class="docs-nav-index">11</span
+            ><span>11 — Worked Examples</span></a
+          >
+        </nav>
+        <a
+          class="docs-source-link"
+          href="https://github.com/arsa0x/violajs/tree/main/docs"
+          target="_blank"
+          rel="noreferrer"
+          >Edit documentation on GitHub ↗</a
+        >
+      </aside>
+
+      <main class="docs-main">
+        <div class="docs-breadcrumb">
+          <a href="../index.html">Home</a><span>/</span
+          ><span>Documentation</span><span>/</span
+          ><strong>04 — Send API</strong>
+        </div>
+        <div class="docs-article-layout">
+          <article class="docs-content markdown-body">
+            <h1 id="04-send-api">04 — Send API</h1>
+            <p>
+              <code>ctx.send</code> is a <code>Send</code> instance. Every
+              method accepts an optional <code>reply</code> boolean (default
+              <code>true</code>) that controls whether the outgoing message
+              quotes the original.
+            </p>
+            <p>
+              <code>ctx.send.interactive</code> is covered separately in
+              <a href="./06-interactive-send-api.md"
+                >06-interactive-send-api.md</a
+              >.
+            </p>
+            <hr />
+            <h2 id="media-types">Media types</h2>
+            <p>
+              All <code>media</code> parameters accept a
+              <code>WAMediaUpload</code>:
+            </p>
+            <pre><code class="language-ts">type WAMediaUpload =
+  | Buffer // in-memory bytes
+  | { url: string } // public URL (fetched by Baileys)
+  | Readable; // Node.js stream
+</code></pre>
+            <hr />
+            <h2 id="method-reference">Method reference</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Method</th>
+                  <th>Signature</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>text</code></td>
+                  <td><code>(body, reply?)</code></td>
+                  <td>Plain text. Array → joined without separator.</td>
+                </tr>
+                <tr>
+                  <td><code>image</code></td>
+                  <td><code>(media, caption?, reply?)</code></td>
+                  <td>Image with optional caption.</td>
+                </tr>
+                <tr>
+                  <td><code>video</code></td>
+                  <td><code>(media, caption?, reply?)</code></td>
+                  <td>Video with optional caption.</td>
+                </tr>
+                <tr>
+                  <td><code>audio</code></td>
+                  <td><code>(media, ptt?, reply?)</code></td>
+                  <td>Audio. <code>ptt=true</code> sends as voice note.</td>
+                </tr>
+                <tr>
+                  <td><code>sticker</code></td>
+                  <td><code>(media, reply?)</code></td>
+                  <td>Sticker (WebP).</td>
+                </tr>
+                <tr>
+                  <td><code>document</code></td>
+                  <td><code>(media, fileName, mimetype?, reply?)</code></td>
+                  <td>File attachment.</td>
+                </tr>
+                <tr>
+                  <td><code>location</code></td>
+                  <td><code>(lat, lon, name?, address?, reply?)</code></td>
+                  <td>Location pin.</td>
+                </tr>
+                <tr>
+                  <td><code>contact</code></td>
+                  <td><code>(displayName, vcard, reply?)</code></td>
+                  <td>vCard contact.</td>
+                </tr>
+                <tr>
+                  <td><code>reaction</code></td>
+                  <td><code>(emoji, message?)</code></td>
+                  <td>React with emoji. <code>""</code> removes reaction.</td>
+                </tr>
+                <tr>
+                  <td><code>delete</code></td>
+                  <td><code>(message?)</code></td>
+                  <td>Request deletion of a message.</td>
+                </tr>
+                <tr>
+                  <td><code>edit</code></td>
+                  <td><code>(text, message?)</code></td>
+                  <td>Edit a previously sent message.</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>
+              <code>message?</code> defaults to the triggering message
+              (<code>ctx.msg</code>) when omitted.
+            </p>
+            <hr />
+            <h2 id="text"><code>text</code></h2>
+            <pre><code class="language-ts">// Simple reply (quoted)
+await ctx.send.text("Hello!");
+
+// Array is joined without a separator
+await ctx.send.text(["Line 1\n", "Line 2\n", "Line 3"]);
+// → "Line 1\nLine 2\nLine 3"
+
+// Without quoting
+await ctx.send.text("No quote.", false);
+</code></pre>
+            <hr />
+            <h2 id="image"><code>image</code></h2>
+            <pre><code class="language-ts">// From a public URL
+await ctx.send.image({ url: "https://example.com/photo.jpg" });
+await ctx.send.image({ url: "https://example.com/photo.jpg" }, "Caption here");
+
+// From a Buffer (e.g. downloaded image)
+import { readFile } from "fs/promises";
+const buf = await readFile("./banner.png");
+await ctx.send.image(buf, "From disk");
+
+// Without quoting the original message
+await ctx.send.image(buf, "No quote", false);
+</code></pre>
+            <hr />
+            <h2 id="video"><code>video</code></h2>
+            <pre><code class="language-ts">await ctx.send.video({ url: "https://example.com/clip.mp4" });
+await ctx.send.video({ url: "https://example.com/clip.mp4" }, "Watch this!");
+</code></pre>
+            <hr />
+            <h2 id="audio"><code>audio</code></h2>
+            <pre><code class="language-ts">// Regular audio file
+await ctx.send.audio({ url: "https://example.com/track.mp3" });
+
+// Push-to-talk voice note
+await ctx.send.audio({ url: "https://example.com/voice.mp3" }, true);
+
+// From buffer
+const audioBuf = await readFile("./audio.mp4");
+await ctx.send.audio(audioBuf, false); // not PTT
+</code></pre>
+            <hr />
+            <h2 id="sticker"><code>sticker</code></h2>
+            <pre><code class="language-ts">const stickerBuf = await readFile("./sticker.webp");
+await ctx.send.sticker(stickerBuf);
+</code></pre>
+            <hr />
+            <h2 id="document"><code>document</code></h2>
+            <pre><code class="language-ts">import type { MimeType } from "@src/types/mime";
+
+await ctx.send.document(
+  { url: "https://example.com/file.pdf" },
+  "report.pdf",
+  "application/pdf",
+);
+
+// From buffer
+const docBuf = await readFile("./data.xlsx");
+await ctx.send.document(
+  docBuf,
+  "data.xlsx",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+);
+</code></pre>
+            <p>
+              <strong>Supported MIME types</strong> (<code>MimeType</code>):
+            </p>
+            <pre><code>application/pdf   text/plain       image/jpeg     image/png
+video/mp4         video/3gpp       audio/aac      audio/amr
+audio/mpeg        audio/mp4        audio/ogg      image/webp
+</code></pre>
+            <hr />
+            <h2 id="location"><code>location</code></h2>
+            <pre><code class="language-ts">await ctx.send.location(-6.2088, 106.8456);
+await ctx.send.location(-6.2088, 106.8456, "Jakarta");
+await ctx.send.location(-6.2088, 106.8456, "Jakarta", "DKI Jakarta, Indonesia");
+</code></pre>
+            <hr />
+            <h2 id="contact"><code>contact</code></h2>
+            <pre><code class="language-ts">const vcard = [
+  "BEGIN:VCARD",
+  "VERSION:3.0",
+  "FN:John Doe",
+  "TEL;type=CELL;waid=628123456789:+62 812-3456-789",
+  "END:VCARD",
+].join("\n");
+
+await ctx.send.contact("John Doe", vcard);
+</code></pre>
+            <hr />
+            <h2 id="reaction"><code>reaction</code></h2>
+            <pre><code class="language-ts">// React to the triggering message
+await ctx.send.reaction("👍");
+
+// React to a different message (e.g. the bot's own reply)
+await ctx.send.reaction("✅", sentMessage);
+
+// Remove a reaction (empty string)
+await ctx.send.reaction("");
+</code></pre>
+            <p>A common pattern — loading state via reactions:</p>
+            <pre><code class="language-ts">await ctx.send.reaction("⏳");
+try {
+  const result = await heavyOperation();
+  await ctx.send.reaction("✅");
+  await ctx.send.text(result);
+} catch (error) {
+  await ctx.send.reaction("❌");
+  await ctx.send.text("Something went wrong.");
+}
+</code></pre>
+            <hr />
+            <h2 id="delete"><code>delete</code></h2>
+            <pre><code class="language-ts">// Delete the triggering message (requires the bot to be an admin for group messages)
+await ctx.send.delete();
+
+// Delete a specific message
+await ctx.send.delete(targetMessage);
+</code></pre>
+            <blockquote>
+              <p>
+                Deletion is subject to WhatsApp's rules. The bot can only delete
+                messages it sent in DMs; in groups it needs admin rights to
+                delete others' messages.
+              </p>
+            </blockquote>
+            <hr />
+            <h2 id="edit"><code>edit</code></h2>
+            <pre><code class="language-ts">// Edit a previously sent message
+const sent = await ctx.sock.sendMessage(ctx.chat.jid, { text: "Processing…" });
+// … do work …
+await ctx.send.edit("Done! Here are the results.", sent);
+</code></pre>
+            <blockquote>
+              <p>
+                Editing is subject to WhatsApp's editing restrictions (time
+                window, message type).
+              </p>
+            </blockquote>
+
+            <nav class="docs-page-footer" aria-label="Documentation source">
+              <span>Found a mistake?</span>
+              <a
+                href="https://github.com/arsa0x/violajs/edit/main/docs/04-send-api.md"
+                target="_blank"
+                rel="noreferrer"
+                >Suggest an edit ↗</a
+              >
+            </nav>
+          </article>
+          <aside class="docs-toc" aria-label="On this page">
+            <p class="docs-toc-title">ON THIS PAGE</p>
+            <nav>
+              <a class="toc-level-2" href="#media-types">Media types</a
+              ><a class="toc-level-2" href="#method-reference"
+                >Method reference</a
+              ><a class="toc-level-2" href="#text">text</a
+              ><a class="toc-level-2" href="#image">image</a
+              ><a class="toc-level-2" href="#video">video</a
+              ><a class="toc-level-2" href="#audio">audio</a
+              ><a class="toc-level-2" href="#sticker">sticker</a
+              ><a class="toc-level-2" href="#document">document</a
+              ><a class="toc-level-2" href="#location">location</a
+              ><a class="toc-level-2" href="#contact">contact</a
+              ><a class="toc-level-2" href="#reaction">reaction</a
+              ><a class="toc-level-2" href="#delete">delete</a
+              ><a class="toc-level-2" href="#edit">edit</a>
+            </nav>
+          </aside>
+        </div>
+      </main>
+    </div>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <a class="brand" href="../index.html"
+          ><span class="brand-mark">v<span>.</span></span
+          ><span>viola<span class="brand-light">js</span></span></a
+        >
+        <p>
+          Made with care, powered by
+          <a
+            href="https://github.com/WhiskeySockets/Baileys"
+            target="_blank"
+            rel="noreferrer"
+            >Baileys</a
+          >
+          & <a href="https://bun.sh" target="_blank" rel="noreferrer">Bun</a>.
+        </p>
+        <span class="footer-copy">© <span id="year"></span> violajs</span>
+      </div>
+    </footer>
+    <script src="../script.js"></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-clike.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-javascript.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-typescript.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-bash.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-json.min.js"
+    ></script>
+  </body>
+</html>
