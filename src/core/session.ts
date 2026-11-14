@@ -5,6 +5,7 @@ import { customFetchAgent } from "@core/socket";
 import { logger, type Log } from "@lib/logger";
 import { qrEncode } from "@lib/qr";
 import type { BotOptions } from "@src/cli";
+import { config } from "@/config";
 
 const FATAL = new Set<number>([
   DisconnectReason.loggedOut,
@@ -45,7 +46,9 @@ export class Session {
   }
 
   async start(): Promise<void> {
-    this.auth ??= await useSQLiteAuthState(`./sessions/${this.name}`);
+    this.auth ??= await useSQLiteAuthState(
+      `${config.session_path}/${this.name}`,
+    );
     this.open();
   }
 

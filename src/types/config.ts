@@ -1,6 +1,7 @@
 export type BotConfig = {
   prefix: string;
   owners: Set<string>;
+  session_path: string;
 
   // nekopoi (optional)
   nekopoi_base?: string; // nekopoi_base

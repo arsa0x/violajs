@@ -5,6 +5,7 @@ import { qrEncode } from "@lib/qr";
 import { TtlCache } from "@src/storage/cache";
 import { logger, type Log } from "@lib/logger";
 import type { BotOptions } from "@src/cli";
+import { config } from "@/config";
 
 export const customFetchAgent = new https.Agent({
   keepAlive: true,
@@ -27,7 +28,9 @@ export const createWAClient: (
   log: Log,
   options?: BotOptions,
 ) => {
-  const { saveCreds, state } = await useSQLiteAuthState(`./sessions/${name}`);
+  const { saveCreds, state } = await useSQLiteAuthState(
+    `${config.session_path}/${name}`,
+  );
 
   let sock: WASocket;
 
