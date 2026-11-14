@@ -1,3 +1,4 @@
+import { pathToFileURL } from "node:url";
 import { readdir } from "fs/promises";
 import { readFile } from "fs/promises";
 import { watch, type FSWatcher } from "fs";
@@ -14,14 +15,70 @@ export class DynamicLoader {
   private watcher?: FSWatcher;
   private timers = new Map<string, ReturnType<typeof setTimeout>>();
   private fileCommands = new Map<string, string>();
+  private queues = new Map<string, Promise<void>>();
+  private seq = 0;
 
   constructor(private readonly registry: CommandRegistry) {}
 
-  async load(): Promise<void> {
-    const files = await this.collectFiles(COMMANDS_DIR);
+  private enqueue(file: string, task: () => Promise<void>): Promise<void> {
+    const next = (this.queues.get(file) ?? Promise.resolve())
+      .then(task)
+      .catch((error) => {
+        log.error("Reload failed:", relative(COMMANDS_DIR, file), error);
+      });
+    this.queues.set(file, next);
+    next.finally(() => {
+      if (this.queues.get(file) === next) this.queues.delete(file);
+    });
+    return next;
+  }
 
-    for (const file of files) {
-      await this.loadFile(file);
+  async load(): Promise<void> {
+    for (const file of await this.collectFiles(COMMANDS_DIR)) {
+      await this.enqueue(file, () => this.reconcile(file));
+    }
+  }
+
+  private async reconcile(file: string): Promise<void> {
+    const name = relative(COMMANDS_DIR, file);
+
+    if (!(await Bun.file(file).exists())) {
+      const prevName = this.fileCommands.get(file);
+      if (!prevName) return;
+      const prev = this.registry.resolve(prevName);
+      this.registry.unregister(prevName);
+      this.fileCommands.delete(file);
+      await this.disposeQuietly(prev);
+      log.info("Deleted:", name);
+      return;
+    }
+
+    const { mtimeMs } = await Bun.file(file).stat();
+    const mod = await import(
+      `${pathToFileURL(file).href}?v=${mtimeMs}.${++this.seq}`
+    );
+    const command = mod.default as CommandPlugin | undefined;
+    if (
+      !command ||
+      typeof command.execute !== "function" ||
+      !command.name?.trim()
+    ) {
+      throw new Error(`Invalid command module: ${file}`);
+    }
+
+    const prevName = this.fileCommands.get(file);
+    const prev = prevName ? this.registry.resolve(prevName) : undefined;
+    this.registry.replace(command, prevName);
+    this.fileCommands.set(file, command.name.trim().toLowerCase());
+    await this.disposeQuietly(prev);
+    log.info("Loaded:", command.name);
+  }
+
+  private async disposeQuietly(cmd?: CommandPlugin): Promise<void> {
+    try {
+      await cmd?.dispose?.();
+    } catch (e) {
+      log.warn("dispose() failed:", e);
     }
   }
 
@@ -46,82 +103,80 @@ export class DynamicLoader {
       log.error("Watcher error:", error);
     });
 
-    log.info("Watching for changes...");
+    log.info("Watching command plugins for changes...");
   }
 
   private debounce(file: string): void {
-    const existing = this.timers.get(file);
-
-    if (existing) clearTimeout(existing);
-
-    const timer = setTimeout(async () => {
-      this.timers.delete(file);
-      await this.handleChange(file);
-    }, DEBOUNCE_MS);
-
-    this.timers.set(file, timer);
+    clearTimeout(this.timers.get(file));
+    this.timers.set(
+      file,
+      setTimeout(() => {
+        this.timers.delete(file);
+        void this.enqueue(file, () => this.reconcile(file));
+      }, DEBOUNCE_MS),
+    );
   }
 
-  private async handleChange(file: string): Promise<void> {
-    const filename = relative(COMMANDS_DIR, file);
+  // private async handleChange(file: string): Promise<void> {
+  //   const filename = relative(COMMANDS_DIR, file);
 
-    try {
-      const files = await this.collectFiles(COMMANDS_DIR);
+  //   try {
+  //     const files = await this.collectFiles(COMMANDS_DIR);
 
-      if (!files.includes(file)) {
-        const commandName = this.fileCommands.get(file);
+  //     if (!files.includes(file)) {
+  //       const commandName = this.fileCommands.get(file);
 
-        if (commandName) {
-          this.registry.unregister(commandName);
-          this.fileCommands.delete(file);
+  //       if (commandName) {
+  //         this.registry.unregister(commandName);
+  //         this.fileCommands.delete(file);
 
-          log.info("Deleted:", filename);
-        }
+  //         log.info("Deleted:", filename);
+  //       }
 
-        return;
-      }
+  //       return;
+  //     }
 
-      await this.loadFile(file);
+  //     await this.loadFile(file);
 
-      log.info("Reloaded:", filename);
-    } catch (error) {
-      log.error("Failed to reload", filename, error);
-    }
-  }
+  //     log.info("Reloaded:", filename);
+  //   } catch (error) {
+  //     log.error("Failed to reload", filename, error);
+  //   }
+  // }
 
-  private async loadFile(file: string): Promise<void> {
-    const source = await readFile(file, "utf-8");
+  // private async loadFile(file: string): Promise<void> {
+  //   const source = await readFile(file, "utf-8");
 
-    const transpiler = new Bun.Transpiler({
-      loader: extname(file).slice(1) as "ts" | "js",
-      target: "bun",
-    });
+  //   const transpiler = new Bun.Transpiler({
+  //     loader: extname(file).slice(1) as "ts" | "js",
+  //     target: "bun",
+  //   });
 
-    const compiled = transpiler.transformSync(source);
+  //   const compiled = transpiler.transformSync(source);
 
-    const moduleUrl = `data:text/javascript;base64,${Buffer.from(
-      compiled,
-    ).toString("base64")}`;
+  //   const moduleUrl = `data:text/javascript;base64,${Buffer.from(
+  //     compiled,
+  //   ).toString("base64")}`;
 
-    const module = await import(moduleUrl);
-    const command = module.default as CommandPlugin | undefined;
+  //   const module = await import(moduleUrl);
+  //   const command = module.default as CommandPlugin | undefined;
 
-    if (
-      !command ||
-      typeof command.execute !== "function" ||
-      !command.name?.trim()
-    ) {
-      throw new Error(`Invalid command module: ${file}`);
-    }
+  //   if (
+  //     !command ||
+  //     typeof command.execute !== "function" ||
+  //     !command.name?.trim()
+  //   ) {
+  //     throw new Error(`Invalid command module: ${file}`);
+  //   }
 
-    const previousName = this.fileCommands.get(file);
+  //   const previousName = this.fileCommands.get(file);
 
-    this.registry.replace(command, previousName);
+  //   this.registry.replace(command, previousName);
 
-    this.fileCommands.set(file, command.name.trim().toLowerCase());
+  //   this.fileCommands.set(file, command.name.trim().toLowerCase());
 
-    log.info("Loaded:", command.name);
-  }
+  //   log.info("Loaded:", command.name);
+  // }
 
   private async collectFiles(dir: string): Promise<string[]> {
     const entries = await readdir(dir, {
