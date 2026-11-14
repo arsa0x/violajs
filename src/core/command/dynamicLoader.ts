@@ -71,7 +71,7 @@ export class DynamicLoader {
     this.registry.replace(command, prevName);
     this.fileCommands.set(file, command.name.trim().toLowerCase());
     await this.disposeQuietly(prev);
-    log.info("Loaded:", command.name);
+    log.debug("Loaded:", command.name);
   }
 
   private async disposeQuietly(cmd?: CommandPlugin): Promise<void> {

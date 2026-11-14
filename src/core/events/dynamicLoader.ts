@@ -101,7 +101,7 @@ export class EventDynamicLoader {
     const previousName = this.filePlugins.get(file);
     this.registry.replace(plugin, previousName);
     this.filePlugins.set(file, plugin.name.trim());
-    log.info("Loaded event plugin:", plugin.name);
+    log.debug("Loaded event plugin:", plugin.name);
   }
 
   private async collectFiles(dir: string): Promise<string[]> {
