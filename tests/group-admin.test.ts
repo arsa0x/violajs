@@ -1,7 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { CommandContext } from "@core/context";
-import { groupAdminOnly } from "@middlewares/group-admin";
-import { botAdminOnly } from "@middlewares/bot-admin";
+import { groupAdminOnly, botAdminOnly } from "@middlewares/group-role";
 
 function mockContext(
   participants: Array<{ id: string; admin?: string | null }>,

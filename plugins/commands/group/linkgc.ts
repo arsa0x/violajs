@@ -1,6 +1,6 @@
 import { defineCommand } from "@core/command";
 import { groupOnly } from "@middlewares/group";
-import { botAdminOnly } from "@middlewares/bot-admin";
+import { botAdminOnly } from "@middlewares/group-role";
 
 export default defineCommand({
   name: "linkgc",

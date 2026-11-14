@@ -1,8 +1,7 @@
 import { jidNormalizedUser } from "baileys";
 import { defineCommand } from "@core/command";
 import { groupOnly } from "@middlewares/group";
-import { groupAdminOnly } from "@middlewares/group-admin";
-import { botAdminOnly } from "@middlewares/bot-admin";
+import { groupAdminOnly, botAdminOnly } from "@middlewares/group-role";
 import { getGroupTarget, isGroupParticipant } from "@utils/group";
 
 export default defineCommand({

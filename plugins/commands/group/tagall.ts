@@ -1,6 +1,6 @@
 import { defineCommand } from "@core/command";
 import { groupOnly } from "@middlewares/group";
-import { groupAdminOnly } from "@middlewares/group-admin";
+import { groupAdminOnly } from "@middlewares/group-role";
 
 export default defineCommand({
   name: "tagall",
