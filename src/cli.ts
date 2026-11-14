@@ -3,7 +3,6 @@ import { parseArgs } from "util";
 import type { CommandRegistry } from "@core/command/registry";
 import type { EventRegistry } from "@core/events/registry";
 import { log } from "@lib/logger";
-import type { Session } from "./core/session";
 
 export interface BotOptions {
   pairing?: boolean;
