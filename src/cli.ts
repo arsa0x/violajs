@@ -3,11 +3,24 @@ import { parseArgs } from "util";
 import type { CommandRegistry } from "@core/command/registry";
 import type { EventRegistry } from "@core/events/registry";
 import { log } from "@lib/logger";
+import type { Session } from "./core/session";
 
 export interface BotOptions {
   pairing?: boolean;
   phone?: string;
 }
+
+const SESSION_NAME = /^[a-z0-9][a-z0-9_-]{0,31}$/i;
+
+const requireSessionName = (name: string): string => {
+  if (!SESSION_NAME.test(name)) {
+    log.error(
+      "Invalid session name. Use 1-32 chars: letters, digits, '-' or '_'.",
+    );
+    process.exit(1);
+  }
+  return name;
+};
 
 export function cli(
   bot: (
@@ -15,7 +28,7 @@ export function cli(
     eventRegistry: EventRegistry,
     name: string,
     options?: BotOptions,
-  ) => Promise<void>,
+  ) => Promise<unknown>,
   registry: CommandRegistry,
   eventRegistry: EventRegistry,
   sessionPath: string,
@@ -73,7 +86,7 @@ export function cli(
 
   switch (cmd) {
     case "create": {
-      const target = values.session.toString();
+      const target = requireSessionName(values.session.toString());
       if (!target || values.all) {
         log.error(
           "Enter the name of the session you want to create! e.g. --session=bot1",
@@ -97,7 +110,8 @@ export function cli(
           log.warn("The session directory is empty.");
         }
       } else {
-        const target = values.session.toString();
+        const target = requireSessionName(values.session.toString());
+
         if (!target) {
           log.error(
             "Enter a session name or use the --all flag! e.g. delete -s bot1",
@@ -127,7 +141,9 @@ export function cli(
           ),
         ).catch((err) => log.error("Error executing parallel sessions:", err));
       } else if (values.session) {
-        bot(registry, eventRegistry, values.session.toString());
+        const target = requireSessionName(values.session.toString());
+
+        bot(registry, eventRegistry, target);
       }
       break;
     }
