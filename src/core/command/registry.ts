@@ -5,31 +5,11 @@ export class CommandRegistry {
   private readonly canonical = new Map<string, CommandPlugin>();
 
   register(command: CommandPlugin): void {
-    const name = command.name.trim().toLowerCase();
+    const name = command.name?.trim().toLowerCase();
     if (!name) throw new Error("Command name cannot be empty");
-
-    const reservedFlags = new Set(["--help", "-h"]);
-
-    for (const flag of command.flags ?? []) {
-      for (const flagName of flag.names) {
-        if (reservedFlags.has(flagName)) {
-          throw new Error(
-            `Flag "${flagName}" is reserved for built-in command help.`,
-          );
-        }
-      }
-    }
-
-    this.assertAvailable(name);
-    this.lookup.set(name, command);
-    this.canonical.set(name, command);
-
-    for (const alias of command.aliases ?? []) {
-      const key = alias.trim().toLowerCase();
-      if (!key) continue;
-      this.assertAvailable(key);
-      this.lookup.set(key, command);
-    }
+    if (this.lookup.has(name))
+      throw new Error(`Command or alias already registered: ${name}`);
+    this.replace(command);
   }
 
   resolve(name: string): CommandPlugin | undefined {

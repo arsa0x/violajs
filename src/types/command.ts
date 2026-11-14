@@ -25,4 +25,6 @@ export type CommandPlugin = {
   middleware?: Middleware[];
   flags?: FlagSpec[];
   execute: (ctx: CommandContext) => Promise<void>;
+  // clear timers, close handles, etc. when replaced/removed
+  dispose?: () => void | Promise<void>;
 };
