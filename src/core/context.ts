@@ -1,9 +1,10 @@
-import type { WASocket, WAMessage } from "baileys";
+import { type WASocket, type WAMessage, jidNormalizedUser } from "baileys";
 import type { ParsedCommand } from "./parser";
 import { config } from "@/config";
 import { Send } from "@lib/send";
 import { type Log } from "@lib/logger";
 import type { Args } from "@lib/args";
+import type { CommandPlugin } from "../types/command";
 
 export class BaseContext {
   sock: WASocket;
@@ -34,12 +35,14 @@ export class EventContext<TEvent> extends BaseContext {
 
 export class CommandContext extends BaseContext {
   msg: WAMessage;
+  command?: CommandPlugin;
   name: string;
   text: string;
   rawArgs: string[];
   args?: Args;
   sender: {
     jid: string;
+    ids: string[];
     isOwner: boolean;
   };
   chat: {
@@ -69,9 +72,23 @@ export class CommandContext extends BaseContext {
       isGroup: params.jid.endsWith("@g.us"),
     };
 
+    const key = params.message.key as {
+      participant?: string;
+      participantAlt?: string;
+      remoteJidAlt?: string;
+    };
+    const ids = [
+      key.participant ?? params.jid,
+      key.participantAlt,
+      key.remoteJidAlt,
+    ]
+      .filter((x): x is string => !!x)
+      .map(jidNormalizedUser);
+
     this.sender = {
-      jid: senderJid,
-      isOwner: config.owners.has(senderJid),
+      jid: ids[0]!,
+      ids,
+      isOwner: ids.some((id) => config.owners.has(id)),
     };
 
     this.send = new Send(params.sock, params.message, params.jid);

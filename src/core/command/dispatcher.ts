@@ -19,6 +19,7 @@ export class CommandDispatcher {
     const command = this.registry.resolve(ctx.name);
     if (!command) return;
 
+    ctx.command = command;
     ctx.args = Args.parse(ctx.rawArgs, [...(command.flags ?? []), HELP_FLAG]);
 
     if (ctx.args.flag("--help")) {
