@@ -117,67 +117,6 @@ export class DynamicLoader {
     );
   }
 
-  // private async handleChange(file: string): Promise<void> {
-  //   const filename = relative(COMMANDS_DIR, file);
-
-  //   try {
-  //     const files = await this.collectFiles(COMMANDS_DIR);
-
-  //     if (!files.includes(file)) {
-  //       const commandName = this.fileCommands.get(file);
-
-  //       if (commandName) {
-  //         this.registry.unregister(commandName);
-  //         this.fileCommands.delete(file);
-
-  //         log.info("Deleted:", filename);
-  //       }
-
-  //       return;
-  //     }
-
-  //     await this.loadFile(file);
-
-  //     log.info("Reloaded:", filename);
-  //   } catch (error) {
-  //     log.error("Failed to reload", filename, error);
-  //   }
-  // }
-
-  // private async loadFile(file: string): Promise<void> {
-  //   const source = await readFile(file, "utf-8");
-
-  //   const transpiler = new Bun.Transpiler({
-  //     loader: extname(file).slice(1) as "ts" | "js",
-  //     target: "bun",
-  //   });
-
-  //   const compiled = transpiler.transformSync(source);
-
-  //   const moduleUrl = `data:text/javascript;base64,${Buffer.from(
-  //     compiled,
-  //   ).toString("base64")}`;
-
-  //   const module = await import(moduleUrl);
-  //   const command = module.default as CommandPlugin | undefined;
-
-  //   if (
-  //     !command ||
-  //     typeof command.execute !== "function" ||
-  //     !command.name?.trim()
-  //   ) {
-  //     throw new Error(`Invalid command module: ${file}`);
-  //   }
-
-  //   const previousName = this.fileCommands.get(file);
-
-  //   this.registry.replace(command, previousName);
-
-  //   this.fileCommands.set(file, command.name.trim().toLowerCase());
-
-  //   log.info("Loaded:", command.name);
-  // }
-
   private async collectFiles(dir: string): Promise<string[]> {
     const entries = await readdir(dir, {
       withFileTypes: true,
