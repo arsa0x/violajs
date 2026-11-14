@@ -4,6 +4,8 @@ import {
   type WAMessage,
   type WASocket,
 } from "baileys";
+import { lookup } from "dns/promises";
+import { isIP } from "net";
 import { buildCarouselButtons } from "./carousel-button";
 import type {
   InteractiveCallButtonOptions,
@@ -16,11 +18,16 @@ import type {
   InteractiveSingleSelectOptions,
   InteractiveUrlButtonOptions,
 } from "./types";
+import { log } from "../logger";
 
+const MAX_REDIRECTS = 3;
 const FETCH_TIMEOUT_MS = 8_000;
 const MAX_MEDIA_BYTES = 5 * 1024 * 1024;
 
-const fallbackImage = await Bun.file("assets/banner.png").arrayBuffer();
+let fallback: Buffer | undefined;
+
+const getFallback = async () =>
+  (fallback ??= Buffer.from(await Bun.file("assets/banner.png").arrayBuffer()));
 
 function assertNonEmpty(value: string, name: string): void {
   if (!value.trim()) {
@@ -28,37 +35,92 @@ function assertNonEmpty(value: string, name: string): void {
   }
 }
 
+function isPrivateIp(ip: string): boolean {
+  const v = ip.toLowerCase();
+  if (v.startsWith("::ffff:")) return isPrivateIp(v.slice(7));
+  if (isIP(v) === 4) {
+    const [a, b] = v.split(".").map(Number) as [number, number];
+    return (
+      a === 0 ||
+      a === 10 ||
+      a === 127 ||
+      (a === 169 && b === 254) ||
+      (a === 172 && b >= 16 && b <= 31) ||
+      (a === 192 && b === 168) ||
+      (a === 100 && b >= 64 && b <= 127)
+    );
+  }
+  return (
+    v === "::1" ||
+    v === "::" ||
+    v.startsWith("fc") ||
+    v.startsWith("fd") ||
+    v.startsWith("fe80")
+  );
+}
+
+async function assertPublicHost(url: URL): Promise<void> {
+  if (url.protocol !== "https:" && url.protocol !== "http:") {
+    throw new TypeError("Media URL must use http or https.");
+  }
+  const host = url.hostname.replace(/^\[|\]$/g, "");
+  const addrs = isIP(host)
+    ? [{ address: host }]
+    : await lookup(host, { all: true });
+  if (addrs.some((a) => isPrivateIp(a.address)))
+    throw new Error("Blocked private address");
+}
+
+async function readCapped(res: Response, max: number): Promise<Buffer> {
+  const declared = Number(res.headers.get("content-length") ?? 0);
+  if (declared > max) throw new Error("Media too large");
+  if (!res.body) throw new Error("Empty body");
+  const reader = res.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > max) {
+      await reader.cancel();
+      throw new Error("Media too large");
+    }
+    chunks.push(value);
+  }
+  if (total === 0) throw new Error("Empty body");
+  return Buffer.concat(chunks, total);
+}
 async function fetchMedia(
   rawUrl: string,
   type: "image" | "video",
 ): Promise<Buffer> {
   assertNonEmpty(rawUrl, "header media URL");
+  let url = new URL(rawUrl);
+  const signal = AbortSignal.timeout(FETCH_TIMEOUT_MS); // one deadline across all hops
 
-  const url = new URL(rawUrl);
-  if (url.protocol !== "https:" && url.protocol !== "http:") {
-    throw new TypeError("Interactive header media URL must use http or https.");
+  for (let hop = 0; ; hop++) {
+    await assertPublicHost(url);
+    const res = await fetch(url, {
+      signal,
+      redirect: "manual",
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; my-bot/1.0)",
+        Accept: `${type}/*`,
+      },
+    });
+    if (res.status >= 300 && res.status < 400) {
+      const loc = res.headers.get("location");
+      if (!loc || hop >= MAX_REDIRECTS) throw new Error("Too many redirects");
+      url = new URL(loc, url); // re-validated at the top of the loop
+      continue;
+    }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const ct = res.headers.get("content-type") ?? "";
+    if (!ct.startsWith(`${type}/`))
+      throw new Error(`Unexpected content-type "${ct}"`);
+    return readCapped(res, MAX_MEDIA_BYTES);
   }
-
-  const response = await fetch(url, {
-    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-    headers: {
-      "User-Agent": "Mozilla/5.0 (compatible; my-bot/1.0)",
-      Accept: `${type}/*`,
-    },
-  });
-
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-  const contentType = response.headers.get("content-type") ?? "";
-  if (!contentType.startsWith(`${type}/`)) {
-    throw new Error(`Unexpected content-type "${contentType}"`);
-  }
-
-  const bytes = Buffer.from(await response.arrayBuffer());
-  if (bytes.length === 0) throw new Error("Empty body");
-  if (bytes.length > MAX_MEDIA_BYTES) throw new Error("Media too large");
-
-  return bytes;
 }
 
 async function mapLimit<T, R>(
@@ -81,24 +143,23 @@ async function mapLimit<T, R>(
   return results;
 }
 
-async function resolveMedia(
-  media: InteractiveHeaderMedia,
-): Promise<{ bytes: Buffer; type: "image" | "video"; usedFallback: boolean }> {
-  const candidates = [media.url, ...(media.fallbackUrls ?? [])];
-  const failures: string[] = [];
-
-  for (const candidate of candidates) {
+async function resolveMedia(media: InteractiveHeaderMedia) {
+  for (const candidate of [media.url, ...(media.fallbackUrls ?? [])]) {
     try {
-      const bytes = await fetchMedia(candidate, media.type);
-      return { bytes, type: media.type, usedFallback: false };
+      return {
+        bytes: await fetchMedia(candidate, media.type),
+        type: media.type,
+        usedFallback: false,
+      };
     } catch (error) {
-      failures.push(`${candidate} -> ${(error as Error).message}`);
+      log.warn(
+        `Media fetch failed: ${candidate} -> ${(error as Error).message}`,
+      );
     }
   }
-
   return {
-    bytes: Buffer.from(fallbackImage),
-    type: "image",
+    bytes: await getFallback(),
+    type: "image" as const,
     usedFallback: true,
   };
 }
