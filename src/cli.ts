@@ -3,6 +3,7 @@ import { parseArgs } from "util";
 import type { CommandRegistry } from "@core/command/registry";
 import type { EventRegistry } from "@core/events/registry";
 import { log } from "@lib/logger";
+import { config } from "@/config";
 
 export interface BotOptions {
   pairing?: boolean;
@@ -20,6 +21,36 @@ const requireSessionName = (name: string): string => {
   }
   return name;
 };
+
+function listSessions(sessionPath: string): string[] {
+  if (!existsSync(sessionPath)) return [];
+  return readdirSync(sessionPath, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .sort();
+}
+
+function resolveSession(
+  explicit: string | undefined,
+  sessionPath: string,
+): string {
+  if (explicit) return requireSessionName(explicit);
+  if (config.main_session) return requireSessionName(config.main_session);
+
+  const existing = listSessions(sessionPath);
+  if (existing.length === 1) {
+    log.info("Using the only session:", existing[0]);
+    return existing[0]!;
+  }
+  if (existing.length > 1) {
+    log.error(
+      `Multiple sessions found (${existing.join(", ")}). ` +
+        "Use -s <name>, --all, or set main_session in config.ts.",
+    );
+    process.exit(1);
+  }
+  return "default";
+}
 
 export function cli(
   bot: (
@@ -40,7 +71,6 @@ export function cli(
       session: {
         type: "string",
         short: "s",
-        default: "default",
       },
       all: {
         type: "boolean",
@@ -83,16 +113,18 @@ export function cli(
     process.exit(1);
   }
 
+  const explicit =
+    typeof values.session === "string" ? values.session : undefined;
+
   switch (cmd) {
     case "create": {
-      const target = requireSessionName(values.session.toString());
-      if (!target || values.all) {
+      if (!explicit || values.all) {
         log.error(
-          "Enter the name of the session you want to create! e.g. --session=bot1",
+          "Enter the name of the session you want to create! e.g. create -s bot1",
         );
-        process.exit();
+        process.exit(1);
       }
-
+      const target = requireSessionName(explicit);
       if (existsSync(getPath(target))) {
         log.warn("Session", target, "already exists");
       } else {
@@ -109,7 +141,12 @@ export function cli(
           log.warn("The session directory is empty.");
         }
       } else {
-        const target = requireSessionName(values.session.toString());
+        if (!explicit) {
+          log.error("Enter a session name or use --all! e.g. delete -s bot1");
+          process.exit(1);
+        }
+
+        const target = requireSessionName(explicit);
 
         if (!target) {
           log.error(
@@ -133,16 +170,12 @@ export function cli(
           log.error("Phone pairing cannot be used with --all.");
           process.exit(1);
         }
-
         Promise.all(
-          readdirSync(sessionPath).map((session) =>
-            bot(registry, eventRegistry, session),
-          ),
+          listSessions(sessionPath).map((s) => bot(registry, eventRegistry, s)),
         ).catch((err) => log.error("Error executing parallel sessions:", err));
-      } else if (values.session) {
-        const target = requireSessionName(values.session.toString());
-
-        bot(registry, eventRegistry, target);
+      } else {
+        const target = resolveSession(explicit, sessionPath);
+        bot(registry, eventRegistry, target, options);
       }
       break;
     }
