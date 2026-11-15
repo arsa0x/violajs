@@ -69,17 +69,18 @@ All commands currently available in violajs.
 
 ## NSFW
 
-| Command   | Aliases | Description | Usage                                             | Flags               |
-| --------- | ------- | ----------- | ------------------------------------------------- | ------------------- |
-| `nekopoi` | `neko`  | —           | `.nekopoi -s enjo kouhai`<br>`.nekopoi -i 112233` | [4 flags](#nekopoi) |
-| `pornhub` | `ph`    | 18+ only.   | —                                                 | [4 flags](#pornhub) |
+| Command   | Aliases | Description | Usage                                                                               | Flags               |
+| --------- | ------- | ----------- | ----------------------------------------------------------------------------------- | ------------------- |
+| `nekopoi` | `neko`  | —           | `.nekopoi`<br>`.nekopoi -c 3d`<br>`.nekopoi -s enjo kouhai`<br>`.nekopoi -i 112233` | [5 flags](#nekopoi) |
+| `pornhub` | `ph`    | 18+ only.   | —                                                                                   | [4 flags](#pornhub) |
 
 ### Flag details
 
 #### `nekopoi`
 
 - `--search`, `-s` `<value>`: Search hentai by query, e.g. .nekopoi -s enjo kouhai
-- `--page`, `-p` `<value>`: Usage: .nekopoi -g milf -p 2
+- `--page`, `-p` `<value>`: Page number for latest or search, e.g. .nekopoi -c 2d -p 2
+- `--category`, `-c` `<value>`: Latest by category (hentai, 2d, 3d, jav, cosplay), e.g. .nekopoi -c 3d
 - `--id`, `-i` `<value>`: Get hentai by id, e.g. .nekopoi -i <id>
 - `--post`: Usage: .nekopoi -i <id> --post
 
