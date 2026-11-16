@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f8f7fc" />
+    <meta name="description" content="Read the violajs documentation." />
+    <script>
+      (() => {
+        try {
+          const saved = localStorage.getItem("violajs-theme");
+          const prefersDark = window.matchMedia(
+            "(prefers-color-scheme: dark)",
+          ).matches;
+          if (saved === "dark" || (!saved && prefersDark))
+            document.documentElement.dataset.theme = "dark";
+        } catch {}
+      })();
+    </script>
+    <title>{{ title | default: "ViolaJS" }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body class="docs-page">
+    {% render 'partials/navbar.liquid', navigation: navigation, navType: navType, page: page %}
+
+    <div class="docs-shell container">
+          {% render 'partials/sidebar.liquid', collections: collections, page: page %}
+
+          <main class="docs-main">
+            <div class="docs-breadcrumb">
+              <a href="/">Home</a><span>/</span><span>Documentation</span><span>/</span><strong>{{ pageTitle }}</strong>
+            </div>
+            <div class="docs-article-layout">
+              <article class="docs-content markdown-body">
+                {{ content }}
+                <nav class="docs-page-footer" aria-label="Documentation source">
+                  <span>Found a mistake?</span>
+                  <a href="https://github.com{{ page.fileSlug }}.md" target="_blank" rel="noreferrer">Suggest an edit ↗</a>
+                </nav>
+              </article>
+
+              {% assign tocHtml = content | toc %}
+              {% if tocHtml != "" %}
+                <aside class="docs-toc" aria-label="On this page">
+                  <p class="docs-toc-title">ON THIS PAGE</p>
+                  {{ tocHtml }}
+                </aside>
+              {% endif %}
+            </div>
+          </main>
+        </div>
+
+    {% render 'partials/footer.liquid' %}
+    <script src="/script.js"></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-clike.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-javascript.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-typescript.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-bash.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-json.min.js"
+    ></script>
+  </body>
+</html>

@@ -4,7 +4,7 @@ import type { Category, CommandPlugin } from "@src/types/command";
 import { CATEGORY_TITLES } from "@utils/category";
 
 const entryDir = path.resolve("./plugins/commands");
-const docsFile = path.resolve("./docs/03-command-list.md");
+const docsFile = path.resolve("site/docs/03-command-list.md");
 
 async function collectCommandFiles(dir: string): Promise<string[]> {
   const entries = await fs.readdir(dir, { withFileTypes: true });

@@ -23,16 +23,18 @@
   "scripts": {
     "start": "bun index.ts",
     "dev": "bun run dev.ts",
-    "dev:web": "bun run scripts/server.ts",
+    "dev:web": "bun run eleventy --serve",
     "build": "bun run generate && bun scripts/build.js",
+    "build:web": "bun run eleventy --input=site",
     "generate:docs": "bun scripts/generate-docs.ts",
-    "generate:pages": "bun scripts/generate-pages.ts && bun fmt",
     "generate:plugins": "bun scripts/generate-config.js && bun scripts/generate.ts && bun fmt",
-    "generate:all": "bun run generate:docs && bun run generate:pages && bun run generate:plugins"
+    "generate:all": "bun run generate:docs && bun run generate:plugins"
   },
   "devDependencies": {
+    "@11ty/eleventy": "^3.1.8",
     "@types/bun": "latest",
-    "marked": "^18.2.0"
+    "eleventy-plugin-toc": "^1.1.5",
+    "markdown-it-anchor": "^10.1.0"
   },
   "peerDependencies": {
     "typescript": "^7"
