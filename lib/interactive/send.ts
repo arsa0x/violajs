@@ -24,6 +24,18 @@ const MAX_REDIRECTS = 3;
 const FETCH_TIMEOUT_MS = 8_000;
 const MAX_MEDIA_BYTES = 5 * 1024 * 1024;
 
+const BIZ_NODE = {
+  tag: "biz",
+  attrs: {},
+  content: [
+    {
+      tag: "interactive",
+      attrs: { type: "native_flow", v: "1" },
+      content: [{ tag: "native_flow", attrs: { v: "9", name: "mixed" } }],
+    },
+  ],
+};
+
 let fallback: Buffer | undefined;
 
 const getFallback = async () =>
@@ -232,41 +244,22 @@ export async function sendNativeFlow(
         },
       },
     } as never,
-    {
-      userJid,
-      quoted: quote ? quotedMessage : undefined,
-    },
+    { userJid, quoted: quote ? quotedMessage : undefined },
   );
 
   if (!generated.message || !generated.key.id) {
     throw new Error("Baileys failed to generate the interactive message.");
   }
 
-  const bizNode = {
-    tag: "biz",
-    attrs: {},
-    content: [
-      {
-        tag: "interactive",
-        attrs: { type: "native_flow", v: "1" },
-        content: [
-          {
-            tag: "native_flow",
-            attrs: { v: "9", name: "mixed" },
-          },
-        ],
-      },
-    ],
-  };
-
-  const additionalNodes = jid.endsWith("@g.us")
-    ? [bizNode]
-    : [{ tag: "bot", attrs: { biz_bot: "1" } }, bizNode];
-
-  await sock.relayMessage(jid, generated.message, {
-    messageId: generated.key.id,
-    additionalNodes,
-  });
+  try {
+    await sock.relayMessage(jid, generated.message, {
+      messageId: generated.key.id,
+      additionalNodes: [BIZ_NODE],
+    });
+  } catch (error) {
+    log.error("relayMessage failed:", jid, error);
+    throw error;
+  }
 }
 
 /** Sends native-flow quick-reply buttons. */
