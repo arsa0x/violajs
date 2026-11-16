@@ -1,0 +1,30 @@
+<aside class="docs-sidebar">
+  <a class="docs-back-link" href="/">← Back to overview</a>
+  <p class="docs-sidebar-label">DOCUMENTATION</p>
+  <nav class="docs-nav" aria-label="Documentation pages">
+    {% for item in collections.sortedDocs %}
+      {% assign isActive = false %}
+      {% if page.url == item.url %}
+        {% assign isActive = true %}
+      {% endif %}
+
+      {% capture idx %}{% if forloop.index < 10 %}0{% endif %}{{ forloop.index }}{% endcapture %}
+      {% assign docTitle = item.data.title | default: item.content | extractTitle: item.fileSlug %}
+
+      <a
+        class="docs-nav-link{% if isActive %} is-active{% endif %}"
+        href="{{ item.url }}"
+        {% if isActive %}aria-current="page"{% endif %}
+      >
+        <span class="docs-nav-index">{{ idx }}</span>
+        <span>{{ docTitle }}</span>
+      </a>
+    {% endfor %}
+  </nav>
+  <a
+    class="docs-source-link"
+    href="https://github.com/arsa0x/violajs/tree/main/docs"
+    target="_blank"
+    rel="noreferrer"
+  >Edit documentation on GitHub ↗</a>
+</aside>
