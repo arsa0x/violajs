@@ -9,7 +9,7 @@
     { "label": "Features", "url": "#features" },
     { "label": "Getting started", "url": "#getting-started" },
     { "label": "Plugins", "url": "#plugins" },
-    { "label": "Documentation", "url": "/docs" },
+    { "label": "Documentation", "url": "#docs" },
     {
       "label": "GitHub",
       "url": "https://github.com/arsa0x/violajs",
