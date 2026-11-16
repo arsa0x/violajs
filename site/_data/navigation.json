@@ -1,0 +1,28 @@
+{
+  "brand": {
+    "mark": "v.",
+    "prefix": "viola",
+    "suffix": "js",
+    "url": "/"
+  },
+  "landing": [
+    { "label": "Features", "url": "#features" },
+    { "label": "Getting started", "url": "#getting-started" },
+    { "label": "Plugins", "url": "#plugins" },
+    { "label": "Documentation", "url": "/docs" },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/arsa0x/violajs",
+      "external": true
+    }
+  ],
+  "docs": [
+    { "label": "Home", "url": "/" },
+    { "label": "Documentation", "url": "#" },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/arsa0x/violajs",
+      "external": true
+    }
+  ]
+}
