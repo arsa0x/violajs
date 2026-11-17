@@ -5,7 +5,7 @@ title: Documentation — violajs
 ---
 
 <section class="container docs-index-main">
-  <a class="docs-back-link" href="/">← Back to overview</a>
+  <a class="docs-back-link" href="{{ '/' | url }}">← Back to overview</a>
   <div class="docs-index-heading">
     <span class="section-kicker">VIOLAJS / DOCUMENTATION</span>
     <h1>
@@ -22,7 +22,7 @@ title: Documentation — violajs
       {% assign docTitle = item.data.title | default: item.content | extractTitle: item.fileSlug %}
       {% assign docDesc = item.data.description | default: "Read the violajs documentation." %}
 
-      <a class="docs-index-card" href="{{ item.url }}">
+      <a class="docs-index-card" href="{{ item.url | url }}">
         <span class="docs-index-number">{{ idx }}</span>
         <span class="docs-index-card-copy">
           <strong>{{ docTitle }}</strong>

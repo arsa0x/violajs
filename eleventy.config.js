@@ -27,7 +27,6 @@ export default function (eleventyConfig) {
     return rawTitle.replace(/<[^>]+>/g, "").trim() || fallback;
   });
 
-
   const mdLib = markdownIt({
     html: true,
     linkify: true,
@@ -54,6 +53,7 @@ export default function (eleventyConfig) {
   });
 
   return {
+    pathPrefix: process.env.GITHUB_ACTIONS === "true" ? "/violajs/" : "/",
     dir: {
       input: "site",
       includes: "_includes",

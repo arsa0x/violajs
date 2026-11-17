@@ -18,7 +18,7 @@
   ],
   "docs": [
     { "label": "Home", "url": "/" },
-    { "label": "Documentation", "url": "#" },
+    { "label": "Documentation", "url": "/docs/" },
     {
       "label": "GitHub",
       "url": "https://github.com/arsa0x/violajs",

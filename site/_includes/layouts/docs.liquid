@@ -24,63 +24,45 @@
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="{{ '/style.css' | url }}" />
   </head>
   <body class="docs-page">
     {% render 'partials/navbar.liquid', navigation: navigation, navType: navType, page: page %}
 
     <div class="docs-shell container">
-          {% render 'partials/sidebar.liquid', collections: collections, page: page %}
+      {% render 'partials/sidebar.liquid', collections: collections, page: page %}
 
-          <main class="docs-main">
-            <div class="docs-breadcrumb">
-              <a href="/">Home</a><span>/</span><span>Documentation</span><span>/</span><strong>{{ pageTitle }}</strong>
-            </div>
-            <div class="docs-article-layout">
-              <article class="docs-content markdown-body">
-                {{ content }}
-                <nav class="docs-page-footer" aria-label="Documentation source">
-                  <span>Found a mistake?</span>
-                  <a href="https://github.com{{ page.fileSlug }}.md" target="_blank" rel="noreferrer">Suggest an edit ↗</a>
-                </nav>
-              </article>
-
-              {% assign tocHtml = content | toc %}
-              {% if tocHtml != "" %}
-                <aside class="docs-toc" aria-label="On this page">
-                  <p class="docs-toc-title">ON THIS PAGE</p>
-                  {{ tocHtml }}
-                </aside>
-              {% endif %}
-            </div>
-          </main>
+      <main class="docs-main">
+        <div class="docs-breadcrumb">
+          <a href="{{ '/' | url }}">Home</a><span>/</span><span>Documentation</span><span>/</span><strong>{{ pageTitle }}</strong>
         </div>
+        <div class="docs-article-layout">
+          <article class="docs-content markdown-body">
+            {{ content }}
+            <nav class="docs-page-footer" aria-label="Documentation source">
+              <span>Found a mistake?</span>
+              <a href="https://github.com{{ page.fileSlug }}.md" target="_blank" rel="noreferrer">Suggest an edit ↗</a>
+            </nav>
+          </article>
+
+          {% assign tocHtml = content | toc %}
+          {% if tocHtml != "" %}
+            <aside class="docs-toc" aria-label="On this page">
+              <p class="docs-toc-title">ON THIS PAGE</p>
+              {{ tocHtml }}
+            </aside>
+          {% endif %}
+        </div>
+      </main>
+    </div>
 
     {% render 'partials/footer.liquid' %}
-    <script src="/script.js"></script>
-    <script
-      defer
-      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js"
-    ></script>
-    <script
-      defer
-      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-clike.min.js"
-    ></script>
-    <script
-      defer
-      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-javascript.min.js"
-    ></script>
-    <script
-      defer
-      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-typescript.min.js"
-    ></script>
-    <script
-      defer
-      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-bash.min.js"
-    ></script>
-    <script
-      defer
-      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-json.min.js"
-    ></script>
+    <script src="{{ '/script.js' | url }}"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-clike.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-javascript.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-typescript.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-bash.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-json.min.js"></script>
   </body>
 </html>
