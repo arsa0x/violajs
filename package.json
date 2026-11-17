@@ -25,9 +25,9 @@
     "dev": "bun run dev.ts",
     "dev:web": "bun run eleventy --serve",
     "build": "bun run generate && bun scripts/build.js",
-    "build:web": "bun run eleventy --input=site",
+    "build:web": "bun run generate:docs && bun run eleventy --input=site && bun fmt --ignore-path=/dev/null _site/",
+    "generate": "bun scripts/generate-config.js && bun scripts/generate.ts && bun fmt",
     "generate:docs": "bun scripts/generate-docs.ts",
-    "generate:plugins": "bun scripts/generate-config.js && bun scripts/generate.ts && bun fmt",
     "generate:all": "bun run generate:docs && bun run generate:plugins"
   },
   "devDependencies": {

@@ -6,6 +6,20 @@ import { CATEGORY_TITLES } from "@utils/category";
 const entryDir = path.resolve("./plugins/commands");
 const docsFile = path.resolve("site/docs/03-command-list.md");
 
+function escapeMarkdown(value: string): string {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
+function escapeCell(value: string): string {
+  return escapeMarkdown(value)
+    .replaceAll("|", "\\|")
+    .replaceAll("\n", " ")
+    .trim();
+}
+
 async function collectCommandFiles(dir: string): Promise<string[]> {
   const entries = await fs.readdir(dir, { withFileTypes: true });
   const files: string[] = [];
@@ -33,21 +47,15 @@ function slug(value: string): string {
     .replace(/^-|-$/g, "");
 }
 
-function escapeCell(value: string): string {
-  return value
-    .replaceAll("|", "\\|")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll("\n", " ")
-    .trim();
-}
-
 function formatFlagDetails(command: CommandPlugin): string[] {
   const flags = command.flags ?? [];
   if (flags.length === 0) return [];
 
   const details = flags.map((flag) => {
-    const names = flag.names.map((name) => "\x60" + name + "\x60").join(", ");
+    const names = flag.names
+      .map((name) => `\`${escapeMarkdown(name)}\``)
+      .join(", ");
+
     const argument =
       flag.kind === "bool"
         ? ""
@@ -56,12 +64,15 @@ function formatFlagDetails(command: CommandPlugin): string[] {
           : flag.kind === "list"
             ? " `<item,...>`"
             : " `<value>`";
-    const description = flag.getDescription();
 
-    return "- " + names + argument + (description ? ": " + description : "");
+    const description = escapeMarkdown(
+      flag.getDescription() ?? "No description provided",
+    ).replaceAll("\n", " ");
+
+    return `- ${names}${argument}${description ? `: ${description}` : ""}`;
   });
 
-  return ["#### " + "\x60" + command.name + "\x60", "", ...details, ""];
+  return [`#### ${escapeMarkdown(command.name)}`, "", ...details];
 }
 
 const files = (await collectCommandFiles(entryDir)).sort();
@@ -136,8 +147,9 @@ for (const [category, title] of Object.entries(CATEGORY_TITLES) as [
       ? escapeCell(command.description)
       : "—";
     const usage = command.usage?.length
-      ? command.usage.map((item) => `\`${item}\``).join("<br>")
+      ? command.usage.map((item) => `\`${escapeCell(item)}\``).join("<br>")
       : "—";
+
     const flags = command.flags?.length
       ? "[" + command.flags.length + " flags](#" + slug(command.name) + ")"
       : "—";
