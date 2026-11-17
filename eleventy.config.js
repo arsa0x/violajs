@@ -21,7 +21,7 @@ export default function (eleventyConfig) {
   });
 
   eleventyConfig.addFilter("extractTitle", (content, fallback) => {
-    const match = /<h1[^>]*>([\\s\\S]*?)<\\/h1>/i.exec(content || "");
+    const match = /<h1[^>]*>([\s\S]*?)<\/h1>/i.exec(content || "");
     if (!match) return fallback;
     const rawTitle = match.at(1) || "";
     return rawTitle.replace(/<[^>]+>/g, "").trim() || fallback;
@@ -41,7 +41,7 @@ export default function (eleventyConfig) {
       s
         .toLowerCase()
         .trim()
-        .replace(/[^\\p{L}\\p{N}]+/gu, "-")
+        .replace(/[^\p{L}\p{N}]+/gu, "-")
         .replace(/^-|-$/g, ""),
   });
 
