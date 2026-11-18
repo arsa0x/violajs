@@ -24,6 +24,13 @@ const OWNED_EVENTS = [
   "group-participants.update",
   "groups.update",
 ] as const;
+const PAIRING_CODE = "V1QLATSC"; // I→1, O→Q
+
+if (!/^[1-9A-HJ-NP-TV-Z]{8}$/.test(PAIRING_CODE)) {
+  throw new Error(
+    "PAIRING_CODE must be 8 chars from 123456789ABCDEFGHJKLMNPQRSTVWXYZ",
+  );
+}
 
 const { version } = await fetchLatestWaWebVersion();
 export const groupCaches = new WeakMap<WASocket, TtlCache>();
@@ -72,18 +79,18 @@ export class Session {
     const sock = makeWASocket({
       auth: auth.state,
       version,
-      syncFullHistory: false,
-      markOnlineOnConnect: false,
-      fetchAgent: new https.Agent({
-        keepAlive: true,
-        keepAliveMsecs: 30_000,
-        maxSockets: 100,
-        maxFreeSockets: 20,
-        timeout: 60_000,
-      }),
+      // syncFullHistory: false,
+      // markOnlineOnConnect: false,
+      // fetchAgent: new https.Agent({
+      //   keepAlive: true,
+      //   keepAliveMsecs: 30_000,
+      //   maxSockets: 100,
+      //   maxFreeSockets: 20,
+      //   timeout: 60_000,
+      // }),
       logger: logger(this.log),
-      msgRetryCounterCache: this.retryCache,
-      cachedGroupMetadata: async (jid) => this.groupCache.get(jid),
+      // msgRetryCounterCache: this.retryCache,
+      // cachedGroupMetadata: async (jid) => this.groupCache.get(jid),
     });
     this.sock = sock;
     groupCaches.set(sock, this.groupCache);
@@ -132,7 +139,7 @@ export class Session {
           try {
             const code = await sock.requestPairingCode(
               this.options.phone!,
-              "VIOLATSC",
+              PAIRING_CODE,
             );
             this.log.info("Pairing code:", code);
           } catch (e) {
