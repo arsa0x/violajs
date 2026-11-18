@@ -106,7 +106,7 @@ if (!quoted) {
 For media in the quoted message you need `downloadMediaMessage` from Baileys:
 
 ```ts
-import { downloadMediaMessage } from "baileys";
+import { downloadMediaMessage } from "@oxidezap/baileyrs";
 
 const stream = await downloadMediaMessage(
   {

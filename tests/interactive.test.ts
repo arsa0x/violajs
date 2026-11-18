@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { WAMessage } from "baileys";
+import type { WAMessage } from "@oxidezap/baileyrs";
 import { extractInteractiveResponse } from "@lib/interactive/response";
 
 function message(value: unknown): WAMessage {

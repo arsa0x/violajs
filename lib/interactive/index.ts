@@ -1,4 +1,4 @@
-import type { WAMessage, WASocket } from "baileys";
+import type { WAMessage, WASocket } from "@oxidezap/baileyrs";
 import {
   sendCallButton,
   sendCarousel,

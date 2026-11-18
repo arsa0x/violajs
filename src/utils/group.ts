@@ -1,4 +1,4 @@
-import { jidNormalizedUser } from "baileys";
+import { jidNormalizedUser } from "@oxidezap/baileyrs";
 import type { CommandContext } from "@core/context";
 
 export function getGroupMentions(ctx: CommandContext): string[] {

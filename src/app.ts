@@ -9,7 +9,7 @@ import { cli, type BotOptions } from "./cli";
 import { EventRegistry } from "@core/events/registry";
 import { EventDispatcher } from "@core/events/dispatcher";
 import { attachBaileysEventAdapter } from "@core/events/adapter";
-import { normalizeMessageContent, type WAMessage } from "baileys";
+import { normalizeMessageContent, type WAMessage } from "@oxidezap/baileyrs";
 import { Session } from "@core/session";
 import { TtlCache } from "@src/storage/cache";
 import { Semaphore } from "./core/semaphore";

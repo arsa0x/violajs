@@ -1,4 +1,4 @@
-import type { CacheStore } from "baileys";
+import type { CacheStore } from "@oxidezap/baileyrs";
 
 export class TtlCache implements CacheStore {
   private map = new Map<string, { v: unknown; exp: number }>();

@@ -1,6 +1,6 @@
 import { defineCommand } from "@core/command";
 import { FlagSpec } from "@lib/args";
-import { downloadMediaMessage, type WAMessage } from "baileys";
+import { downloadMediaMessage, type WAMessage } from "@oxidezap/baileyrs";
 
 export default defineCommand({
   name: "sticker",

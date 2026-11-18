@@ -3,7 +3,7 @@ import {
   prepareWAMessageMedia,
   type WAMessage,
   type WASocket,
-} from "baileys";
+} from "@oxidezap/baileyrs";
 import { lookup } from "dns/promises";
 import { isIP } from "net";
 import { buildCarouselButtons } from "./carousel-button";
@@ -188,7 +188,10 @@ async function buildHeader(
 
   const prepared = await prepareWAMessageMedia(
     type === "image" ? { image: bytes } : { video: bytes },
-    { upload: sock.waUploadToServer },
+    {
+      waClient: undefined as never,
+      upload: sock.waUploadToServer,
+    },
   );
 
   if (type === "image") {
@@ -571,7 +574,10 @@ export async function sendCarousel(
     const buttons = buildCarouselButtons(cardButtons, index + 1);
     const media = await prepareWAMessageMedia(
       { image: bytes },
-      { upload: sock.waUploadToServer },
+      {
+        waClient: undefined as never,
+        upload: sock.waUploadToServer,
+      },
     );
 
     if (!media.imageMessage) {

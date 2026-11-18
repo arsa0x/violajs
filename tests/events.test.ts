@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { WASocket } from "baileys";
+import type { WASocket } from "@oxidezap/baileyrs";
 import type { Log } from "@lib/logger";
 import { defineEvent } from "@core/event";
 import { EventDispatcher } from "@core/events/dispatcher";

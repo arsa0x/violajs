@@ -1,9 +1,13 @@
-import makeWASocket, { DisconnectReason, type WASocket } from "baileys";
+import makeWASocket, {
+  DisconnectReason,
+  fetchLatestWaWebVersion,
+  type WASocket,
+} from "@oxidezap/baileyrs";
 import { useSQLiteAuthState } from "@src/storage/auth";
 import { TtlCache } from "@src/storage/cache";
-import { customFetchAgent } from "@core/socket";
 import { logger, type Log } from "@lib/logger";
 import { qrEncode } from "@lib/qr";
+import https from "https";
 import type { BotOptions } from "@src/cli";
 import { config } from "@/config";
 
@@ -21,6 +25,7 @@ const OWNED_EVENTS = [
   "groups.update",
 ] as const;
 
+const { version } = await fetchLatestWaWebVersion();
 export const groupCaches = new WeakMap<WASocket, TtlCache>();
 
 export class Session {
@@ -66,9 +71,16 @@ export class Session {
 
     const sock = makeWASocket({
       auth: auth.state,
+      version,
       syncFullHistory: false,
       markOnlineOnConnect: false,
-      fetchAgent: customFetchAgent,
+      fetchAgent: new https.Agent({
+        keepAlive: true,
+        keepAliveMsecs: 30_000,
+        maxSockets: 100,
+        maxFreeSockets: 20,
+        timeout: 60_000,
+      }),
       logger: logger(this.log),
       msgRetryCounterCache: this.retryCache,
       cachedGroupMetadata: async (jid) => this.groupCache.get(jid),
@@ -139,7 +151,36 @@ export class Session {
       this.log.info("WhatsApp connected");
       return;
     }
+
     if (u.connection !== "close") return;
+    // if (u.connection === "close") {
+    //   const boom = u.lastDisconnect?.error as
+    //     | { output?: { statusCode?: number }; data?: { expire?: number } }
+    //     | undefined;
+    //   const statusCode = boom?.output?.statusCode;
+
+    //   switch (statusCode) {
+    //     case DisconnectReason.loggedOut:
+    //       this.log.error("Logged out; delete session and pair again.");
+    //       return;
+    //     case 405: // CLIENT_OUTDATED — next socket is rejected identically
+    //       this.log.error("Client outdated; update baileyrs / WA Web version.");
+    //       return;
+    //     case DisconnectReason.forbidden: {
+    //       const expire = boom?.data?.expire;
+    //       if (!expire) return;
+    //       const delay = Math.max(0, expire * 1000 - Date.now());
+    //       this.log.error(
+    //         `Temp banned until ${new Date(expire * 1000).toISOString()}`,
+    //       );
+    //       setTimeout(connect, delay);
+    //       return;
+    //     }
+    //     default:
+    //       this.log.error("Connection closed:", statusCode ?? "unknown");
+    //       setTimeout(connect, RECONNECT_DELAY);
+    //   }
+    // }
 
     const code = (
       u.lastDisconnect?.error as

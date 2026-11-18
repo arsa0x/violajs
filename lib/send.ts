@@ -1,6 +1,6 @@
 import type { MimeType } from "../src/types/mime";
 import { InteractiveSend } from "./interactive";
-import type { WAMediaUpload, WAMessage, WASocket } from "baileys";
+import type { WAMediaUpload, WAMessage, WASocket } from "@oxidezap/baileyrs";
 
 /**
  * Provides helper methods for sending WhatsApp messages and media.

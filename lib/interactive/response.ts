@@ -1,4 +1,4 @@
-import type { WAMessage } from "baileys";
+import type { WAMessage } from "@oxidezap/baileyrs";
 
 function stringField(
   value: Record<string, unknown>,

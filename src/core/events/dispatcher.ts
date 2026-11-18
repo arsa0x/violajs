@@ -1,4 +1,4 @@
-import type { WASocket } from "baileys";
+import type { WASocket } from "@oxidezap/baileyrs";
 import type { Log } from "@lib/logger";
 import type { EventMap, EventName } from "@src/types/event";
 import { EventRegistry } from "./registry";

@@ -1,4 +1,4 @@
-import { jidNormalizedUser, type GroupMetadata, type WASocket } from "baileys";
+import { jidNormalizedUser, type GroupMetadata, type WASocket } from "@oxidezap/baileyrs";
 import { groupCaches } from "@core/session";
 
 const norm = (j?: string | null) => (j ? jidNormalizedUser(j) : "");

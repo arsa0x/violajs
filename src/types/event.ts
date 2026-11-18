@@ -1,4 +1,4 @@
-import type { WAMessage, BaileysEventMap } from "baileys";
+import type { WAMessage, BaileysEventMap } from "@oxidezap/baileyrs";
 import type { EventContext } from "@core/context";
 
 export type InternalEventMap = {

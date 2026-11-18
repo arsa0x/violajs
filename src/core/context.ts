@@ -1,4 +1,4 @@
-import { type WASocket, type WAMessage, jidNormalizedUser } from "baileys";
+import { type WASocket, type WAMessage, jidNormalizedUser } from "@oxidezap/baileyrs";
 import type { ParsedCommand } from "./parser";
 import { config } from "@/config";
 import { Send } from "@lib/send";

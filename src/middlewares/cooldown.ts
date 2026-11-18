@@ -1,4 +1,4 @@
-import { jidNormalizedUser } from "baileys";
+import { jidNormalizedUser } from "@oxidezap/baileyrs";
 import type { Middleware } from "@src/types/middleware";
 
 export const cooldown = (durationMs: number): Middleware => {

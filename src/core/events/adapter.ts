@@ -1,4 +1,4 @@
-import type { WASocket } from "baileys";
+import type { WASocket } from "@oxidezap/baileyrs";
 import type { EventDispatcher } from "./dispatcher";
 
 export function attachBaileysEventAdapter(

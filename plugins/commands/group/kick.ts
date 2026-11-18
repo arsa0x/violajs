@@ -1,4 +1,4 @@
-import { jidNormalizedUser } from "baileys";
+import { jidNormalizedUser } from "@oxidezap/baileyrs";
 import { defineCommand } from "@core/command";
 import { groupOnly } from "@middlewares/group";
 import { groupAdminOnly, botAdminOnly } from "@middlewares/group-role";
