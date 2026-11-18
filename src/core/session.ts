@@ -1,7 +1,7 @@
 import makeWASocket, { DisconnectReason, type WASocket } from "baileys";
 import { useSQLiteAuthState } from "@src/storage/auth";
 import { TtlCache } from "@src/storage/cache";
-import { customFetchAgent } from "@core/socket";
+import https from "node:https";
 import { logger, type Log } from "@lib/logger";
 import { qrEncode } from "@lib/qr";
 import type { BotOptions } from "@src/cli";
@@ -20,6 +20,14 @@ const OWNED_EVENTS = [
   "group-participants.update",
   "groups.update",
 ] as const;
+
+const customFetchAgent = new https.Agent({
+  keepAlive: true,
+  keepAliveMsecs: 30_000,
+  maxSockets: 100,
+  maxFreeSockets: 20,
+  timeout: 60_000,
+});
 
 export const groupCaches = new WeakMap<WASocket, TtlCache>();
 
