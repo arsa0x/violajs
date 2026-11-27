@@ -50,7 +50,7 @@ export default defineCommand({
     }
 
     const start = Number(ctx.args?.value("--start") ?? 0);
-    const duration = Number(ctx.args?.value("--duration", "-d") ?? 10);
+    const duration = Number(ctx.args?.value("--duration") ?? 10);
     if (!Number.isFinite(start) || start < 0) {
       await ctx.send.text("Nilai --start harus berupa angka 0 atau lebih.");
       return;
