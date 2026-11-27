@@ -25,7 +25,8 @@ import _21 from "@plugins/commands/tools/menu.ts";
 import _22 from "@plugins/commands/tools/ouo.ts";
 import _23 from "@plugins/commands/tools/ping.js";
 import _24 from "@plugins/commands/tools/qr.ts";
-import _25 from "@plugins/commands/tools/sticker.ts";
+import _25 from "@plugins/commands/tools/saudio.ts";
+import _26 from "@plugins/commands/tools/sticker.ts";
 
 export const commands = [
   _0,
@@ -54,4 +55,5 @@ export const commands = [
   _23,
   _24,
   _25,
+  _26,
 ];

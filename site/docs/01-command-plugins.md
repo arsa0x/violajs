@@ -97,6 +97,28 @@ export default defineCommand({
 
 ---
 
+## Audio sticker command
+
+The `.saudio` command creates a native WhatsApp sound sticker from a video. Reply to
+a video with the command, or send a video with `.saudio` as its caption.
+
+```text
+.saudio
+.saudio --start 2 --duration 6
+```
+
+- `--start`: start position in seconds (default: `0`).
+- `--duration` / `-d`: output duration in seconds (default: `10`, maximum: `10`).
+- The source video must be at most 25 MB and contain an audio track.
+- The sticker is encoded as animated WebP and the audio as Ogg/Opus.
+- **FFmpeg and FFprobe** must be installed and available on `PATH`. FFmpeg must include
+  the `libwebp_anim` and `libopus` encoders.
+
+The command uses an internal protobuf compatibility hook for Baileys 7.0.0-rc14.
+WhatsApp's sound-sticker support is still rolling out, so playback depends on the
+recipient's WhatsApp client and feature availability.
+
+
 ## Usage hints
 
 `usage` is an array of example invocations shown in the auto-generated `--help` output.
