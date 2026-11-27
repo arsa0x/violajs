@@ -25,6 +25,7 @@ export const MENU = {
         id: ".ping --help",
       },
       { title: "qr", description: "Generate a text QR code", id: ".qr --help" },
+      { title: "saudio", description: "Create an animated sticker with sound from a video.", id: ".saudio --help" },
       { title: "sticker", description: "Sticker maker", id: ".sticker --help" },
     ],
   },
