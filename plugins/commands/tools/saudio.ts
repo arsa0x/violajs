@@ -74,7 +74,7 @@ export default defineCommand({
 
       const message =
         error instanceof Error ? error.message : String(error);
-      if (/ffmpeg|ffprobe/i.test(message)) {
+      if (/not installed|unavailable on PATH|unknown encoder/i.test(message)) {
         await ctx.send.text(
           "Gagal membuat audio sticker. Pastikan FFmpeg (termasuk FFprobe) terpasang dan mendukung encoder libwebp_anim serta libopus.",
         );
