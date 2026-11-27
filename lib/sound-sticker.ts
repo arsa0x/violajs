@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
@@ -24,15 +24,6 @@ type SocketInternals = WASocket & {
   logger?: any;
   authState?: { creds?: { me?: { id?: string } } };
 };
-
-type MediaSource = {
-  message: WAMessage;
-  video: NonNullable<ReturnType<typeof getVideoMessage>>;
-};
-
-function getVideoMessage(message: any) {
-  return message?.videoMessage;
-}
 
 function cloneOmitting<T extends object>(value: T, omitted: Set<string>): T {
   const clone = Object.create(Object.getPrototypeOf(value) ?? Object.prototype);
@@ -302,6 +293,11 @@ export async function sendAudioSticker(
   const audioPath = join(directory, "audio.ogg");
 
   try {
+    const declaredSize = Number((source.message as any)?.videoMessage?.fileLength ?? 0);
+    if (declaredSize > MAX_INPUT_BYTES) {
+      throw new Error("Video must be smaller than 25 MB.");
+    }
+
     const input = await downloadMediaMessage(source, "buffer", {});
     if (!input.length || input.length > MAX_INPUT_BYTES) {
       throw new Error("Video must be smaller than 25 MB.");
@@ -377,6 +373,9 @@ export async function sendAudioSticker(
         audioBuffer,
       ),
     );
+    if (webpBuffer.length > MAX_OUTPUT_BYTES) {
+      throw new Error("Sticker is too large for WhatsApp's sound-sticker limit.");
+    }
 
     const userJid = socket.user?.id ?? socket.authState?.creds?.me?.id;
     if (!userJid) throw new Error("Unable to determine the bot's WhatsApp JID.");
@@ -430,4 +429,3 @@ export async function sendAudioSticker(
   }
 }
 
-export type { MediaSource };
