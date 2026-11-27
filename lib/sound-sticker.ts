@@ -127,11 +127,18 @@ async function run(
   args: string[],
   timeoutMs = 60_000,
 ): Promise<string> {
-  const process = Bun.spawn([command, ...args], {
-    stdout: "pipe",
-    stderr: "pipe",
-    signal: AbortSignal.timeout(timeoutMs),
-  });
+  let process: ReturnType<typeof Bun.spawn>;
+  try {
+    process = Bun.spawn([command, ...args], {
+      stdout: "pipe",
+      stderr: "pipe",
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+  } catch (error) {
+    throw new Error(
+      `${command} is not installed or is unavailable on PATH: ${String(error)}`,
+    );
+  }
 
   const [stdout, stderr, exitCode] = await Promise.all([
     new Response(process.stdout).text(),
