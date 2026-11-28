@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { run } from "./binary";
 import {
   downloadMediaMessage,
   generateWAMessage,
@@ -17,7 +18,10 @@ const MAX_DURATION_SECONDS = 10;
 const AUDIO_MIMETYPE = "audio/ogg; codecs=opus";
 const PATCHED = Symbol.for("violajs.audioStickerCodec");
 const pending = new WeakMap<object, { audio: Uint8Array; emoji: string }>();
-const pendingByHash = new Map<string, { audio: Uint8Array; emoji: string; at: number }>();
+const pendingByHash = new Map<
+  string,
+  { audio: Uint8Array; emoji: string; at: number }
+>();
 
 type SocketInternals = WASocket & {
   waUploadToServer: (...args: any[]) => Promise<any>;
@@ -65,7 +69,10 @@ function installAudioStickerCodec(): void {
   if (!messageProto || messageProto[PATCHED]) return;
 
   const originalEncode = messageProto.encode;
-  messageProto.encode = function encodeWithAudioSticker(message: any, writer?: any) {
+  messageProto.encode = function encodeWithAudioSticker(
+    message: any,
+    writer?: any,
+  ) {
     const sticker = message?.stickerMessage;
     const attachment = sticker ? findPending(sticker) : undefined;
     if (!sticker || !attachment) {
@@ -122,38 +129,6 @@ function registerAudio(sticker: object, audio: Uint8Array): void {
   }
 }
 
-async function run(
-  command: string,
-  args: string[],
-  timeoutMs = 60_000,
-): Promise<string> {
-  let process: ReturnType<typeof Bun.spawn>;
-  try {
-    process = Bun.spawn([command, ...args], {
-      stdout: "pipe",
-      stderr: "pipe",
-      signal: AbortSignal.timeout(timeoutMs),
-    });
-  } catch (error) {
-    throw new Error(
-      `${command} is not installed or is unavailable on PATH: ${String(error)}`,
-    );
-  }
-
-  const [stdout, stderr, exitCode] = await Promise.all([
-    new Response(process.stdout).text(),
-    new Response(process.stderr).text(),
-    process.exited,
-  ]);
-
-  if (exitCode !== 0) {
-    throw new Error(
-      `${command} exited with code ${exitCode}: ${stderr.trim().slice(-1200)}`,
-    );
-  }
-  return stdout.trim();
-}
-
 function makeChunk(name: string, data: Uint8Array): Buffer {
   const payload = Buffer.from(data);
   const header = Buffer.alloc(8);
@@ -166,7 +141,11 @@ function makeChunk(name: string, data: Uint8Array): Buffer {
   ]);
 }
 
-function buildExif(packName: string, publisher: string, audio: Uint8Array): Buffer {
+function buildExif(
+  packName: string,
+  publisher: string,
+  audio: Uint8Array,
+): Buffer {
   const metadata = Buffer.from(
     JSON.stringify({
       "sticker-pack-id": "violajs-audio-sticker",
@@ -256,15 +235,25 @@ async function createVideoSticker(
     ].join(",");
 
     const args = [
-      "-y", "-hide_banner", "-loglevel", "error",
-      "-ss", startSeconds.toFixed(3),
-      "-i", inputPath,
-      "-t", durationSeconds.toFixed(3),
+      "-y",
+      "-hide_banner",
+      "-loglevel",
+      "error",
+      "-ss",
+      startSeconds.toFixed(3),
+      "-i",
+      inputPath,
+      "-t",
+      durationSeconds.toFixed(3),
       "-an",
-      "-vf", filter,
-      "-c:v", "libwebp_anim",
-      "-loop", "0",
-      "-q:v", String(profile.quality),
+      "-vf",
+      filter,
+      "-c:v",
+      "libwebp_anim",
+      "-loop",
+      "0",
+      "-q:v",
+      String(profile.quality),
       outputPath,
     ];
     await run("ffmpeg", args);
@@ -274,7 +263,9 @@ async function createVideoSticker(
     }
   }
 
-  throw new Error("Video is too large to fit WhatsApp's animated sticker limit.");
+  throw new Error(
+    "Video is too large to fit WhatsApp's animated sticker limit.",
+  );
 }
 
 export async function sendAudioSticker(
@@ -302,7 +293,9 @@ export async function sendAudioSticker(
   const audioPath = join(directory, "audio.ogg");
 
   try {
-    const declaredSize = Number((source.message as any)?.videoMessage?.fileLength ?? 0);
+    const declaredSize = Number(
+      (source.message as any)?.videoMessage?.fileLength ?? 0,
+    );
     if (declaredSize > MAX_INPUT_BYTES) {
       throw new Error("Video must be smaller than 25 MB.");
     }
@@ -313,24 +306,39 @@ export async function sendAudioSticker(
     }
     await writeFile(inputPath, input);
 
-    const durationText = await run("ffprobe", [
-      "-v", "error",
-      "-show_entries", "format=duration",
-      "-of", "default=noprint_wrappers=1:nokey=1",
-      inputPath,
-    ], 15_000);
+    const durationText = await run(
+      "ffprobe",
+      [
+        "-v",
+        "error",
+        "-show_entries",
+        "format=duration",
+        "-of",
+        "default=noprint_wrappers=1:nokey=1",
+        inputPath,
+      ],
+      15_000,
+    );
     const totalDuration = Number(durationText);
     if (!Number.isFinite(totalDuration) || totalDuration <= 0) {
       throw new Error("Unable to read the video's duration.");
     }
 
-    const audioStream = await run("ffprobe", [
-      "-v", "error",
-      "-select_streams", "a:0",
-      "-show_entries", "stream=codec_type",
-      "-of", "csv=p=0",
-      inputPath,
-    ], 15_000);
+    const audioStream = await run(
+      "ffprobe",
+      [
+        "-v",
+        "error",
+        "-select_streams",
+        "a:0",
+        "-show_entries",
+        "stream=codec_type",
+        "-of",
+        "csv=p=0",
+        inputPath,
+      ],
+      15_000,
+    );
     if (!audioStream.includes("audio")) {
       throw new Error("The selected video does not contain an audio track.");
     }
@@ -351,15 +359,34 @@ export async function sendAudioSticker(
     );
 
     const audioArgs = [
-      "-y", "-hide_banner", "-loglevel", "error",
-      "-ss", startSeconds.toFixed(3),
-      "-i", inputPath,
-      "-t", durationSeconds.toFixed(3),
-      "-vn", "-map", "0:a:0",
-      "-ar", "48000", "-ac", "1",
-      "-c:a", "libopus", "-b:a", "24k", "-vbr", "on",
-      "-application", "audio",
-      "-f", "ogg", audioPath,
+      "-y",
+      "-hide_banner",
+      "-loglevel",
+      "error",
+      "-ss",
+      startSeconds.toFixed(3),
+      "-i",
+      inputPath,
+      "-t",
+      durationSeconds.toFixed(3),
+      "-vn",
+      "-map",
+      "0:a:0",
+      "-ar",
+      "48000",
+      "-ac",
+      "1",
+      "-c:a",
+      "libopus",
+      "-b:a",
+      "24k",
+      "-vbr",
+      "on",
+      "-application",
+      "audio",
+      "-f",
+      "ogg",
+      audioPath,
     ];
     await run("ffmpeg", audioArgs);
 
@@ -383,11 +410,14 @@ export async function sendAudioSticker(
       ),
     );
     if (webpBuffer.length > MAX_OUTPUT_BYTES) {
-      throw new Error("Sticker is too large for WhatsApp's sound-sticker limit.");
+      throw new Error(
+        "Sticker is too large for WhatsApp's sound-sticker limit.",
+      );
     }
 
     const userJid = socket.user?.id ?? socket.authState?.creds?.me?.id;
-    if (!userJid) throw new Error("Unable to determine the bot's WhatsApp JID.");
+    if (!userJid)
+      throw new Error("Unable to determine the bot's WhatsApp JID.");
 
     const preparedAudio = await prepareWAMessageMedia(
       {
@@ -425,16 +455,16 @@ export async function sendAudioSticker(
     );
 
     const stickerMessage = generated.message?.stickerMessage;
-    if (!stickerMessage) throw new Error("Failed to prepare the sticker message.");
+    if (!stickerMessage)
+      throw new Error("Failed to prepare the sticker message.");
 
     stickerMessage.stickerSentTs = Date.now();
     registerAudio(stickerMessage, audioBytes);
 
     await socket.relayMessage(jid, generated.message!, {
-      messageId: generated.key.id,
+      messageId: generated.key.id!,
     });
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
 }
-
