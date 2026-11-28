@@ -6,6 +6,9 @@ export const config: BotConfig = {
   // Selalu akhiri nomor telepon dengan '@s.whatsapp.net'
   owners: new Set([]),
   session_path: "sessions",
+  // Direktori untuk binary cadangan ketika
+  // binary sistem tidak tersedia.
+  binary_path: "bin",
   main_session: "main",
 
   nekopoi_base: Bun.env.NEKOPOI_BASE,
