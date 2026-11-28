@@ -39,3 +39,5 @@ session
 sessions
 dev
 _site
+bin/*
+!bin/.gitkeep
