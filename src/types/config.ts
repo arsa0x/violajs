@@ -2,6 +2,7 @@ export type BotConfig = {
   prefix: string;
   owners: Set<string>;
   session_path: string;
+  binary_path: string;
   main_session: string;
 
   // nekopoi (optional)
