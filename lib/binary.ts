@@ -1,7 +1,6 @@
 import { config } from "@/config";
 import { statSync } from "node:fs";
 import { resolve } from "node:path";
-import { log } from "./logger";
 
 export async function run(
   command: string,
@@ -9,7 +8,7 @@ export async function run(
   timeoutMs = 60_000,
 ): Promise<string> {
   const executable = resolveBinary(command);
-  log.debug(executable);
+
   let child: Bun.Subprocess<"ignore", "pipe", "pipe">;
   try {
     child = Bun.spawn([executable, ...args], {
